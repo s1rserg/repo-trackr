@@ -1,0 +1,35 @@
+.card-container {
+	position: relative;
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	min-height: 81px;
+	padding: 16px 24px;
+	background-color: var(--color-background-secondary);
+	border: 1px solid var(--color-border-secondary);
+	border-radius: 8px;
+}
+
+.card {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: start;
+	width: 100%;
+	height: 100%;
+	font-size: 16px;
+	color: var(--color-text-primary);
+	text-decoration: none;
+	background: transparent;
+}
+
+.name {
+	flex-basis: min(300px, 30%);
+	min-width: 150px;
+	font-size: 16px;
+	line-height: 120%;
+}
