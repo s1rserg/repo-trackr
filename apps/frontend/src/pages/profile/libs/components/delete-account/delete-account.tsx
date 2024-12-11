@@ -22,7 +22,6 @@ const DeleteAccount = (): JSX.Element => {
 	return (
 		<div className={styles["profile-delete"]}>
 			<h2 className={styles["delete-title"]}>Delete account</h2>
-			<p className={styles["delete-text"]}>This action cannot be undone.</p>
 			<div>
 				<Button
 					label="Delete Your Account"

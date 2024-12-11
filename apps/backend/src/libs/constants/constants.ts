@@ -1,2 +1,5 @@
 export { PAGE_INDEX_OFFSET } from "./page-index-offset.constant.js";
-export { EMPTY_LENGTH, MIN_GIT_EMAILS_LENGTH_FOR_SPLIT } from "@repo-trackr/shared";
+export {
+	EMPTY_LENGTH,
+	MIN_GIT_EMAILS_LENGTH_FOR_SPLIT,
+} from "@repo-trackr/shared";

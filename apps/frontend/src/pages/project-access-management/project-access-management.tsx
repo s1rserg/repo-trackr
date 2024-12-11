@@ -268,11 +268,11 @@ const ProjectAccessManagement = (): JSX.Element => {
 									href: projectRoute as ValueOf<typeof AppRoute>,
 									label: project.name,
 								},
-								{ label: "Access Management" },
+								{ label: "Permission Control" },
 							]}
 						/>
 					</div>
-					<h1 className={styles["title"]}>Access Management</h1>
+					<h1 className={styles["title"]}>Permission Control</h1>
 					<section>
 						<div className={styles["section-header"]}>
 							<h2 className={styles["section-title"]}>Users</h2>

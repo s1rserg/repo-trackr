@@ -23,7 +23,7 @@ const SIDEBAR_ITEMS: NavigationItem[] = [
 	{
 		href: AppRoute.ACCESS_MANAGEMENT,
 		icon: "access",
-		label: "Access Management",
+		label: "Permission Control",
 		pagePermissions: [PermissionKey.MANAGE_USER_ACCESS],
 	},
 	{

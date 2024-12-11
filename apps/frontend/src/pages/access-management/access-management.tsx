@@ -231,7 +231,7 @@ const AccessManagement = (): JSX.Element => {
 
 	return (
 		<PageLayout>
-			<h1 className={styles["title"]}>Access Management</h1>
+			<h1 className={styles["title"]}>Permission Control</h1>
 
 			<section>
 				<div className={styles["section-header"]}>

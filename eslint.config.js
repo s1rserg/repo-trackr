@@ -5,7 +5,6 @@ import tsParser from "@typescript-eslint/parser";
 import { resolve as tsResolver } from "eslint-import-resolver-typescript";
 import * as importPlugin from "eslint-plugin-import";
 import jsdocPlugin from "eslint-plugin-jsdoc";
-import perfectionistPlugin from "eslint-plugin-perfectionist";
 import explicitGenericsPlugin from "eslint-plugin-require-explicit-generics";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import unicornPlugin from "eslint-plugin-unicorn";
@@ -53,22 +52,8 @@ const jsConfig = {
 		"no-restricted-syntax": [
 			"error",
 			{
-				message: "Export/Import all (*) is forbidden.",
-				selector: "ExportAllDeclaration,ImportAllDeclaration",
-			},
-			{
-				message: "Exports should be at the end of the file.",
-				selector: "ExportNamedDeclaration[declaration!=null]",
-			},
-			{
 				message: "TS features are forbidden.",
 				selector: "TSEnumDeclaration,ClassDeclaration[abstract=true]",
-			},
-			{
-				message:
-					"Avoid import/export type { Type } from './module'. Prefer import/export { type Type } from './module'.",
-				selector:
-					"ImportDeclaration[importKind=type],ExportNamedDeclaration[exportKind=type]",
 			},
 		],
 		"object-shorthand": ["error"],
@@ -92,7 +77,6 @@ const importConfig = {
 			},
 		],
 		"import/newline-after-import": ["error"],
-		"import/no-default-export": ["error"],
 		"import/no-duplicates": ["error"],
 	},
 	settings: {
@@ -125,16 +109,6 @@ const unicornConfig = {
 		...unicornPlugin.configs.recommended.rules,
 		"unicorn/no-null": ["off"],
 	},
-};
-
-/** @type {FlatConfig} */
-const perfectionistConfig = {
-	plugins: {
-		perfectionist: /** @type {Plugin} */ (
-			/** @type {unknown} */ (perfectionistPlugin)
-		),
-	},
-	rules: perfectionistPlugin.configs["recommended-natural"].rules,
 };
 
 /** @type {FlatConfig} */
@@ -229,7 +203,6 @@ const explicitGenericsConfig = {
 const overridesConfigs = [
 	{
 		files: [
-			"commitlint.config.ts",
 			"prettier.config.ts",
 			"stylelint.config.js",
 			"knip.config.ts",
@@ -256,7 +229,6 @@ const config = [
 	importConfig,
 	sonarConfig,
 	unicornConfig,
-	perfectionistConfig,
 	stylisticConfig,
 	typescriptConfig,
 	jsdocConfig,

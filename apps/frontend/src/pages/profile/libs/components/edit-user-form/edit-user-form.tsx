@@ -36,30 +36,43 @@ const EditUserForm = ({ user }: Properties): JSX.Element => {
 	);
 
 	return (
-		<form className={styles["form-wrapper"]} onSubmit={handleFormSubmit}>
-			<div className={styles["inputs-wrapper"]}>
-				<Input
-					autoComplete="username"
-					control={control}
-					errors={errors}
-					label="Name"
-					name="name"
+		<div className={styles["profile-wrapper"]}>
+			<div className={styles["profile-image-wrapper"]}>
+				<img
+					alt="profile"
+					className={styles["profile-image"]}
+					src="./profile.png"
+					width="500px"
 				/>
-
-				<Input
-					autoComplete="email"
-					control={control}
-					errors={errors}
-					isDisabled
-					label="Email"
-					name="email"
-				/>
+				<div>
+					<Button isDisabled={!isDirty} label="Update Picture" type="submit" />
+				</div>
 			</div>
+			<form className={styles["form-wrapper"]} onSubmit={handleFormSubmit}>
+				<div className={styles["inputs-wrapper"]}>
+					<Input
+						autoComplete="username"
+						control={control}
+						errors={errors}
+						label="Name"
+						name="name"
+					/>
 
-			<div>
-				<Button isDisabled={!isDirty} label="Update Profile" type="submit" />
-			</div>
-		</form>
+					<Input
+						autoComplete="email"
+						control={control}
+						errors={errors}
+						isDisabled
+						label="Email"
+						name="email"
+					/>
+				</div>
+
+				<div>
+					<Button isDisabled={!isDirty} label="Update Profile" type="submit" />
+				</div>
+			</form>
+		</div>
 	);
 };
 

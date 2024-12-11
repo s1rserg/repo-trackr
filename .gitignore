@@ -15,5 +15,6 @@ build
 # logs
 *.log
 
-#scripts
-scripts
+# diagrams
+explorer.js
+*.puml

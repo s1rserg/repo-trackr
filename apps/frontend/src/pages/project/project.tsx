@@ -49,6 +49,7 @@ import {
 } from "./libs/components/components.js";
 import { checkIsProjectPermitted } from "./libs/helpers/helpers.js";
 import styles from "./styles.module.css";
+import AnalyticsGraphs from "./analytics-chart.js";
 
 const Project = (): JSX.Element => {
 	const dispatch = useAppDispatch();
@@ -409,6 +410,8 @@ const Project = (): JSX.Element => {
 								/>
 							</div>
 						)}
+
+						<AnalyticsGraphs />
 
 						<div className={styles["contributors-list-wrapper"]}>
 							<ContributorsList

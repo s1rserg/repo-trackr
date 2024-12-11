@@ -1,1 +1,4 @@
-export { ContributorOrderByKey, ContributorsApiPath } from "@repo-trackr/shared";
+export {
+	ContributorOrderByKey,
+	ContributorsApiPath,
+} from "@repo-trackr/shared";

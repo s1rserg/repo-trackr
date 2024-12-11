@@ -1,0 +1,31 @@
+{
+	"name": "@repo-trackr/analytics",
+	"version": "1.8.0",
+	"type": "module",
+	"engines": {
+		"node": "20.x.x",
+		"npm": "10.x.x"
+	},
+	"main": "./build/index.js",
+	"scripts": {
+		"lint:type": "npx tsc --noEmit",
+		"lint:js": "npx eslint . --max-warnings=0 --no-warn-ignored",
+		"lint": "concurrently \"npm:lint:*\"",
+		"build:cp": "cp -r package.json build",
+		"build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && npm run build:cp",
+		"start:dev": "tsx watch src/index.ts"
+	},
+	"dependencies": {
+		"@repo-trackr/shared": "*",
+		"commander": "12.1.0",
+		"convict": "6.2.4",
+		"node-cron": "3.0.3",
+		"pino": "9.4.0",
+		"pino-pretty": "11.2.2",
+		"pm2": "5.4.2"
+	},
+	"devDependencies": {
+		"@types/node-cron": "3.0.11",
+		"tsx": "4.19.1"
+	}
+}

@@ -74,6 +74,9 @@ const SignInForm = ({ onSubmit }: Properties): JSX.Element => {
 					type={isPasswordVisible ? "text" : "password"}
 				/>
 			</div>
+			<p className={styles["form-reset-text"]}>
+				Forgot password? <Link to={AppRoute.SIGN_UP}>Reset</Link>
+			</p>
 			<Button label="Log in" type="submit" />
 		</form>
 	);
