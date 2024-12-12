@@ -24,7 +24,7 @@ import {
 } from "./libs/types/types.js";
 import { type ProjectService } from "./project.service.js";
 import { projectCreateValidationSchema, projectPatchValidationSchema } from "./libs/validation-schemas/validation-schemas.js";
-import { type ProjectConfigureAnalyticsRequestDto } from "~/libs/types/types.js";
+import { projectConfigureAnalyticsValidationSchema, type ProjectConfigureAnalyticsRequestDto } from "~/libs/types/types.js";
 
 /**
  * @swagger
@@ -202,7 +202,7 @@ class ProjectController extends BaseController {
 				),
 			],
 			validation: {
-				body: projectPatchValidationSchema,
+				body: projectConfigureAnalyticsValidationSchema,
 			},
 		});
 	}

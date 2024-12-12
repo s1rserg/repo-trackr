@@ -20,10 +20,7 @@ import { type ProjectGetByIdResponseDto } from "~/modules/projects/projects.js";
 import { actions as scriptActions } from "~/modules/scripts/scripts.js";
 
 import styles from "./styles.module.css";
-import {
-	projectConfigureAnalyticsValidationSchema,
-	type ProjectConfigureAnalyticsRequestDto,
-} from "~/libs/types/types.js";
+import { type ProjectConfigureAnalyticsRequestDto, projectConfigureAnalyticsValidationSchema } from "~/libs/types/types.js";
 
 type Properties = {
 	isOpened: boolean;
@@ -112,7 +109,7 @@ const SetupAnalyticsModal = ({
 				},
 			)(event_);
 		},
-		[handleSubmit],
+		[analyticsHandleSubmit, onConfigureAnalyticsSubmit],
 	);
 
 	const handleCopyApiKeyToClipboard = useCallback(
@@ -386,21 +383,19 @@ const SetupAnalyticsModal = ({
 						</div>
 						<form
 							className={styles["api-key-container"]}
-							onSubmit={handleGenerateSubmit}
+							onSubmit={handleAnalyticsSubmit}
 						>
 							<Input
 								control={analyticsControl}
 								errors={analyticsErrors}
-								isReadOnly
 								label="Github API key"
 								name="apiKey"
-								placeholder="No API key"
+								placeholder="API key"
 							/>
 
 							<Input
 								control={analyticsControl}
 								errors={analyticsErrors}
-								isReadOnly
 								label="Repository URL (owner/repoName)"
 								name="repositoryUrl"
 								placeholder="owner/repoName"
