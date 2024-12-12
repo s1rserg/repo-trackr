@@ -20,17 +20,20 @@ import { type ProjectGetByIdResponseDto } from "~/modules/projects/projects.js";
 import { actions as scriptActions } from "~/modules/scripts/scripts.js";
 
 import styles from "./styles.module.css";
+import { type ProjectConfigureAnalyticsRequestDto } from "~/libs/types/types.js";
 
 type Properties = {
 	isOpened: boolean;
 	onClose: () => void;
 	project: ProjectGetByIdResponseDto;
+	onConfigureAnalyticsSubmit: (payload: ProjectConfigureAnalyticsRequestDto) => void;
 };
 
 const SetupAnalyticsModal = ({
 	isOpened,
 	onClose,
 	project,
+	onConfigureAnalyticsSubmit
 }: Properties): JSX.Element => {
 	const dispatch = useAppDispatch();
 

@@ -50,6 +50,7 @@ import {
 import { checkIsProjectPermitted } from "./libs/helpers/helpers.js";
 import styles from "./styles.module.css";
 import AnalyticsGraphs from "./analytics-chart.js";
+import { type ProjectConfigureAnalyticsRequestDto } from "@repo-trackr/shared";
 
 const Project = (): JSX.Element => {
 	const dispatch = useAppDispatch();
@@ -157,6 +158,16 @@ const Project = (): JSX.Element => {
 		}
 	}, [projectPatchStatus, handleEditModalClose, dispatch, projectId]);
 
+	useEffect(() => {
+		if (projectPatchStatus === DataStatus.FULFILLED) {
+			onSetupAnalyticsModalClose();
+
+			if (projectId) {
+				void dispatch(projectActions.getById({ id: projectId }));
+			}
+		}
+	}, [dispatch, onSetupAnalyticsModalClose, projectId, projectPatchStatus]);
+
 	const handleEditProject = useCallback(() => {
 		handleEditModalOpen();
 	}, [handleEditModalOpen]);
@@ -169,6 +180,15 @@ const Project = (): JSX.Element => {
 		(payload: ProjectPatchRequestDto) => {
 			if (project) {
 				void dispatch(projectActions.patch({ id: project.id, payload }));
+			}
+		},
+		[dispatch, project],
+	);
+
+	const handleProjectConfigureAnalyticsSubmit = useCallback(
+		(payload: ProjectConfigureAnalyticsRequestDto) => {
+			if (project) {
+				void dispatch(projectActions.configureAnalytics({ id: project.id, payload }));
 			}
 		},
 		[dispatch, project],
@@ -489,6 +509,7 @@ const Project = (): JSX.Element => {
 						isOpened={isSetupAnalyticsModalOpened}
 						onClose={onSetupAnalyticsModalClose}
 						project={project}
+						onConfigureAnalyticsSubmit={handleProjectConfigureAnalyticsSubmit}
 					/>
 
 					<ConfirmationModal
