@@ -20,20 +20,25 @@ import { type ProjectGetByIdResponseDto } from "~/modules/projects/projects.js";
 import { actions as scriptActions } from "~/modules/scripts/scripts.js";
 
 import styles from "./styles.module.css";
-import { type ProjectConfigureAnalyticsRequestDto } from "~/libs/types/types.js";
+import {
+	projectConfigureAnalyticsValidationSchema,
+	type ProjectConfigureAnalyticsRequestDto,
+} from "~/libs/types/types.js";
 
 type Properties = {
 	isOpened: boolean;
 	onClose: () => void;
 	project: ProjectGetByIdResponseDto;
-	onConfigureAnalyticsSubmit: (payload: ProjectConfigureAnalyticsRequestDto) => void;
+	onConfigureAnalyticsSubmit: (
+		payload: ProjectConfigureAnalyticsRequestDto,
+	) => void;
 };
 
 const SetupAnalyticsModal = ({
 	isOpened,
 	onClose,
 	project,
-	onConfigureAnalyticsSubmit
+	onConfigureAnalyticsSubmit,
 }: Properties): JSX.Element => {
 	const dispatch = useAppDispatch();
 
@@ -49,6 +54,15 @@ const SetupAnalyticsModal = ({
 	const handleTabChange = (tab: "gitScript" | "githubAnalytics"): void => {
 		setActiveTab(tab);
 	};
+
+	const {
+		control: analyticsControl,
+		errors: analyticsErrors,
+		handleSubmit: analyticsHandleSubmit,
+	} = useAppForm<ProjectConfigureAnalyticsRequestDto>({
+		defaultValues: { apiKey: "", repositoryUrl: "" },
+		validationSchema: projectConfigureAnalyticsValidationSchema,
+	});
 
 	const hasProjectApiKey = project.apiKey !== null;
 	const hasAuthenticatedUser = authenticatedUser !== null;
@@ -88,6 +102,17 @@ const SetupAnalyticsModal = ({
 			})(event_);
 		},
 		[handleSubmit, dispatch],
+	);
+
+	const handleAnalyticsSubmit = useCallback(
+		(event_: React.BaseSyntheticEvent): void => {
+			void analyticsHandleSubmit(
+				(formData: ProjectConfigureAnalyticsRequestDto) => {
+					onConfigureAnalyticsSubmit(formData);
+				},
+			)(event_);
+		},
+		[handleSubmit],
 	);
 
 	const handleCopyApiKeyToClipboard = useCallback(
@@ -307,8 +332,8 @@ const SetupAnalyticsModal = ({
 						<div>
 							<span className={styles["subtitle"]}>Overview</span>
 							<p className={styles["text"]}>
-								System will fetch data from Github API, collecting
-								statistics and updating analytics data every 3 hours.
+								System will fetch data from Github API, collecting statistics
+								and updating analytics data every 3 hours.
 							</p>
 						</div>
 
@@ -317,10 +342,15 @@ const SetupAnalyticsModal = ({
 							<ol className={styles["text"]}>
 								<li className={styles["list-item"]}>
 									<span className={styles["list-item-title"]}>
-										Go to <a href="https://github.com/settings/tokens?type=beta">https://github.com/settings/tokens?type=beta</a>.
+										Go to{" "}
+										<a href="https://github.com/settings/tokens?type=beta">
+											https://github.com/settings/tokens?type=beta
+										</a>
+										.
 									</span>
 									<p className={styles["list-item-text"]}>
-										Go to the Github API key creation link and log in if necessary.
+										Go to the Github API key creation link and log in if
+										necessary.
 									</p>
 								</li>
 								<li className={styles["list-item"]}>
@@ -328,7 +358,8 @@ const SetupAnalyticsModal = ({
 										Click Generate Token button on top.
 									</span>
 									<p className={styles["list-item-text"]}>
-										Confirm access, input desired token name, expiration date and desired repository access.
+										Confirm access, input desired token name, expiration date
+										and desired repository access.
 									</p>
 								</li>
 
@@ -337,7 +368,8 @@ const SetupAnalyticsModal = ({
 										Add necessary permissions
 									</span>
 									<p className={styles["list-item-text"]}>
-										Add read-only repository permissions for commit statuses, contents, discussions, issues, pull requests and metadata.
+										Add read-only repository permissions for commit statuses,
+										contents, discussions, issues, pull requests and metadata.
 									</p>
 								</li>
 
@@ -346,11 +378,37 @@ const SetupAnalyticsModal = ({
 										Copy and paste API token here
 									</span>
 									<p className={styles["list-item-text"]}>
-										Click Generate Token button, copy it, and paste into the form here. 
+										Click Generate Token button, copy it, and paste into the
+										form here.
 									</p>
 								</li>
 							</ol>
 						</div>
+						<form
+							className={styles["api-key-container"]}
+							onSubmit={handleGenerateSubmit}
+						>
+							<Input
+								control={analyticsControl}
+								errors={analyticsErrors}
+								isReadOnly
+								label="Github API key"
+								name="apiKey"
+								placeholder="No API key"
+							/>
+
+							<Input
+								control={analyticsControl}
+								errors={analyticsErrors}
+								isReadOnly
+								label="Repository URL (owner/repoName)"
+								name="repositoryUrl"
+								placeholder="owner/repoName"
+							/>
+							<div className={styles["button-wrapper"]}>
+								<Button label="Submit" type="submit" />
+							</div>
+						</form>
 					</>
 				)}
 			</div>
