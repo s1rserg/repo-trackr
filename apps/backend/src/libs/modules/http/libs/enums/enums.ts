@@ -1,1 +1,1 @@
-export { HTTPCode } from "@repo-trackr/shared";
+export { HTTPCode, HTTPHeader } from "@repo-trackr/shared";

@@ -1,1 +1,1 @@
-export { HTTPError } from "@repo-trackr/shared";
+export { HTTPError } from "./http-error.exception.js";

@@ -6,4 +6,5 @@ export {
 	PermissionKey,
 	ProjectPermissionKey,
 	ServerErrorType,
+	ContentType,
 } from "@repo-trackr/shared";

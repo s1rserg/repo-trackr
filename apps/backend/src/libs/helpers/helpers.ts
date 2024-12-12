@@ -1,5 +1,6 @@
 export { checkPermissions } from "./check-permissions/check-permissions.helper.js";
 export {
+	configureString,
 	changeCase,
 	checkHasPermission,
 	formatDate,

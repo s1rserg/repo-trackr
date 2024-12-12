@@ -1,1 +1,1 @@
-export { type HTTP, type HTTPMethod } from "@repo-trackr/shared";
+export { type HTTP, type HTTPOptions } from "@repo-trackr/shared";

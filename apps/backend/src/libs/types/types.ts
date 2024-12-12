@@ -11,3 +11,5 @@ export {
 	type ValidationSchema,
 	type ValueOf,
 } from "@repo-trackr/shared";
+export { type ServerErrorDetail } from "./server-error-detail.type.js";
+export { type ServerErrorResponse } from "./server-error-response.type.js";
