@@ -7,7 +7,7 @@ import {
 import { getDifferenceInDays } from "~/libs/helpers/helpers.js";
 import { HTTPCode } from "~/libs/modules/http/http.js";
 import { type Logger } from "~/libs/modules/logger/logger.js";
-import { type Service } from "~/libs/types/types.js";
+import { type ProjectConfigureAnalyticsRequestDto, type Service } from "~/libs/types/types.js";
 import { type ProjectApiKeyService } from "~/modules/project-api-keys/project-api-key.service.js";
 import { type ProjectGroupService } from "~/modules/project-groups/project-groups.js";
 
@@ -213,6 +213,35 @@ class ProjectService implements Service {
 		}
 
 		const updatedItem = await this.projectRepository.patch(id, projectData);
+
+		const project = updatedItem.toObject();
+
+		const projectApiKey = await this.projectApiKeyService.findByProjectId(
+			project.id,
+		);
+
+		const apiKey = projectApiKey ? projectApiKey.apiKey : null;
+
+		return {
+			...project,
+			apiKey,
+		};
+	}
+
+	public async configureAnalytics(
+		id: number,
+		projectData: ProjectConfigureAnalyticsRequestDto,
+	): Promise<ProjectPatchResponseDto> {
+		const targetProject = await this.projectRepository.find(id);
+
+		if (!targetProject) {
+			throw new ProjectError({
+				message: ExceptionMessage.PROJECT_NOT_FOUND,
+				status: HTTPCode.NOT_FOUND,
+			});
+		}
+
+		const updatedItem = await this.projectRepository.configureAnalytics(id, projectData);
 
 		const project = updatedItem.toObject();
 

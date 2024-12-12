@@ -13,6 +13,7 @@ import {
 
 import { FIRST_PAGE } from "../libs/constants/constants.js";
 import {
+	configureAnalytics,
 	create,
 	deleteById,
 	getById,
@@ -106,6 +107,21 @@ const { actions, name, reducer } = createSlice({
 			state.projectPatchStatus = DataStatus.FULFILLED;
 		});
 		builder.addCase(patch.rejected, (state) => {
+			state.projectPatchStatus = DataStatus.REJECTED;
+		});
+
+		builder.addCase(configureAnalytics.pending, (state) => {
+			state.projectPatchStatus = DataStatus.PENDING;
+		});
+		builder.addCase(configureAnalytics.fulfilled, (state, action) => {
+			const updatedProject = action.payload;
+			state.projects = state.projects.map((project) =>
+				project.id === updatedProject.id ? updatedProject : project,
+			);
+
+			state.projectPatchStatus = DataStatus.FULFILLED;
+		});
+		builder.addCase(configureAnalytics.rejected, (state) => {
 			state.projectPatchStatus = DataStatus.REJECTED;
 		});
 

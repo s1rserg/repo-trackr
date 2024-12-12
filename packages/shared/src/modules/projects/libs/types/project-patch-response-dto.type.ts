@@ -4,6 +4,7 @@ type ProjectPatchResponseDto = {
 	id: number;
 	lastActivityDate: null | string;
 	name: string;
+	repositoryUrl: null | string;
 };
 
 export { type ProjectPatchResponseDto };

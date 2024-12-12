@@ -15,6 +15,10 @@ class ProjectEntity implements Entity {
 
 	private name!: string;
 
+	private apiKey!: null | string;
+
+	private repositoryUrl!: null | string;
+
 	private constructor({
 		analyticsLastSyncedAt,
 		analyticsLastSyncedByUser,
@@ -22,6 +26,8 @@ class ProjectEntity implements Entity {
 		id,
 		lastActivityDate,
 		name,
+		apiKey,
+		repositoryUrl,
 	}: {
 		analyticsLastSyncedAt: null | string;
 		analyticsLastSyncedByUser: null | string;
@@ -29,6 +35,8 @@ class ProjectEntity implements Entity {
 		id: null | number;
 		lastActivityDate: null | string;
 		name: string;
+		apiKey: null | string;
+		repositoryUrl: null | string;
 	}) {
 		this.analyticsLastSyncedAt = analyticsLastSyncedAt;
 		this.analyticsLastSyncedByUser = analyticsLastSyncedByUser;
@@ -36,6 +44,8 @@ class ProjectEntity implements Entity {
 		this.description = description;
 		this.lastActivityDate = lastActivityDate;
 		this.name = name;
+		this.apiKey = apiKey;
+		this.repositoryUrl = repositoryUrl;
 	}
 
 	public static initialize({
@@ -45,6 +55,8 @@ class ProjectEntity implements Entity {
 		id,
 		lastActivityDate,
 		name,
+		apiKey,
+		repositoryUrl,
 	}: {
 		analyticsLastSyncedAt: string;
 		analyticsLastSyncedByUser: null | string;
@@ -52,6 +64,8 @@ class ProjectEntity implements Entity {
 		id: number;
 		lastActivityDate: string;
 		name: string;
+		apiKey: null | string;
+		repositoryUrl: null | string;
 	}): ProjectEntity {
 		return new ProjectEntity({
 			analyticsLastSyncedAt,
@@ -60,6 +74,8 @@ class ProjectEntity implements Entity {
 			id,
 			lastActivityDate,
 			name,
+			apiKey,
+			repositoryUrl,
 		});
 	}
 
@@ -77,6 +93,8 @@ class ProjectEntity implements Entity {
 			id: null,
 			lastActivityDate: null,
 			name,
+			apiKey: null,
+			repositoryUrl: null,
 		});
 	}
 
@@ -98,6 +116,7 @@ class ProjectEntity implements Entity {
 		| "id"
 		| "lastActivityDate"
 		| "name"
+		| "repositoryUrl"
 	> {
 		return {
 			analyticsLastSyncedAt: this.analyticsLastSyncedAt,
@@ -106,6 +125,7 @@ class ProjectEntity implements Entity {
 			id: this.id as number,
 			lastActivityDate: this.lastActivityDate,
 			name: this.name,
+			repositoryUrl: this.repositoryUrl
 		};
 	}
 }

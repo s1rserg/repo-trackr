@@ -13,6 +13,7 @@ import {
 	type ProjectPatchRequestDto,
 	type ProjectPatchResponseDto,
 } from "./libs/types/types.js";
+import { type ProjectConfigureAnalyticsRequestDto } from "~/libs/types/types.js";
 
 type Constructor = {
 	baseUrl: string;
@@ -106,6 +107,23 @@ class ProjectApi extends BaseHTTPApi {
 	): Promise<ProjectPatchResponseDto> {
 		const response = await this.load(
 			this.getFullEndpoint(ProjectsApiPath.$ID, { id: String(id) }),
+			{
+				contentType: ContentType.JSON,
+				hasAuth: true,
+				method: "PATCH",
+				payload: JSON.stringify(payload),
+			},
+		);
+
+		return await response.json<ProjectPatchResponseDto>();
+	}
+
+	public async configureAnalytics(
+		id: number,
+		payload: ProjectConfigureAnalyticsRequestDto,
+	): Promise<ProjectPatchResponseDto> {
+		const response = await this.load(
+			this.getFullEndpoint(ProjectsApiPath.ANALYTICS, { id: String(id) }),
 			{
 				contentType: ContentType.JSON,
 				hasAuth: true,

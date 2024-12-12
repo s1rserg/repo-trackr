@@ -14,6 +14,10 @@ class ProjectModel extends AbstractModel {
 
 	public name!: string;
 
+	public apiKey!: string;
+
+	public repositoryUrl!: string;
+
 	public static override get tableName(): string {
 		return DatabaseTableName.PROJECTS;
 	}

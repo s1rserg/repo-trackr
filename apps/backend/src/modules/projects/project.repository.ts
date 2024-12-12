@@ -2,6 +2,7 @@ import { EMPTY_LENGTH } from "~/libs/constants/constants.js";
 import { SortType } from "~/libs/enums/enums.js";
 import { subtractDays } from "~/libs/helpers/helpers.js";
 import {
+	type ProjectConfigureAnalyticsRequestDto,
 	type PaginationResponseDto,
 	type Repository,
 } from "~/libs/types/types.js";
@@ -138,6 +139,19 @@ class ProjectRepository implements Repository {
 		const updatedItem = await this.projectModel
 			.query()
 			.patchAndFetchById(id, { description, name });
+
+		return ProjectEntity.initialize(updatedItem);
+	}
+
+	public async configureAnalytics(
+		id: number,
+		projectData: ProjectConfigureAnalyticsRequestDto,
+	): Promise<ProjectEntity> {
+		const { apiKey, repositoryUrl } = projectData;
+
+		const updatedItem = await this.projectModel
+			.query()
+			.patchAndFetchById(id, { apiKey, repositoryUrl });
 
 		return ProjectEntity.initialize(updatedItem);
 	}

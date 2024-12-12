@@ -40,7 +40,6 @@ const reactConfig = {
 		...reactPlugin.configs["recommended"].rules,
 		"react/jsx-boolean-value": ["error"],
 		"react/jsx-curly-brace-presence": ["error"],
-		"react/jsx-no-bind": ["error", { ignoreRefs: true }],
 		"react/prop-types": ["off"],
 		"react/self-closing-comp": ["error"],
 	}),

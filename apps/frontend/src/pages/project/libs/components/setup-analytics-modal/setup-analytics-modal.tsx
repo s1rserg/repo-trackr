@@ -13,6 +13,7 @@ import {
 	useCallback,
 	useEffect,
 	useMemo,
+	useState,
 } from "~/libs/hooks/hooks.js";
 import { actions as projectApiKeyActions } from "~/modules/project-api-keys/project-api-keys.js";
 import { type ProjectGetByIdResponseDto } from "~/modules/projects/projects.js";
@@ -37,6 +38,14 @@ const SetupAnalyticsModal = ({
 		({ projectApiKeys }) => projectApiKeys,
 	);
 	const { authenticatedUser } = useAppSelector(({ auth }) => auth);
+
+	const [activeTab, setActiveTab] = useState<
+		"gitScript" | "githubAnalytics" | ""
+	>("");
+
+	const handleTabChange = (tab: "gitScript" | "githubAnalytics"): void => {
+		setActiveTab(tab);
+	};
 
 	const hasProjectApiKey = project.apiKey !== null;
 	const hasAuthenticatedUser = authenticatedUser !== null;
@@ -115,157 +124,232 @@ const SetupAnalyticsModal = ({
 	return (
 		<Modal isOpened={isOpened} onClose={onClose} title="Setup Analytics">
 			<div className={styles["content"]}>
-				<div>
-					<span className={styles["subtitle"]}>Overview</span>
-					<p className={styles["text"]}>
-						This script operates continuously in the background, collecting
-						statistics and updating analytics data every 3 hours.
-					</p>
-				</div>
-
-				<form
-					className={styles["api-key-container"]}
-					onSubmit={handleGenerateSubmit}
-				>
-					<Input
-						control={control}
-						errors={errors}
-						isReadOnly
-						label="API key"
-						name="apiKey"
-						placeholder="No API key"
-						{...(isKeyGenerated
-							? {
-									leftIcon: (
-										<div className={styles["generated-key-indicator"]}>
-											<Icon height={20} name="check" width={20} />
-										</div>
-									),
-								}
-							: {})}
-						rightIcon={
-							<IconButton
-								iconName="clipboard"
-								isDisabled={isCopyButtonDisabled}
-								label="Copy API key"
-								onClick={handleCopyAPIKeyClick}
-							/>
-						}
-					/>
-					<div className={styles["button-wrapper"]}>
+				{!activeTab && (
+					<>
 						<Button
-							isDisabled={isGenerateButtonDisabled}
-							label={hasProjectApiKey ? "Regenerate" : "Generate"}
-							type="submit"
+							label="Git Script"
+							onClick={() => {
+								handleTabChange("gitScript");
+							}}
+							variant="default"
 						/>
-					</div>
-				</form>
-
-				<div>
-					<span className={styles["subtitle"]}>Prerequisites</span>
-					<ul className={styles["text"]}>
-						<li>
-							<span className={styles["list-item-title"]}>Git</span>: Ensure Git
-							is installed for repository management.
-						</li>
-						<li>
-							<span className={styles["list-item-title"]}>Node.js 20</span>: The
-							script requires Node.js 20 to be installed on your machine.
-						</li>
-						<li>
-							<span className={styles["list-item-title"]}>PM2 5.4</span>: The
-							script requires PM2 5.4 to be installed on your machine.
-						</li>
-						<li>
-							<span className={styles["list-item-title"]}>
-								Unix-based system
-							</span>
-							: The script requires a Unix-based operating system (e.g., Linux
-							or macOS) to run properly.
-						</li>
-					</ul>
-				</div>
-
-				<div>
-					<span className={styles["subtitle"]}>Installation Steps</span>
-					<ol className={styles["text"]}>
-						<li className={styles["list-item"]}>
-							<span className={styles["list-item-title"]}>
-								Execute the configuration script.
-							</span>
-							<p className={styles["list-item-text"]}>
-								Open your terminal or console, copy the following script, paste
-								and run it.
+						<Button
+							label="GitHub Analytics"
+							onClick={() => {
+								handleTabChange("githubAnalytics");
+							}}
+							variant="outlined"
+						/>
+					</>
+				)}
+				{activeTab === "gitScript" && (
+					<>
+						<div>
+							<span className={styles["subtitle"]}>Overview</span>
+							<p className={styles["text"]}>
+								This script operates continuously in the background, collecting
+								statistics and updating analytics data every 3 hours.
 							</p>
+						</div>
+
+						<form
+							className={styles["api-key-container"]}
+							onSubmit={handleGenerateSubmit}
+						>
 							<Input
 								control={control}
 								errors={errors}
-								isLabelHidden
 								isReadOnly
-								label="pm2StartupScript"
-								name="pm2StartupScript"
-								placeholder="Need to generate API key"
+								label="API key"
+								name="apiKey"
+								placeholder="No API key"
+								{...(isKeyGenerated
+									? {
+											leftIcon: (
+												<div className={styles["generated-key-indicator"]}>
+													<Icon height={20} name="check" width={20} />
+												</div>
+											),
+										}
+									: {})}
 								rightIcon={
 									<IconButton
 										iconName="clipboard"
 										isDisabled={isCopyButtonDisabled}
-										label="Copy script"
-										onClick={handleCopyStartupScriptClick}
+										label="Copy API key"
+										onClick={handleCopyAPIKeyClick}
 									/>
 								}
 							/>
-							<span className={styles["list-item-text"]}>
-								Then, modify the command output from this step with your
-								system&apos;s values and execute it in terminal or console.
-							</span>
-						</li>
-						<li className={styles["list-item"]}>
-							<span className={styles["list-item-title"]}>
-								Clone your project repository.
-							</span>
-							<p className={styles["list-item-text"]}>
-								Use Git to clone your project repository to your local machine.
-							</p>
-						</li>
+							<div className={styles["button-wrapper"]}>
+								<Button
+									isDisabled={isGenerateButtonDisabled}
+									label={hasProjectApiKey ? "Regenerate" : "Generate"}
+									type="submit"
+								/>
+							</div>
+						</form>
 
-						<li className={styles["list-item"]}>
-							<span className={styles["list-item-title"]}>
-								Prepare the script.
-							</span>
-							<p className={styles["list-item-text"]}>
-								Copy the command below and replace &lt;project-path&gt;
-								placeholder with your local repository&apos;s path:
-							</p>
-							<Input
-								control={control}
-								errors={errors}
-								isLabelHidden
-								isReadOnly
-								label="Analytics script"
-								name="analyticsScript"
-								placeholder="Need to generate API key"
-								rightIcon={
-									<IconButton
-										iconName="clipboard"
-										isDisabled={isCopyButtonDisabled}
-										label="Copy script"
-										onClick={handleCopyAnalyticsScriptClick}
+						<div>
+							<span className={styles["subtitle"]}>Prerequisites</span>
+							<ul className={styles["text"]}>
+								<li>
+									<span className={styles["list-item-title"]}>Git</span>: Ensure
+									Git is installed for repository management.
+								</li>
+								<li>
+									<span className={styles["list-item-title"]}>Node.js 20</span>:
+									The script requires Node.js 20 to be installed on your
+									machine.
+								</li>
+								<li>
+									<span className={styles["list-item-title"]}>PM2 5.4</span>:
+									The script requires PM2 5.4 to be installed on your machine.
+								</li>
+								<li>
+									<span className={styles["list-item-title"]}>
+										Unix-based system
+									</span>
+									: The script requires a Unix-based operating system (e.g.,
+									Linux or macOS) to run properly.
+								</li>
+							</ul>
+						</div>
+
+						<div>
+							<span className={styles["subtitle"]}>Installation Steps</span>
+							<ol className={styles["text"]}>
+								<li className={styles["list-item"]}>
+									<span className={styles["list-item-title"]}>
+										Execute the configuration script.
+									</span>
+									<p className={styles["list-item-text"]}>
+										Open your terminal or console, copy the following script,
+										paste and run it.
+									</p>
+									<Input
+										control={control}
+										errors={errors}
+										isLabelHidden
+										isReadOnly
+										label="pm2StartupScript"
+										name="pm2StartupScript"
+										placeholder="Need to generate API key"
+										rightIcon={
+											<IconButton
+												iconName="clipboard"
+												isDisabled={isCopyButtonDisabled}
+												label="Copy script"
+												onClick={handleCopyStartupScriptClick}
+											/>
+										}
 									/>
-								}
-							/>
-						</li>
+									<span className={styles["list-item-text"]}>
+										Then, modify the command output from this step with your
+										system&apos;s values and execute it in terminal or console.
+									</span>
+								</li>
+								<li className={styles["list-item"]}>
+									<span className={styles["list-item-title"]}>
+										Clone your project repository.
+									</span>
+									<p className={styles["list-item-text"]}>
+										Use Git to clone your project repository to your local
+										machine.
+									</p>
+								</li>
 
-						<li className={styles["list-item"]}>
-							<span className={styles["list-item-title"]}>
-								Execute the script.
-							</span>
-							<p className={styles["list-item-text"]}>
-								Open your terminal or console, paste and run the modified
-								script. Script will start and be saved to restart on reboot.
+								<li className={styles["list-item"]}>
+									<span className={styles["list-item-title"]}>
+										Prepare the script.
+									</span>
+									<p className={styles["list-item-text"]}>
+										Copy the command below and replace &lt;project-path&gt;
+										placeholder with your local repository&apos;s path:
+									</p>
+									<Input
+										control={control}
+										errors={errors}
+										isLabelHidden
+										isReadOnly
+										label="Analytics script"
+										name="analyticsScript"
+										placeholder="Need to generate API key"
+										rightIcon={
+											<IconButton
+												iconName="clipboard"
+												isDisabled={isCopyButtonDisabled}
+												label="Copy script"
+												onClick={handleCopyAnalyticsScriptClick}
+											/>
+										}
+									/>
+								</li>
+
+								<li className={styles["list-item"]}>
+									<span className={styles["list-item-title"]}>
+										Execute the script.
+									</span>
+									<p className={styles["list-item-text"]}>
+										Open your terminal or console, paste and run the modified
+										script. Script will start and be saved to restart on reboot.
+									</p>
+								</li>
+							</ol>
+						</div>
+					</>
+				)}
+				{activeTab === "githubAnalytics" && (
+					<>
+						<div>
+							<span className={styles["subtitle"]}>Overview</span>
+							<p className={styles["text"]}>
+								System will fetch data from Github API, collecting
+								statistics and updating analytics data every 3 hours.
 							</p>
-						</li>
-					</ol>
-				</div>
+						</div>
+
+						<div>
+							<span className={styles["subtitle"]}>Configuration Steps</span>
+							<ol className={styles["text"]}>
+								<li className={styles["list-item"]}>
+									<span className={styles["list-item-title"]}>
+										Go to <a href="https://github.com/settings/tokens?type=beta">https://github.com/settings/tokens?type=beta</a>.
+									</span>
+									<p className={styles["list-item-text"]}>
+										Go to the Github API key creation link and log in if necessary.
+									</p>
+								</li>
+								<li className={styles["list-item"]}>
+									<span className={styles["list-item-title"]}>
+										Click Generate Token button on top.
+									</span>
+									<p className={styles["list-item-text"]}>
+										Confirm access, input desired token name, expiration date and desired repository access.
+									</p>
+								</li>
+
+								<li className={styles["list-item"]}>
+									<span className={styles["list-item-title"]}>
+										Add necessary permissions
+									</span>
+									<p className={styles["list-item-text"]}>
+										Add read-only repository permissions for commit statuses, contents, discussions, issues, pull requests and metadata.
+									</p>
+								</li>
+
+								<li className={styles["list-item"]}>
+									<span className={styles["list-item-title"]}>
+										Copy and paste API token here
+									</span>
+									<p className={styles["list-item-text"]}>
+										Click Generate Token button, copy it, and paste into the form here. 
+									</p>
+								</li>
+							</ol>
+						</div>
+					</>
+				)}
 			</div>
 		</Modal>
 	);

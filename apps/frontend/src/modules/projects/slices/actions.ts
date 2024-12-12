@@ -2,7 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { NotificationMessage } from "~/libs/enums/enums.js";
 import { subtractDays } from "~/libs/helpers/helpers.js";
-import { type AsyncThunkConfig } from "~/libs/types/types.js";
+import { type ProjectConfigureAnalyticsRequestDto, type AsyncThunkConfig } from "~/libs/types/types.js";
 import {
 	type ActivityLogGetAllAnalyticsResponseDto,
 	type ActivityLogQueryParameters,
@@ -66,6 +66,20 @@ const patch = createAsyncThunk<
 	const { projectApi, toastNotifier } = extra;
 
 	const updatedProject = await projectApi.patch(id, payload);
+
+	toastNotifier.showSuccess(NotificationMessage.PROJECT_UPDATE_SUCCESS);
+
+	return updatedProject;
+});
+
+const configureAnalytics = createAsyncThunk<
+	ProjectPatchResponseDto,
+	{ id: number; payload: ProjectConfigureAnalyticsRequestDto },
+	AsyncThunkConfig
+>(`${sliceName}/configure-analytics`, async ({ id, payload }, { extra }) => {
+	const { projectApi, toastNotifier } = extra;
+
+	const updatedProject = await projectApi.configureAnalytics(id, payload);
 
 	toastNotifier.showSuccess(NotificationMessage.PROJECT_UPDATE_SUCCESS);
 
@@ -139,4 +153,5 @@ export {
 	loadAllContributorsActivityByProjectId,
 	loadAllContributorsByProjectId,
 	patch,
+	configureAnalytics
 };

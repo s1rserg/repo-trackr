@@ -22,11 +22,9 @@ import {
 	type ProjectGetAllRequestDto,
 	type ProjectPatchRequestDto,
 } from "./libs/types/types.js";
-import {
-	projectCreateValidationSchema,
-	projectPatchValidationSchema,
-} from "./libs/validation-schemas/validation-schemas.js";
 import { type ProjectService } from "./project.service.js";
+import { projectCreateValidationSchema, projectPatchValidationSchema } from "./libs/validation-schemas/validation-schemas.js";
+import { type ProjectConfigureAnalyticsRequestDto } from "~/libs/types/types.js";
 
 /**
  * @swagger
@@ -154,6 +152,38 @@ class ProjectController extends BaseController {
 				),
 			method: "PATCH",
 			path: ProjectsApiPath.$ID,
+			preHandlers: [
+				checkUserPermissions(
+					[PermissionKey.MANAGE_ALL_PROJECTS],
+					[
+						ProjectPermissionKey.EDIT_PROJECT,
+						ProjectPermissionKey.MANAGE_PROJECT,
+					],
+					(options) =>
+						Number(
+							(
+								options as APIHandlerOptions<{
+									params: { id: string };
+								}>
+							).params.id,
+						),
+				),
+			],
+			validation: {
+				body: projectPatchValidationSchema,
+			},
+		});
+
+		this.addRoute({
+			handler: (options) =>
+				this.configureAnalytics(
+					options as APIHandlerOptions<{
+						body: ProjectConfigureAnalyticsRequestDto;
+						params: { id: string };
+					}>,
+				),
+			method: "PATCH",
+			path: ProjectsApiPath.ANALYTICS,
 			preHandlers: [
 				checkUserPermissions(
 					[PermissionKey.MANAGE_ALL_PROJECTS],
@@ -406,6 +436,20 @@ class ProjectController extends BaseController {
 
 		return {
 			payload: await this.projectService.patch(projectId, options.body),
+			status: HTTPCode.OK,
+		};
+	}
+
+	private async configureAnalytics(
+		options: APIHandlerOptions<{
+			body: ProjectConfigureAnalyticsRequestDto;
+			params: { id: string };
+		}>,
+	): Promise<APIHandlerResponse> {
+		const projectId = Number(options.params.id);
+
+		return {
+			payload: await this.projectService.configureAnalytics(projectId, options.body),
 			status: HTTPCode.OK,
 		};
 	}
