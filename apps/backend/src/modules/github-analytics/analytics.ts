@@ -1,12 +1,11 @@
-import { config } from "~/libs/modules/config/config.js";
 import { http } from "~/libs/modules/http/http.js";
 
 import { AnalyticsApi } from "./analytics-api.js";
 
 const analyticsApi = new AnalyticsApi({
-	baseUrl: config.ENV.APP.API_ORIGIN_URL,
+	baseUrl: "",
 	http,
-	serverUrl: config.ENV.APP.SERVER_URL,
+	serverUrl: "https://api.github.com",
 });
 
 export { analyticsApi };

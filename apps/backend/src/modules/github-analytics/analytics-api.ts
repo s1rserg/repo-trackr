@@ -1,12 +1,8 @@
-import { APIPath, ContentType } from "~/libs/enums/enums.js";
 import { BaseHTTPApi } from "~/libs/modules/api/api.js";
 import { type HTTP } from "~/libs/modules/http/http.js";
 
-import { ActivityLogsApiPath } from "./libs/enums/enums.js";
-import {
-	type ActivityLogCreateRequestDto,
-	type ActivityLogGetAllResponseDto,
-} from "./libs/types/types.js";
+import { GithubApiPath } from "./libs/enums/enums.js";
+import { type CommitResponseDto } from "./libs/types/types.js";
 
 type Constructor = {
 	baseUrl: string;
@@ -16,24 +12,31 @@ type Constructor = {
 
 class AnalyticsApi extends BaseHTTPApi {
 	public constructor({ baseUrl, http, serverUrl }: Constructor) {
-		super({ baseUrl, http, path: APIPath.ACTIVITY_LOGS, serverUrl });
+		super({ baseUrl, http, path: "", serverUrl });
 	}
 
-	public async sendAnalytics(
+	public async fetchCommits(
 		authToken: string,
-		payload: ActivityLogCreateRequestDto,
-	): Promise<ActivityLogGetAllResponseDto> {
+		repositoryUrl: string,
+		since: string,
+	): Promise<CommitResponseDto> {
 		const response = await this.load(
-			this.getFullEndpoint(ActivityLogsApiPath.ROOT, {}),
+			this.getFullEndpoint(
+				GithubApiPath.REPOS,
+				repositoryUrl,
+				GithubApiPath.COMMITS,
+				{},
+			),
 			{
 				authToken,
-				contentType: ContentType.JSON,
-				method: "POST",
-				payload: JSON.stringify(payload),
+				method: "GET",
+				query: {
+					since,
+				},
 			},
 		);
 
-		return await response.json<ActivityLogGetAllResponseDto>();
+		return await response.json();
 	}
 }
 
