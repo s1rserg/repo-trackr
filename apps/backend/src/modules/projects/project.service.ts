@@ -188,6 +188,18 @@ class ProjectService implements Service {
 		});
 	}
 
+	public async findGithubAnalyticsProjects(
+	): Promise<ProjectGetAllItemResponseDto[]> {
+		const projects =
+			await this.projectRepository.findGithubAnalyticsProjects();
+
+		return projects.map((project) => {
+			const { id, lastActivityDate, name } = project.toObject();
+
+			return { id, lastActivityDate, name };
+		});
+	}
+
 	public async patch(
 		id: number,
 		projectData: ProjectPatchRequestDto,
