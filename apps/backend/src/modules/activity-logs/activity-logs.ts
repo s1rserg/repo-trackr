@@ -24,5 +24,5 @@ const activityLogController = new ActivityLogController(
 	projectGroupService,
 );
 
-export { activityLogController };
+export { activityLogController, activityLogService };
 export { ActivityLogService } from "./activity-log.service.js";

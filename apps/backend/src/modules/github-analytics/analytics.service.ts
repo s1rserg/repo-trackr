@@ -1,5 +1,3 @@
-import { logger } from "~/libs/modules/logger/logger.js";
-
 import { type analyticsApi } from "./analytics.js";
 import {
 	type ActivityLogCreateItemRequestDto,

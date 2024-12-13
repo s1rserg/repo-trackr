@@ -7,7 +7,7 @@ import {
 import { getDifferenceInDays } from "~/libs/helpers/helpers.js";
 import { HTTPCode } from "~/libs/modules/http/http.js";
 import { type Logger } from "~/libs/modules/logger/logger.js";
-import { type ProjectConfigureAnalyticsRequestDto, type Service } from "~/libs/types/types.js";
+import { type ActivityLogCreateRequestDto, type ActivityLogGetAllResponseDto, type ProjectConfigureAnalyticsRequestDto, type Service } from "~/libs/types/types.js";
 import { type ProjectApiKeyService } from "~/modules/project-api-keys/project-api-key.service.js";
 import { type ProjectGroupService } from "~/modules/project-groups/project-groups.js";
 
@@ -26,6 +26,8 @@ import {
 } from "./libs/types/types.js";
 import { ProjectEntity } from "./project.entity.js";
 import { type ProjectRepository } from "./project.repository.js";
+import { type AnalyticsService } from "../github-analytics/analytics.js";
+import { type IActivityLogDelegate } from "./activity-log.service.wrapper.js";
 
 type Constructor = {
 	logger: Logger;
@@ -34,6 +36,8 @@ type Constructor = {
 	projectGroupService: ProjectGroupService;
 	projectRepository: ProjectRepository;
 	userService: UserService;
+	activityLogService: IActivityLogDelegate;
+	analyticsService: AnalyticsService
 };
 
 class ProjectService implements Service {
@@ -49,6 +53,10 @@ class ProjectService implements Service {
 
 	private userService: UserService;
 
+	private activityLogService: IActivityLogDelegate;
+
+	private analyticsService: AnalyticsService
+
 	public constructor({
 		logger,
 		notificationService,
@@ -56,6 +64,8 @@ class ProjectService implements Service {
 		projectGroupService,
 		projectRepository,
 		userService,
+		activityLogService,
+		analyticsService
 	}: Constructor) {
 		this.logger = logger;
 		this.notificationService = notificationService;
@@ -63,6 +73,8 @@ class ProjectService implements Service {
 		this.projectGroupService = projectGroupService;
 		this.projectRepository = projectRepository;
 		this.projectApiKeyService = projectApiKeyService;
+		this.activityLogService = activityLogService;
+		this.analyticsService = analyticsService;
 	}
 
 	public async create(
@@ -321,6 +333,15 @@ class ProjectService implements Service {
 		}
 	}
 
+	public async collectGithubAnalytics(): Promise<void> {
+		const projects = await this.findGithubAnalyticsProjects();
+
+		for (const project of projects) {
+			const activityLogs = 
+			await this.activityLogService.create({projectIdPayload: project.id, ite})
+		}
+	}
+
 	public update(): ReturnType<Service["update"]> {
 		return Promise.resolve(null);
 	}
@@ -334,6 +355,40 @@ class ProjectService implements Service {
 			lastActivityDate,
 		);
 	}
+
+	public async createGithubActivityLog(
+		payload: {
+			projectId: number;
+		} & ActivityLogCreateRequestDto,
+	): Promise<ActivityLogGetAllResponseDto> {
+		const { projectId, items, userId } = payload;
+		
+		const createdActivityLogs: ActivityLogGetAllResponseDto = {
+			items: [],
+		};
+
+		for (const record of items) {
+			const { date, items } = record;
+
+			for (const logItem of items) {
+				const activityLog = await this.activityLogService.createActivityLog({
+					date,
+					logItem,
+					projectId,
+					userId,
+				});
+
+				createdActivityLogs.items.push(activityLog.toObject());
+			}
+
+			if (items.length > EMPTY_LENGTH) {
+				await this.updateLastActivityDate(projectId, date);
+			}
+		}
+
+		return createdActivityLogs;
+	}
+	
 }
 
 export { ProjectService };

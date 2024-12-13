@@ -53,7 +53,7 @@ class ActivityLogService implements Service {
 		this.projectService = projectService;
 	}
 
-	private async createActivityLog({
+	public async createActivityLog({
 		date,
 		logItem,
 		projectId,

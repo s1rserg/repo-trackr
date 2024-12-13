@@ -1,6 +1,7 @@
 import { http } from "~/libs/modules/http/http.js";
 
 import { AnalyticsApi } from "./analytics-api.js";
+import { AnalyticsService } from "./analytics.service.js";
 
 const analyticsApi = new AnalyticsApi({
 	baseUrl: "",
@@ -8,5 +9,7 @@ const analyticsApi = new AnalyticsApi({
 	serverUrl: "https://api.github.com",
 });
 
-export { analyticsApi };
+const analyticsService = new AnalyticsService({analyticsApi});
+
+export { analyticsApi, analyticsService };
 export { AnalyticsService } from "./analytics.service.js";
