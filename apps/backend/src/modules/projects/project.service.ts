@@ -7,7 +7,13 @@ import {
 import { getDifferenceInDays } from "~/libs/helpers/helpers.js";
 import { HTTPCode } from "~/libs/modules/http/http.js";
 import { type Logger } from "~/libs/modules/logger/logger.js";
-import { type ActivityLogCreateRequestDto, type ActivityLogGetAllResponseDto, type ProjectConfigureAnalyticsRequestDto, type Service } from "~/libs/types/types.js";
+import {
+	formatDate,
+	type ActivityLogCreateRequestDto,
+	type ActivityLogGetAllResponseDto,
+	type ProjectConfigureAnalyticsRequestDto,
+	type Service,
+} from "~/libs/types/types.js";
 import { type ProjectApiKeyService } from "~/modules/project-api-keys/project-api-key.service.js";
 import { type ProjectGroupService } from "~/modules/project-groups/project-groups.js";
 
@@ -37,7 +43,7 @@ type Constructor = {
 	projectRepository: ProjectRepository;
 	userService: UserService;
 	activityLogService: IActivityLogDelegate;
-	analyticsService: AnalyticsService
+	analyticsService: AnalyticsService;
 };
 
 class ProjectService implements Service {
@@ -55,7 +61,7 @@ class ProjectService implements Service {
 
 	private activityLogService: IActivityLogDelegate;
 
-	private analyticsService: AnalyticsService
+	private analyticsService: AnalyticsService;
 
 	public constructor({
 		logger,
@@ -65,7 +71,7 @@ class ProjectService implements Service {
 		projectRepository,
 		userService,
 		activityLogService,
-		analyticsService
+		analyticsService,
 	}: Constructor) {
 		this.logger = logger;
 		this.notificationService = notificationService;
@@ -200,10 +206,10 @@ class ProjectService implements Service {
 		});
 	}
 
-	public async findGithubAnalyticsProjects(
-	): Promise<ProjectGetAllItemResponseDto[]> {
-		const projects =
-			await this.projectRepository.findGithubAnalyticsProjects();
+	public async findGithubAnalyticsProjects(): Promise<
+		ProjectGetAllItemResponseDto[]
+	> {
+		const projects = await this.projectRepository.findGithubAnalyticsProjects();
 
 		return projects.map((project) => {
 			const { id, lastActivityDate, name } = project.toObject();
@@ -265,7 +271,10 @@ class ProjectService implements Service {
 			});
 		}
 
-		const updatedItem = await this.projectRepository.configureAnalytics(id, projectData);
+		const updatedItem = await this.projectRepository.configureAnalytics(
+			id,
+			projectData,
+		);
 
 		const project = updatedItem.toObject();
 
@@ -337,8 +346,31 @@ class ProjectService implements Service {
 		const projects = await this.findGithubAnalyticsProjects();
 
 		for (const project of projects) {
-			const activityLogs = 
-			await this.activityLogService.create({projectIdPayload: project.id, ite})
+			const activityLogs = await this.analyticsService.groupCommitsByAuthor(
+				project.apiKey || "",
+				project.repositoryUrl || "",
+				formatDate(new Date(), "yyyy-MM-dd"),
+			);
+			console.log(activityLogs);
+
+			const createdActivityLogs: ActivityLogGetAllResponseDto = {
+				items: [],
+			};
+
+			for (const record of activityLogs.items) {
+				const activityLog = await this.activityLogService.createActivityLog({
+					date: activityLogs.date,
+					logItem: record,
+					projectId: project.id,
+					userId: 1,
+				});
+
+				createdActivityLogs.items.push(activityLog.toObject());
+
+				if (activityLogs.items.length > EMPTY_LENGTH) {
+					await this.updateLastActivityDate(project.id, activityLogs.date);
+				}
+			}
 		}
 	}
 
@@ -362,7 +394,7 @@ class ProjectService implements Service {
 		} & ActivityLogCreateRequestDto,
 	): Promise<ActivityLogGetAllResponseDto> {
 		const { projectId, items, userId } = payload;
-		
+
 		const createdActivityLogs: ActivityLogGetAllResponseDto = {
 			items: [],
 		};
@@ -388,7 +420,6 @@ class ProjectService implements Service {
 
 		return createdActivityLogs;
 	}
-	
 }
 
 export { ProjectService };
