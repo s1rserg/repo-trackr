@@ -9,7 +9,7 @@ import { ActivityLogController } from "./activity-log.controller.js";
 import { ActivityLogModel } from "./activity-log.model.js";
 import { ActivityLogRepository } from "./activity-log.repository.js";
 import { ActivityLogService } from "./activity-log.service.js";
-import { ActivityLogDelegate, type IActivityLogDelegate } from "../projects/activity-log.service.wrapper.js";
+import { analyticsService } from "../github-analytics/analytics.js";
 
 const activityLogRepository = new ActivityLogRepository(ActivityLogModel);
 const activityLogService = new ActivityLogService({
@@ -18,6 +18,7 @@ const activityLogService = new ActivityLogService({
 	gitEmailService,
 	projectApiKeyService,
 	projectService,
+	analyticsService,
 });
 const activityLogController = new ActivityLogController(
 	logger,
@@ -25,9 +26,5 @@ const activityLogController = new ActivityLogController(
 	projectGroupService,
 );
 
-const createActivityLogDelegate = (): IActivityLogDelegate => new ActivityLogDelegate(activityLogService);
-
-const activityLogDelegate = createActivityLogDelegate();
-
-export { activityLogController, activityLogService, activityLogDelegate };
+export { activityLogController, activityLogService };
 export { ActivityLogService } from "./activity-log.service.js";

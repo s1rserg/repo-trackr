@@ -1,3 +1,4 @@
+import { type ActivityLogService } from "~/modules/activity-logs/activity-logs.js";
 import fastifyStatic from "@fastify/static";
 import swagger, { type StaticDocumentSpec } from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
@@ -38,6 +39,7 @@ type Constructor = {
 	services: {
 		projectService: ProjectService;
 		userService: UserService;
+		activityLogService: ActivityLogService;
 	};
 	taskScheduler: TaskScheduler;
 	title: string;
@@ -59,6 +61,7 @@ class BaseServerApplication implements ServerApplication {
 	private services: {
 		projectService: ProjectService;
 		userService: UserService;
+		activityLogService: ActivityLogService;
 	};
 
 	private taskScheduler: TaskScheduler;
@@ -143,14 +146,14 @@ class BaseServerApplication implements ServerApplication {
 	}
 
 	private initJobs(): void {
-		const { projectService } = this.services;
+		const { projectService, activityLogService } = this.services;
 		this.taskScheduler.start(
 			JobCronPattern.INACTIVE_PROJECT_NOTIFICATION,
 			() => void projectService.processInactiveProjects(),
 		);
 		this.taskScheduler.start(
 			JobCronPattern.GITHUB_ANALYTICS,
-			() => void projectService.collectGithubAnalytics(),
+			() => void activityLogService.collectGithubAnalytics(),
 		);
 	}
 
@@ -254,7 +257,7 @@ class BaseServerApplication implements ServerApplication {
 			throw error;
 		}
 
-		setTimeout((() => void this.services.projectService.collectGithubAnalytics()), 5000);
+		void this.services.activityLogService.collectGithubAnalytics();
 	}
 
 	public async initMiddlewares(): Promise<void> {

@@ -23,6 +23,7 @@ import {
 	type ActivityLogGetAllResponseDto,
 	type ActivityLogQueryParameters,
 } from "./libs/types/types.js";
+import { type AnalyticsService } from "../github-analytics/analytics.js";
 
 type Constructor = {
 	activityLogRepository: ActivityLogRepository;
@@ -30,6 +31,7 @@ type Constructor = {
 	gitEmailService: GitEmailService;
 	projectApiKeyService: ProjectApiKeyService;
 	projectService: ProjectService;
+	analyticsService: AnalyticsService;
 };
 
 class ActivityLogService implements Service {
@@ -38,6 +40,7 @@ class ActivityLogService implements Service {
 	private gitEmailService: GitEmailService;
 	private projectApiKeyService: ProjectApiKeyService;
 	private projectService: ProjectService;
+	private analyticsService: AnalyticsService;
 
 	public constructor({
 		activityLogRepository,
@@ -45,12 +48,14 @@ class ActivityLogService implements Service {
 		gitEmailService,
 		projectApiKeyService,
 		projectService,
+		analyticsService,
 	}: Constructor) {
 		this.activityLogRepository = activityLogRepository;
 		this.contributorService = contributorService;
 		this.gitEmailService = gitEmailService;
 		this.projectApiKeyService = projectApiKeyService;
 		this.projectService = projectService;
+		this.analyticsService = analyticsService;
 	}
 
 	public async createActivityLog({
@@ -249,6 +254,41 @@ class ActivityLogService implements Service {
 
 	public update(): ReturnType<Service["update"]> {
 		return Promise.resolve(null);
+	}
+
+	public async collectGithubAnalytics(): Promise<void> {
+		const projects = await this.projectService.findGithubAnalyticsProjects();
+
+		for (const project of projects) {
+			const activityLogs = await this.analyticsService.groupCommitsByAuthor(
+				project.apiKey || "",
+				project.repositoryUrl || "",
+				formatDate(new Date(), "yyyy-MM-dd"),
+			);
+			console.log(activityLogs);
+
+			const createdActivityLogs: ActivityLogGetAllResponseDto = {
+				items: [],
+			};
+
+			for (const record of activityLogs.items) {
+				const activityLog = await this.createActivityLog({
+					date: activityLogs.date,
+					logItem: record,
+					projectId: project.id,
+					userId: 1,
+				});
+
+				createdActivityLogs.items.push(activityLog.toObject());
+
+				if (activityLogs.items.length > EMPTY_LENGTH) {
+					await this.projectService.updateLastActivityDate(
+						project.id,
+						activityLogs.date,
+					);
+				}
+			}
+		}
 	}
 }
 

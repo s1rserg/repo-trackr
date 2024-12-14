@@ -8,8 +8,6 @@ import { ProjectController } from "./project.controller.js";
 import { ProjectModel } from "./project.model.js";
 import { ProjectRepository } from "./project.repository.js";
 import { ProjectService } from "./project.service.js";
-import { activityLogDelegate } from "../activity-logs/activity-logs.js";
-import { analyticsService } from "../github-analytics/analytics.js";
 
 const projectRepository = new ProjectRepository(ProjectModel);
 
@@ -20,8 +18,6 @@ const projectService = new ProjectService({
 	projectGroupService,
 	projectRepository,
 	userService,
-	activityLogService: activityLogDelegate,
-	analyticsService,
 });
 const projectController = new ProjectController(
 	logger,
