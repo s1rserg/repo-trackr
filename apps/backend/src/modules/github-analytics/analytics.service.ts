@@ -1,7 +1,5 @@
 import { type analyticsApi } from "./analytics.js";
-import {
-	type ActivityLogCreateItemRequestDto,
-} from "./libs/types/types.js";
+import { type ActivityLogCreateItemRequestDto } from "./libs/types/types.js";
 
 type Constructor = {
 	analyticsApi: typeof analyticsApi;

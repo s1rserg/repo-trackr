@@ -1,6 +1,6 @@
 type ProjectConfigureAnalyticsRequestDto = {
 	apiKey: string;
-    repositoryUrl: string
+	repositoryUrl: string;
 };
 
 export { type ProjectConfigureAnalyticsRequestDto };

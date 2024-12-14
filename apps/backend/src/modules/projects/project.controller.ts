@@ -23,8 +23,14 @@ import {
 	type ProjectPatchRequestDto,
 } from "./libs/types/types.js";
 import { type ProjectService } from "./project.service.js";
-import { projectCreateValidationSchema, projectPatchValidationSchema } from "./libs/validation-schemas/validation-schemas.js";
-import { projectConfigureAnalyticsValidationSchema, type ProjectConfigureAnalyticsRequestDto } from "~/libs/types/types.js";
+import {
+	projectCreateValidationSchema,
+	projectPatchValidationSchema,
+} from "./libs/validation-schemas/validation-schemas.js";
+import {
+	projectConfigureAnalyticsValidationSchema,
+	type ProjectConfigureAnalyticsRequestDto,
+} from "~/libs/types/types.js";
 
 /**
  * @swagger
@@ -449,7 +455,10 @@ class ProjectController extends BaseController {
 		const projectId = Number(options.params.id);
 
 		return {
-			payload: await this.projectService.configureAnalytics(projectId, options.body),
+			payload: await this.projectService.configureAnalytics(
+				projectId,
+				options.body,
+			),
 			status: HTTPCode.OK,
 		};
 	}

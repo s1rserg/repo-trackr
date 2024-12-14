@@ -188,7 +188,9 @@ const Project = (): JSX.Element => {
 	const handleProjectConfigureAnalyticsSubmit = useCallback(
 		(payload: ProjectConfigureAnalyticsRequestDto) => {
 			if (project) {
-				void dispatch(projectActions.configureAnalytics({ id: project.id, payload }));
+				void dispatch(
+					projectActions.configureAnalytics({ id: project.id, payload }),
+				);
 			}
 		},
 		[dispatch, project],

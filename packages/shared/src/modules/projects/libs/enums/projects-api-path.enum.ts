@@ -1,7 +1,7 @@
 const ProjectsApiPath = {
 	$ID: "/:id",
 	ROOT: "/",
-	ANALYTICS: "/:id/analytics"
+	ANALYTICS: "/:id/analytics",
 } as const;
 
 export { ProjectsApiPath };

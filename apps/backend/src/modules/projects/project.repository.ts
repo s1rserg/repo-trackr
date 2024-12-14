@@ -130,8 +130,7 @@ class ProjectRepository implements Repository {
 		return projects.map((project) => ProjectEntity.initialize(project));
 	}
 
-	public async findGithubAnalyticsProjects(
-	): Promise<ProjectEntity[]> {
+	public async findGithubAnalyticsProjects(): Promise<ProjectEntity[]> {
 		const projects = await this.projectModel
 			.query()
 			.whereNotNull("apiKey")

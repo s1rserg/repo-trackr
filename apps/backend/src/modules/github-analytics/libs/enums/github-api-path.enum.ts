@@ -1,7 +1,6 @@
 const GithubApiPath = {
 	REPOS: "/repos",
-    COMMITS: "/commits",
-
+	COMMITS: "/commits",
 } as const;
 
 export { GithubApiPath };

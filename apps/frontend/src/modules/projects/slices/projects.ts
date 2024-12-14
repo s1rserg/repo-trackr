@@ -6,7 +6,7 @@ import {
 	loadAllContributorsActivityByProjectId,
 	loadAllContributorsByProjectId,
 	patch,
-	configureAnalytics
+	configureAnalytics,
 } from "./actions.js";
 import { actions } from "./project.slice.js";
 
@@ -19,7 +19,7 @@ const allActions = {
 	loadAllContributorsActivityByProjectId,
 	loadAllContributorsByProjectId,
 	patch,
-	configureAnalytics
+	configureAnalytics,
 };
 
 export { allActions as actions };

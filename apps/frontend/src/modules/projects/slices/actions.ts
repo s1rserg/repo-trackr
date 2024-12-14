@@ -2,7 +2,10 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import { NotificationMessage } from "~/libs/enums/enums.js";
 import { subtractDays } from "~/libs/helpers/helpers.js";
-import { type ProjectConfigureAnalyticsRequestDto, type AsyncThunkConfig } from "~/libs/types/types.js";
+import {
+	type ProjectConfigureAnalyticsRequestDto,
+	type AsyncThunkConfig,
+} from "~/libs/types/types.js";
 import {
 	type ActivityLogGetAllAnalyticsResponseDto,
 	type ActivityLogQueryParameters,
@@ -153,5 +156,5 @@ export {
 	loadAllContributorsActivityByProjectId,
 	loadAllContributorsByProjectId,
 	patch,
-	configureAnalytics
+	configureAnalytics,
 };

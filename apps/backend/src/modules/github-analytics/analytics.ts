@@ -9,7 +9,7 @@ const analyticsApi = new AnalyticsApi({
 	serverUrl: "https://api.github.com",
 });
 
-const analyticsService = new AnalyticsService({analyticsApi});
+const analyticsService = new AnalyticsService({ analyticsApi });
 
 export { analyticsApi, analyticsService };
 export { AnalyticsService } from "./analytics.service.js";

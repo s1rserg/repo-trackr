@@ -5,4 +5,4 @@ export { type ProjectGetAllResponseDto } from "./project-get-all-response-dto.ty
 export { type ProjectGetByIdResponseDto } from "./project-get-by-id-response-dto.type.js";
 export { type ProjectPatchRequestDto } from "./project-patch-request-dto.type.js";
 export { type ProjectPatchResponseDto } from "./project-patch-response-dto.type.js";
-export { type ProjectConfigureAnalyticsRequestDto } from "./project-configure-analytics-request-dto.type.js"
+export { type ProjectConfigureAnalyticsRequestDto } from "./project-configure-analytics-request-dto.type.js";

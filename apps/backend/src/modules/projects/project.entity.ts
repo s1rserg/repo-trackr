@@ -125,7 +125,7 @@ class ProjectEntity implements Entity {
 			id: this.id as number,
 			lastActivityDate: this.lastActivityDate,
 			name: this.name,
-			repositoryUrl: this.repositoryUrl
+			repositoryUrl: this.repositoryUrl,
 		};
 	}
 }

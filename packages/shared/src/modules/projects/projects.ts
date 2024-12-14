@@ -4,5 +4,5 @@ export * from "./libs/types/types.js";
 export {
 	projectCreate as projectCreateValidationSchema,
 	projectPatch as projectPatchValidationSchema,
-	projectConfigureAnalytics as projectConfigureAnalyticsValidationSchema
+	projectConfigureAnalytics as projectConfigureAnalyticsValidationSchema,
 } from "./libs/validation-schemas/validation-schemas.js";
