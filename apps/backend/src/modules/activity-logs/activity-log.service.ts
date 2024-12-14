@@ -265,7 +265,6 @@ class ActivityLogService implements Service {
 				project.repositoryUrl || "",
 				formatDate(new Date(), "yyyy-MM-dd"),
 			);
-			console.log(activityLogs);
 
 			const createdActivityLogs: ActivityLogGetAllResponseDto = {
 				items: [],

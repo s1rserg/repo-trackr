@@ -128,6 +128,29 @@ class ProjectEntity implements Entity {
 			repositoryUrl: this.repositoryUrl,
 		};
 	}
+
+	public toObjectWithApiKey(): Pick<
+		ProjectGetByIdResponseDto,
+		| "analyticsLastSyncedAt"
+		| "analyticsLastSyncedByUser"
+		| "description"
+		| "id"
+		| "lastActivityDate"
+		| "name"
+		| "repositoryUrl"
+		| "apiKey"
+	> {
+		return {
+			analyticsLastSyncedAt: this.analyticsLastSyncedAt,
+			analyticsLastSyncedByUser: this.analyticsLastSyncedByUser,
+			description: this.description,
+			id: this.id as number,
+			lastActivityDate: this.lastActivityDate,
+			name: this.name,
+			repositoryUrl: this.repositoryUrl,
+			apiKey: this.apiKey,
+		};
+	}
 }
 
 export { ProjectEntity };

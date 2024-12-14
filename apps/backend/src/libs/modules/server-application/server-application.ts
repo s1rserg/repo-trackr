@@ -1,7 +1,10 @@
 import { config } from "~/libs/modules/config/config.js";
 import { database } from "~/libs/modules/database/database.js";
 import { logger } from "~/libs/modules/logger/logger.js";
-import { activityLogController, activityLogService } from "~/modules/activity-logs/activity-logs.js";
+import {
+	activityLogController,
+	activityLogService,
+} from "~/modules/activity-logs/activity-logs.js";
 import { authController } from "~/modules/auth/auth.js";
 import { authAnalyticsController } from "~/modules/auth-analytics/auth-analytics.js";
 import { contributorController } from "~/modules/contributors/contributors.js";

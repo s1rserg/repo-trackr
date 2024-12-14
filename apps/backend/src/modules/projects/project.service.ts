@@ -197,9 +197,10 @@ class ProjectService implements Service {
 		const projects = await this.projectRepository.findGithubAnalyticsProjects();
 
 		return projects.map((project) => {
-			const { id, lastActivityDate, name } = project.toObject();
+			const { id, lastActivityDate, name, apiKey, repositoryUrl } =
+				project.toObjectWithApiKey();
 
-			return { id, lastActivityDate, name };
+			return { id, lastActivityDate, name, apiKey, repositoryUrl };
 		});
 	}
 

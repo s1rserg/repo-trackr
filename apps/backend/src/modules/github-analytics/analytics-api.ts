@@ -23,6 +23,7 @@ class AnalyticsApi extends BaseHTTPApi {
 		const response = await this.load(
 			this.getFullEndpoint(
 				GithubApiPath.REPOS,
+				"/",
 				repositoryUrl,
 				GithubApiPath.COMMITS,
 				{},
