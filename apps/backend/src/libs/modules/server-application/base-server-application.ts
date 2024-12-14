@@ -148,6 +148,10 @@ class BaseServerApplication implements ServerApplication {
 			JobCronPattern.INACTIVE_PROJECT_NOTIFICATION,
 			() => void projectService.processInactiveProjects(),
 		);
+		this.taskScheduler.start(
+			JobCronPattern.GITHUB_ANALYTICS,
+			() => void projectService.collectGithubAnalytics(),
+		);
 	}
 
 	private initPlugins(): void {
@@ -249,6 +253,8 @@ class BaseServerApplication implements ServerApplication {
 
 			throw error;
 		}
+
+		setTimeout((() => void this.services.projectService.collectGithubAnalytics()), 5000);
 	}
 
 	public async initMiddlewares(): Promise<void> {
