@@ -13,7 +13,7 @@ class ActivityLogRepository implements Repository {
 	}
 
 	public async create(entity: ActivityLogEntity): Promise<ActivityLogEntity> {
-		const { commitsNumber, createdByUser, date, gitEmail, project } =
+		const { commitsNumber, createdByUser, date, gitEmail, project, linesAdded, linesDeleted } =
 			entity.toNewObject();
 
 		const activityLogData = {

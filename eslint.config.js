@@ -168,13 +168,6 @@ const typescriptConfig = {
 			},
 		],
 		"@typescript-eslint/explicit-member-accessibility": ["error"],
-		"@typescript-eslint/no-magic-numbers": [
-			"error",
-			{
-				ignoreEnums: true,
-				ignoreReadonlyClassProperties: true,
-			},
-		],
 		"@typescript-eslint/return-await": ["error", "always"],
 	},
 };

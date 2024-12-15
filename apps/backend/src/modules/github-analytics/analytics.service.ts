@@ -22,15 +22,14 @@ class AnalyticsService {
 			repositoryUrl,
 			since,
 		);
-
+	
 		const commitsByAuthor: Record<
 			string,
-			{ name: string; email: string; commitsNumber: number }
+			{ name: string; email: string; commitsNumber: number; linesAdded: number; linesDeleted: number }
 		> = {};
-
-		for (const { commit } of commits) {
+	
+		for (const { commit, stats } of commits) {
 			const { author } = commit;
-
 			const { name, email } = author;
 
 			if (!commitsByAuthor[email]) {
@@ -38,25 +37,35 @@ class AnalyticsService {
 					name,
 					email,
 					commitsNumber: 0,
+					linesAdded: 0,
+					linesDeleted: 0,
 				};
 			}
 
 			commitsByAuthor[email].commitsNumber += 1;
-		}
 
+			if (stats) {
+				commitsByAuthor[email].linesAdded += stats.additions || 0;
+				commitsByAuthor[email].linesDeleted += stats.deletions || 0;
+			}
+		}
+	
 		const items = Object.values(commitsByAuthor).map(
-			({ name, email, commitsNumber }) => ({
+			({ name, email, commitsNumber, linesAdded, linesDeleted }) => ({
 				authorName: name,
 				authorEmail: email,
 				commitsNumber,
+				linesAdded,
+				linesDeleted,
 			}),
 		);
-
+	
 		return {
 			date: new Date().toISOString(),
 			items,
 		};
 	}
+	
 }
 
 export { AnalyticsService };

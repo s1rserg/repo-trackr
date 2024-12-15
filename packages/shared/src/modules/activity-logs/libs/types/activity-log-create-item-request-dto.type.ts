@@ -4,6 +4,8 @@ type ActivityLogCreateItemRequestDto = {
 		authorEmail: string;
 		authorName: string;
 		commitsNumber: number;
+		linesAdded: number;
+		linesDeleted: number;
 	}[];
 };
 

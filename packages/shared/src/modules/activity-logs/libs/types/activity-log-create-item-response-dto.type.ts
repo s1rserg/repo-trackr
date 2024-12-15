@@ -4,6 +4,8 @@ type ActivityLogCreateItemResponseDto = {
 		authorEmail: string;
 		authorName: string;
 		commitsNumber: number;
+		linesAdded: number;
+		linesDeleted: number;
 	};
 	projectId: number;
 	userId: number;

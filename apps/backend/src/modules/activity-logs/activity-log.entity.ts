@@ -12,6 +12,8 @@ class ActivityLogEntity implements Entity {
 	private gitEmail!: Pick<GitEmailModel, "contributor" | "id">;
 	private id: null | number;
 	private project!: Pick<ProjectModel, "id">;
+	private linesAdded!: number;
+	private linesDeleted!: number;
 
 	private constructor({
 		commitsNumber,
@@ -20,6 +22,8 @@ class ActivityLogEntity implements Entity {
 		gitEmail,
 		id,
 		project,
+		linesAdded,
+		linesDeleted,
 	}: {
 		commitsNumber: number;
 		createdByUser: Pick<UserModel, "id">;
@@ -27,6 +31,8 @@ class ActivityLogEntity implements Entity {
 		gitEmail: Pick<GitEmailModel, "contributor" | "id">;
 		id: null | number;
 		project: Pick<ProjectModel, "id">;
+		linesAdded: number;
+		linesDeleted: number;
 	}) {
 		this.commitsNumber = commitsNumber;
 		this.createdByUser = createdByUser;
@@ -34,6 +40,8 @@ class ActivityLogEntity implements Entity {
 		this.gitEmail = gitEmail;
 		this.id = id;
 		this.project = project;
+		this.linesAdded = linesAdded;
+		this.linesDeleted = linesDeleted;
 	}
 
 	public static initialize({
@@ -43,6 +51,8 @@ class ActivityLogEntity implements Entity {
 		gitEmail,
 		id,
 		project,
+		linesAdded,
+		linesDeleted,
 	}: {
 		commitsNumber: number;
 		createdByUser: Pick<UserModel, "id">;
@@ -50,6 +60,8 @@ class ActivityLogEntity implements Entity {
 		gitEmail: Pick<GitEmailModel, "contributor" | "id">;
 		id: null | number;
 		project: Pick<ProjectModel, "id">;
+		linesAdded: number;
+		linesDeleted: number;
 	}): ActivityLogEntity {
 		return new ActivityLogEntity({
 			commitsNumber,
@@ -58,6 +70,8 @@ class ActivityLogEntity implements Entity {
 			gitEmail,
 			id,
 			project,
+			linesAdded,
+			linesDeleted,
 		});
 	}
 
@@ -67,12 +81,16 @@ class ActivityLogEntity implements Entity {
 		date,
 		gitEmail,
 		project,
+		linesAdded,
+		linesDeleted,
 	}: {
 		commitsNumber: number;
 		createdByUser: Pick<UserModel, "id">;
 		date: string;
 		gitEmail: Pick<GitEmailModel, "contributor" | "id">;
 		project: Pick<ProjectModel, "id">;
+		linesAdded: number;
+		linesDeleted: number;
 	}): ActivityLogEntity {
 		return new ActivityLogEntity({
 			commitsNumber,
@@ -81,6 +99,8 @@ class ActivityLogEntity implements Entity {
 			gitEmail,
 			id: null,
 			project,
+			linesAdded,
+			linesDeleted,
 		});
 	}
 
@@ -90,6 +110,8 @@ class ActivityLogEntity implements Entity {
 		date: string;
 		gitEmail: Pick<GitEmailModel, "contributor" | "id">;
 		project: Pick<ProjectModel, "id">;
+		linesAdded: number;
+		linesDeleted: number;
 	} {
 		return {
 			commitsNumber: this.commitsNumber,
@@ -97,6 +119,8 @@ class ActivityLogEntity implements Entity {
 			date: this.date,
 			gitEmail: this.gitEmail,
 			project: this.project,
+			linesAdded: this.linesAdded,
+			linesDeleted: this.linesDeleted,
 		};
 	}
 
@@ -111,6 +135,8 @@ class ActivityLogEntity implements Entity {
 			},
 			id: this.id as number,
 			project: { id: this.project.id },
+			linesAdded: this.linesAdded,
+			linesDeleted: this.linesDeleted,
 		};
 	}
 }

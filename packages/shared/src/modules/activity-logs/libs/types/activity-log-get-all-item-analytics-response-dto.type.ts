@@ -5,6 +5,8 @@ type ActivityLogGetAllItemAnalyticsResponseDto = {
 		id: string;
 		name: string;
 	};
+	linesAdded: number[];
+		linesDeleted: number[];
 };
 
 export { type ActivityLogGetAllItemAnalyticsResponseDto };

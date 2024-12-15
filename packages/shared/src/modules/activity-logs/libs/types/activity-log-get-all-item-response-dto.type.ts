@@ -9,6 +9,8 @@ type ActivityLogGetAllItemResponseDto = {
 		};
 		id: number;
 	};
+	linesAdded: number;
+	linesDeleted: number;
 	id: number;
 	project: { id: number };
 };
