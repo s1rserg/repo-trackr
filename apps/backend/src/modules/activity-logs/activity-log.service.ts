@@ -154,9 +154,9 @@ class ActivityLogService implements Service {
 		userProjectIds: number[];
 	} & ActivityLogQueryParameters): Promise<ActivityLogGetAllAnalyticsResponseDto> {
 		const projectIdParsed = projectId ? Number(projectId) : undefined;
-
+	
 		let permittedProjectIds: number[];
-
+	
 		if (projectIdParsed) {
 			if (!hasRootPermission && !userProjectIds.includes(projectIdParsed)) {
 				throw new ActivityLogError({
@@ -164,24 +164,24 @@ class ActivityLogService implements Service {
 					status: HTTPCode.FORBIDDEN,
 				});
 			}
-
+	
 			permittedProjectIds = [projectIdParsed];
 		} else if (hasRootPermission) {
 			permittedProjectIds = [];
 		} else {
 			permittedProjectIds = userProjectIds;
 		}
-
+	
 		const formattedStartDate = formatDate(
 			getStartOfDay(new Date(startDate)),
 			"yyyy-MM-dd",
 		);
-
+	
 		const formattedEndDate = formatDate(
 			getEndOfDay(new Date(endDate)),
 			"yyyy-MM-dd",
 		);
-
+	
 		const activityLogsEntities = await this.activityLogRepository.findAll({
 			contributorName,
 			endDate: formattedEndDate,
@@ -189,51 +189,70 @@ class ActivityLogService implements Service {
 			projectId,
 			startDate: formattedStartDate,
 		});
-
+	
 		const activityLogs = activityLogsEntities.items.map((item) =>
 			item.toObject(),
 		);
-
+	
 		const allContributors = await this.contributorService.findAll({
 			contributorName,
 			permittedProjectIds,
 			projectId,
 		});
-
+	
 		const dateRange = getDateRange(formattedStartDate, formattedEndDate);
-
+	
 		const INITIAL_COMMITS_NUMBER = 0;
-		const contributorMap: Record<string, number[]> = {};
-
+		const INITIAL_LINES_NUMBER = 0;
+	
+		const contributorMap: Record<
+			string,
+			{ commitsNumber: number[]; linesAdded: number[]; linesDeleted: number[] }
+		> = {};
+	
 		for (const contributor of allContributors.items) {
 			const uniqueKey = `${contributor.name}_${String(contributor.id)}`;
-			contributorMap[uniqueKey] = Array.from(
-				{ length: dateRange.length },
-				() => INITIAL_COMMITS_NUMBER,
-			);
+			contributorMap[uniqueKey] = {
+				commitsNumber: Array.from({ length: dateRange.length }, () => INITIAL_COMMITS_NUMBER),
+				linesAdded: Array.from({ length: dateRange.length }, () => INITIAL_LINES_NUMBER),
+				linesDeleted: Array.from({ length: dateRange.length }, () => INITIAL_LINES_NUMBER),
+			};
 		}
-
+	
 		for (const log of activityLogs) {
-			const { commitsNumber, date, gitEmail } = log;
+			const { commitsNumber, linesAdded, linesDeleted, date, gitEmail } = log;
 			const { id, name } = gitEmail.contributor;
-
+	
 			const uniqueKey = `${name}_${String(id)}`;
 			const formattedDate = formatDate(new Date(date), "MMM d");
 			const dateIndex = dateRange.indexOf(formattedDate);
-
+	
 			if (contributorMap[uniqueKey]) {
-				const currentValue =
-					contributorMap[uniqueKey][dateIndex] ?? INITIAL_COMMITS_NUMBER;
-				contributorMap[uniqueKey][dateIndex] = currentValue + commitsNumber;
+				// Update commits number
+				const currentCommits =
+					contributorMap[uniqueKey].commitsNumber[dateIndex] ?? INITIAL_COMMITS_NUMBER;
+				contributorMap[uniqueKey].commitsNumber[dateIndex] = currentCommits + commitsNumber;
+	
+				// Update lines added
+				const currentLinesAdded =
+					contributorMap[uniqueKey].linesAdded[dateIndex] ?? INITIAL_LINES_NUMBER;
+				contributorMap[uniqueKey].linesAdded[dateIndex] = currentLinesAdded + linesAdded;
+	
+				// Update lines deleted
+				const currentLinesDeleted =
+					contributorMap[uniqueKey].linesDeleted[dateIndex] ?? INITIAL_LINES_NUMBER;
+				contributorMap[uniqueKey].linesDeleted[dateIndex] = currentLinesDeleted + linesDeleted;
 			}
 		}
-
+	
 		return {
-			items: Object.entries(contributorMap).map(([uniqueKey, commitsArray]) => {
+			items: Object.entries(contributorMap).map(([uniqueKey, { commitsNumber, linesAdded, linesDeleted }]) => {
 				const [contributorName, contributorId] = uniqueKey.split("_");
-
+	
 				return {
-					commitsNumber: commitsArray,
+					commitsNumber,
+					linesAdded,
+					linesDeleted,
 					contributor: {
 						hiddenAt: null,
 						id: contributorId as string,
@@ -242,7 +261,7 @@ class ActivityLogService implements Service {
 				};
 			}),
 		};
-	}
+	}	
 
 	public async findAllWithoutFilter(): Promise<ActivityLogGetAllResponseDto> {
 		const activityLogs =
