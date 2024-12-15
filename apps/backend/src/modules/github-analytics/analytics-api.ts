@@ -2,7 +2,7 @@ import { BaseHTTPApi } from "~/libs/modules/api/api.js";
 import { type HTTP } from "~/libs/modules/http/http.js";
 
 import { GithubApiPath } from "./libs/enums/enums.js";
-import { type CommitResponseDto } from "./libs/types/types.js";
+import { type CommitDto, type CommitResponseDto } from "./libs/types/types.js";
 
 type Constructor = {
 	baseUrl: string;
@@ -37,7 +37,21 @@ class AnalyticsApi extends BaseHTTPApi {
 			},
 		);
 
-		return await response.json();
+		const commits: CommitResponseDto = await response.json();
+
+		for (const commitItem of commits) {
+			const detailedResponse = await this.load(
+				commitItem.url,
+				{
+					authToken,
+					method: "GET",
+				},
+			);
+			const detailedCommit: CommitDto = await detailedResponse.json();
+			commitItem.stats = detailedCommit.stats;
+		}
+
+		return commits;
 	}
 }
 

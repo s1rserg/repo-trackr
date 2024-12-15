@@ -13,7 +13,16 @@ export type CommitAuthorDto = {
 };
 export type CommitDto = {
 	author: CommitAuthorDto;
+	message: string;
+	stats: CommitStatsDto | undefined
+};
+export type CommitStatsDto = {
+	additions: number;
+	deletions: number;
+	total: number;
 };
 export type CommitResponseDto = {
 	commit: CommitDto;
+	url: string;
+	stats: CommitStatsDto | undefined
 }[];
