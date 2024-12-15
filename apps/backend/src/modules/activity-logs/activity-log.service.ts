@@ -302,7 +302,7 @@ class ActivityLogService implements Service {
 			const activityLogs = await this.analyticsService.groupCommitsByAuthor(
 				project.apiKey || "",
 				project.repositoryUrl || "",
-				formatDate(new Date(), "yyyy-MM-dd"),
+				formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
 			);
 
 			const createdActivityLogs: ActivityLogGetAllResponseDto = {

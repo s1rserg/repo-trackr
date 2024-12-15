@@ -40,7 +40,15 @@ class AnalyticsApi extends BaseHTTPApi {
 		const commits: CommitResponseDto = await response.json();
 
 		for (const commitItem of commits) {
-			const detailedResponse = await this.load(commitItem.url, {
+			const detailedResponse = await this.load(this.getFullEndpoint(
+				GithubApiPath.REPOS,
+				"/",
+				repositoryUrl,
+				GithubApiPath.COMMITS,
+				"/",
+				commitItem.sha,
+				{},
+			), {
 				authToken,
 				method: "GET",
 			});

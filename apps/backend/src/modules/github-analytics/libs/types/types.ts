@@ -25,6 +25,6 @@ export type CommitDto = {
 };
 export type CommitResponseDto = {
 	commit: CommitDto;
-	url: string;
+	sha: string;
 	stats: CommitStatsDto | undefined;
 }[];
