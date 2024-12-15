@@ -6,7 +6,7 @@ type ActivityLogGetAllItemAnalyticsResponseDto = {
 		name: string;
 	};
 	linesAdded: number[];
-		linesDeleted: number[];
+	linesDeleted: number[];
 };
 
 export { type ActivityLogGetAllItemAnalyticsResponseDto };
