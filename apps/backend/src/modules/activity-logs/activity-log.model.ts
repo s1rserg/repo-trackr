@@ -14,6 +14,8 @@ class ActivityLogModel extends AbstractModel {
 	public date!: string;
 	public gitEmail!: Pick<GitEmailModel, "contributor" | "id">;
 	public project!: Pick<ProjectModel, "id">;
+	public linesAdded!: number;
+	public linesDeleted!: number;
 
 	public static override get relationMappings(): RelationMappings {
 		return {

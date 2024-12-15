@@ -22,6 +22,8 @@ class ActivityLogRepository implements Repository {
 			date,
 			gitEmail,
 			project,
+			linesAdded,
+			linesDeleted
 		};
 
 		const createdActivityLog = await this.activityLogModel

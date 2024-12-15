@@ -64,7 +64,7 @@ class ActivityLogService implements Service {
 		projectId,
 		userId,
 	}: ActivityLogCreateItemResponseDto): Promise<ActivityLogEntity> {
-		const { authorEmail, authorName, commitsNumber } = logItem;
+		const { authorEmail, authorName, commitsNumber, linesAdded, linesDeleted } = logItem;
 
 		let gitEmail = await this.gitEmailService.findByEmail(authorEmail);
 
@@ -87,6 +87,7 @@ class ActivityLogService implements Service {
 					date,
 					gitEmail: { contributor: gitEmail.contributor, id: gitEmail.id },
 					project: { id: projectId },
+					linesAdded, linesDeleted
 				}),
 			);
 		} catch {
