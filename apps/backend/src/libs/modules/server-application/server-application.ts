@@ -14,7 +14,7 @@ import { permissionController } from "~/modules/permissions/permissions.js";
 import { projectApiKeyController } from "~/modules/project-api-keys/project-api-keys.js";
 import { projectGroupController } from "~/modules/project-groups/project-groups.js";
 import { projectPermissionsController } from "~/modules/project-permissions/project-permissions.js";
-import { issueController } from "~/modules/issues/issues.js";
+import { issueController, issueService } from "~/modules/issues/issues.js";
 import {
 	projectController,
 	projectService,
@@ -49,7 +49,7 @@ const serverApplication = new BaseServerApplication({
 	config,
 	database,
 	logger,
-	services: { projectService, userService, activityLogService },
+	services: { projectService, userService, activityLogService, issueService },
 	taskScheduler,
 	title: "RepoTrackr",
 	token,

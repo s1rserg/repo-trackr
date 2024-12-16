@@ -30,6 +30,8 @@ import {
 	type ServerApplicationApi,
 	type ServerApplicationRouteParameters,
 } from "./libs/types/types.js";
+import { type IssueService } from "~/modules/issues/issue.service.js";
+import { issueService } from "~/modules/issues/issues.js";
 
 type Constructor = {
 	apis: ServerApplicationApi[];
@@ -40,6 +42,7 @@ type Constructor = {
 		projectService: ProjectService;
 		userService: UserService;
 		activityLogService: ActivityLogService;
+		issueService: IssueService;
 	};
 	taskScheduler: TaskScheduler;
 	title: string;
@@ -62,6 +65,7 @@ class BaseServerApplication implements ServerApplication {
 		projectService: ProjectService;
 		userService: UserService;
 		activityLogService: ActivityLogService;
+		issueService: IssueService;
 	};
 
 	private taskScheduler: TaskScheduler;
@@ -154,6 +158,10 @@ class BaseServerApplication implements ServerApplication {
 		this.taskScheduler.start(
 			JobCronPattern.GITHUB_ANALYTICS,
 			() => void activityLogService.collectGithubAnalytics(),
+		);
+		this.taskScheduler.start(
+			JobCronPattern.GITHUB_ANALYTICS,
+			() => void issueService.collectGithubAnalytics(),
 		);
 	}
 
@@ -258,6 +266,7 @@ class BaseServerApplication implements ServerApplication {
 		}
 
 		void this.services.activityLogService.collectGithubAnalytics();
+		void this.services.issueService.collectGithubAnalytics();
 	}
 
 	public async initMiddlewares(): Promise<void> {
