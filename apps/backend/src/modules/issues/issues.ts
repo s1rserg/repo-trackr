@@ -5,10 +5,10 @@ import { projectApiKeyService } from "~/modules/project-api-keys/project-api-key
 import { projectGroupService } from "~/modules/project-groups/project-groups.js";
 import { projectService } from "~/modules/projects/projects.js";
 
-import { ActivityLogController } from "./activity-log.controller.js";
-import { ActivityLogModel } from "./activity-log.model.js";
-import { ActivityLogRepository } from "./activity-log.repository.js";
-import { ActivityLogService } from "./activity-log.service.js";
+import { ActivityLogController } from "./issue.controller.js";
+import { ActivityLogModel } from "./issue.model.js";
+import { ActivityLogRepository } from "./issue.repository.js";
+import { ActivityLogService } from "./issue.service.js";
 import { analyticsService } from "../github-analytics/analytics.js";
 
 const activityLogRepository = new ActivityLogRepository(ActivityLogModel);
@@ -27,4 +27,4 @@ const activityLogController = new ActivityLogController(
 );
 
 export { activityLogController, activityLogService };
-export { ActivityLogService } from "./activity-log.service.js";
+export { ActivityLogService } from "./issue.service.js";

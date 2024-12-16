@@ -13,8 +13,8 @@ import { type GitEmailService } from "~/modules/git-emails/git-emails.js";
 import { type ProjectApiKeyService } from "~/modules/project-api-keys/project-api-keys.js";
 import { type ProjectService } from "~/modules/projects/project.service.js";
 
-import { ActivityLogEntity } from "./activity-log.entity.js";
-import { type ActivityLogRepository } from "./activity-log.repository.js";
+import { ActivityLogEntity } from "./issue.entity.js";
+import { type ActivityLogRepository } from "./issue.repository.js";
 import { ActivityLogError } from "./libs/exceptions/exceptions.js";
 import {
 	type ActivityLogCreateItemResponseDto,

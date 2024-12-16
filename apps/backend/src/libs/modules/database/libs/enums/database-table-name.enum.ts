@@ -17,6 +17,8 @@ const DatabaseTableName = {
 	USERS: "users",
 	USERS_TO_PROJECT_GROUPS: "users_to_project_groups",
 	USERS_TO_USER_GROUPS: "users_to_user_groups",
+	ISSUES: "issues",
+	PULL_REQUESTS: "pull_requests"
 } as const;
 
 export { DatabaseTableName };

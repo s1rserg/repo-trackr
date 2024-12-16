@@ -16,7 +16,7 @@ import { type ProjectGroupService } from "~/modules/project-groups/project-group
 import { type UserAuthResponseDto } from "~/modules/users/users.js";
 
 import { type PermissionGetAllItemResponseDto } from "../permissions/libs/types/types.js";
-import { type ActivityLogService } from "./activity-log.service.js";
+import { type ActivityLogService } from "./issue.service.js";
 import { ActivityLogsApiPath } from "./libs/enums/enums.js";
 import {
 	type ActivityLogCreateRequestDto,

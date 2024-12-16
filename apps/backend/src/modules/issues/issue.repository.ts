@@ -1,8 +1,8 @@
 import { EMPTY_LENGTH } from "~/libs/constants/constants.js";
 import { type Repository } from "~/libs/types/types.js";
 
-import { ActivityLogEntity } from "./activity-log.entity.js";
-import { type ActivityLogModel } from "./activity-log.model.js";
+import { ActivityLogEntity } from "./issue.entity.js";
+import { type ActivityLogModel } from "./issue.model.js";
 import { type ActivityLogQueryParameters } from "./libs/types/types.js";
 
 class ActivityLogRepository implements Repository {

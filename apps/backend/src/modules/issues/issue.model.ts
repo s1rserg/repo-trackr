@@ -1,35 +1,37 @@
 import { type RelationMappings } from "objection";
-
 import {
 	AbstractModel,
 	DatabaseTableName,
 } from "~/libs/modules/database/database.js";
 import { GitEmailModel } from "~/modules/git-emails/git-emails.js";
 import { ProjectModel } from "~/modules/projects/project.model.js";
-import { UserModel } from "~/modules/users/user.model.js";
 
-class ActivityLogModel extends AbstractModel {
-	public commitsNumber!: number;
-	public createdByUser!: Pick<UserModel, "id">;
-	public date!: string;
-	public gitEmail!: Pick<GitEmailModel, "contributor" | "id">;
+class IssueModel extends AbstractModel {
+	public number!: number;
+	public creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
+	public assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
 	public project!: Pick<ProjectModel, "id">;
-	public linesAdded!: number;
-	public linesDeleted!: number;
+	public title!: string;
+	public body!: string;
+	public state!: string;
+	public closedAt!: string;
+	public reactionsTotalCount!: number;
+	public subIssuesTotalCount!: number;
+	public commentsCount!: number;
 
 	public static override get relationMappings(): RelationMappings {
 		return {
-			createdByUser: {
+			creatorGitEmail: {
 				join: {
-					from: `${DatabaseTableName.ACTIVITY_LOGS}.createdByUserId`,
-					to: `${DatabaseTableName.USERS}.id`,
+					from: `${DatabaseTableName.ACTIVITY_LOGS}.creatorGitEmailId`,
+					to: `${DatabaseTableName.GIT_EMAILS}.id`,
 				},
-				modelClass: UserModel,
+				modelClass: GitEmailModel,
 				relation: AbstractModel.BelongsToOneRelation,
 			},
-			gitEmail: {
+			assigneeGitEmail: {
 				join: {
-					from: `${DatabaseTableName.ACTIVITY_LOGS}.gitEmailId`,
+					from: `${DatabaseTableName.ACTIVITY_LOGS}.assigneeGitEmailId`,
 					to: `${DatabaseTableName.GIT_EMAILS}.id`,
 				},
 				modelClass: GitEmailModel,
@@ -51,4 +53,4 @@ class ActivityLogModel extends AbstractModel {
 	}
 }
 
-export { ActivityLogModel };
+export { IssueModel };
