@@ -1,18 +1,27 @@
-type ActivityLogGetAllItemResponseDto = {
-	commitsNumber: number;
-	createdByUser: { id: number };
-	date: string;
-	gitEmail: {
-		contributor: {
-			id: number;
-			name: string;
-		};
+type IssueGetAllItemResponseDto = {
+	number: number;
+	creatorGitEmail: {
+	  contributor: {
 		id: number;
+		name: string;
+	  };
+	  id: number;
 	};
-	linesAdded: number;
-	linesDeleted: number;
-	id: number;
+	assigneeGitEmail: {
+	  contributor: {
+		id: number;
+		name: string;
+	  };
+	  id: number;
+	};
 	project: { id: number };
-};
-
-export { type ActivityLogGetAllItemResponseDto };
+	title: string;
+	body: string;
+	state: string;
+	closedAt: string;
+	reactionsTotalCount: number;
+	subIssuesTotalCount: number;
+	commentsCount: number;
+  };
+  
+  export { type IssueGetAllItemResponseDto };

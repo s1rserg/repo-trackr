@@ -19,3 +19,4 @@ export * from "./modules/project-groups/project-groups.js";
 export * from "./modules/project-permissions/project-permissions.js";
 export * from "./modules/projects/projects.js";
 export * from "./modules/users/users.js";
+export * from "./modules/issues/issues.js"

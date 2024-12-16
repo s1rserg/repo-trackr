@@ -1,144 +1,200 @@
-import { type Entity } from "~/libs/types/types.js";
+import {
+	type IssueGetAllItemResponseDto,
+	type Entity,
+} from "~/libs/types/types.js";
 import { type GitEmailModel } from "~/modules/git-emails/git-emails.js";
 
 import { type ProjectModel } from "../projects/project.model.js";
-import { type UserModel } from "../users/user.model.js";
-import { type ActivityLogGetAllItemResponseDto } from "./libs/types/types.js";
 
-class ActivityLogEntity implements Entity {
-	private commitsNumber!: number;
-	private createdByUser!: Pick<UserModel, "id">;
-	private date!: string;
-	private gitEmail!: Pick<GitEmailModel, "contributor" | "id">;
-	private id: null | number;
+class IssueEntity implements Entity {
+	private number!: number;
+	private creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
+	private assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
 	private project!: Pick<ProjectModel, "id">;
-	private linesAdded!: number;
-	private linesDeleted!: number;
+	private title!: string;
+	private body!: string;
+	private state!: string;
+	private closedAt!: string;
+	private reactionsTotalCount!: number;
+	private subIssuesTotalCount!: number;
+	private commentsCount!: number;
+	private id: null | number;
 
 	private constructor({
-		commitsNumber,
-		createdByUser,
-		date,
-		gitEmail,
-		id,
+		number,
+		creatorGitEmail,
+		assigneeGitEmail,
 		project,
-		linesAdded,
-		linesDeleted,
+		title,
+		body,
+		state,
+		closedAt,
+		reactionsTotalCount,
+		subIssuesTotalCount,
+		commentsCount,
+		id,
 	}: {
-		commitsNumber: number;
-		createdByUser: Pick<UserModel, "id">;
-		date: string;
-		gitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		id: null | number;
+		number: number;
+		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id">;
 		project: Pick<ProjectModel, "id">;
-		linesAdded: number;
-		linesDeleted: number;
+		title: string;
+		body: string;
+		state: string;
+		closedAt: string;
+		reactionsTotalCount: number;
+		subIssuesTotalCount: number;
+		commentsCount: number;
+		id: null | number;
 	}) {
-		this.commitsNumber = commitsNumber;
-		this.createdByUser = createdByUser;
-		this.date = date;
-		this.gitEmail = gitEmail;
-		this.id = id;
+		this.number = number;
+		this.creatorGitEmail = creatorGitEmail;
+		this.assigneeGitEmail = assigneeGitEmail;
 		this.project = project;
-		this.linesAdded = linesAdded;
-		this.linesDeleted = linesDeleted;
+		this.title = title;
+		this.body = body;
+		this.state = state;
+		this.closedAt = closedAt;
+		this.reactionsTotalCount = reactionsTotalCount;
+		this.subIssuesTotalCount = subIssuesTotalCount;
+		this.commentsCount = commentsCount;
+		this.id = id;
 	}
 
 	public static initialize({
-		commitsNumber,
-		createdByUser,
-		date,
-		gitEmail,
-		id,
+		number,
+		creatorGitEmail,
+		assigneeGitEmail,
 		project,
-		linesAdded,
-		linesDeleted,
+		title,
+		body,
+		state,
+		closedAt,
+		reactionsTotalCount,
+		subIssuesTotalCount,
+		commentsCount,
+		id,
 	}: {
-		commitsNumber: number;
-		createdByUser: Pick<UserModel, "id">;
-		date: string;
-		gitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		id: null | number;
+		number: number;
+		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id">;
 		project: Pick<ProjectModel, "id">;
-		linesAdded: number;
-		linesDeleted: number;
-	}): ActivityLogEntity {
-		return new ActivityLogEntity({
-			commitsNumber,
-			createdByUser,
-			date,
-			gitEmail,
-			id,
+		title: string;
+		body: string;
+		state: string;
+		closedAt: string;
+		reactionsTotalCount: number;
+		subIssuesTotalCount: number;
+		commentsCount: number;
+		id: null | number;
+	}): IssueEntity {
+		return new IssueEntity({
+			number,
+			creatorGitEmail,
+			assigneeGitEmail,
 			project,
-			linesAdded,
-			linesDeleted,
+			title,
+			body,
+			state,
+			closedAt,
+			reactionsTotalCount,
+			subIssuesTotalCount,
+			commentsCount,
+			id,
 		});
 	}
 
 	public static initializeNew({
-		commitsNumber,
-		createdByUser,
-		date,
-		gitEmail,
+		number,
+		creatorGitEmail,
+		assigneeGitEmail,
 		project,
-		linesAdded,
-		linesDeleted,
+		title,
+		body,
+		state,
+		closedAt,
+		reactionsTotalCount,
+		subIssuesTotalCount,
+		commentsCount,
 	}: {
-		commitsNumber: number;
-		createdByUser: Pick<UserModel, "id">;
-		date: string;
-		gitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		number: number;
+		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id">;
 		project: Pick<ProjectModel, "id">;
-		linesAdded: number;
-		linesDeleted: number;
-	}): ActivityLogEntity {
-		return new ActivityLogEntity({
-			commitsNumber,
-			createdByUser,
-			date,
-			gitEmail,
-			id: null,
+		title: string;
+		body: string;
+		state: string;
+		closedAt: string;
+		reactionsTotalCount: number;
+		subIssuesTotalCount: number;
+		commentsCount: number;
+		id: null | number;
+	}): IssueEntity {
+		return new IssueEntity({
+			number,
+			creatorGitEmail,
+			assigneeGitEmail,
 			project,
-			linesAdded,
-			linesDeleted,
+			title,
+			body,
+			state,
+			closedAt,
+			reactionsTotalCount,
+			subIssuesTotalCount,
+			commentsCount,
+			id: null,
 		});
 	}
 
 	public toNewObject(): {
-		commitsNumber: number;
-		createdByUser: Pick<UserModel, "id">;
-		date: string;
-		gitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		number: number;
+		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id">;
 		project: Pick<ProjectModel, "id">;
-		linesAdded: number;
-		linesDeleted: number;
+		title: string;
+		body: string;
+		state: string;
+		closedAt: string;
+		reactionsTotalCount: number;
+		subIssuesTotalCount: number;
+		commentsCount: number;
 	} {
 		return {
-			commitsNumber: this.commitsNumber,
-			createdByUser: this.createdByUser,
-			date: this.date,
-			gitEmail: this.gitEmail,
+			number: this.number,
+			creatorGitEmail: this.creatorGitEmail,
+			assigneeGitEmail: this.assigneeGitEmail,
 			project: this.project,
-			linesAdded: this.linesAdded,
-			linesDeleted: this.linesDeleted,
+			title: this.title,
+			body: this.body,
+			state: this.state,
+			closedAt: this.closedAt,
+			reactionsTotalCount: this.reactionsTotalCount,
+			subIssuesTotalCount: this.subIssuesTotalCount,
+			commentsCount: this.commentsCount,
 		};
 	}
 
-	public toObject(): ActivityLogGetAllItemResponseDto {
+	public toObject(): IssueGetAllItemResponseDto {
 		return {
-			commitsNumber: this.commitsNumber,
-			createdByUser: { id: this.createdByUser.id },
-			date: this.date,
-			gitEmail: {
-				contributor: this.gitEmail.contributor,
-				id: this.gitEmail.id,
+			number: this.number,
+			creatorGitEmail: {
+				contributor: this.creatorGitEmail.contributor,
+				id: this.creatorGitEmail.id,
 			},
-			id: this.id as number,
+			assigneeGitEmail: {
+				contributor: this.assigneeGitEmail.contributor,
+				id: this.assigneeGitEmail.id,
+			},
 			project: { id: this.project.id },
-			linesAdded: this.linesAdded,
-			linesDeleted: this.linesDeleted,
+			title: this.title,
+			body: this.body,
+			state: this.state,
+			closedAt: this.closedAt,
+			reactionsTotalCount: this.reactionsTotalCount,
+			subIssuesTotalCount: this.subIssuesTotalCount,
+			commentsCount: this.commentsCount,
 		};
 	}
 }
 
-export { ActivityLogEntity };
+export { IssueEntity };
