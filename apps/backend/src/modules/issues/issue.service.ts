@@ -356,7 +356,6 @@ class IssueService implements Service {
 
 				// eslint-disable-next-line unicorn/prefer-ternary
 				if (existingIssue) {
-					// Update the existing issue
 					await this.issueRepository.updateCustom(
 						existingIssueObject?.id || 0,
 						{
@@ -371,7 +370,6 @@ class IssueService implements Service {
 						},
 					);
 				} else {
-					// Create a new issue
 					await this.create({
 						logItem: record,
 						projectId: project.id,

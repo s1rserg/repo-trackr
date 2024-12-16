@@ -32,11 +32,11 @@ class IssueRepository implements Repository {
 
 		const issueData = {
 			number,
-			creatorGitEmail: { id: creatorGitEmail.id }, // Only pass the id for creatorGitEmail
+			creatorGitEmail: { id: creatorGitEmail.id },
 			assigneeGitEmail: assigneeGitEmail
 				? { id: assigneeGitEmail.id }
-				: { id: 1 }, // Only pass id or null for assigneeGitEmail
-			project: { id: project.id }, // Only pass the id for project
+				: { id: 1 },
+			project: { id: project.id },
 			title,
 			body,
 			state,

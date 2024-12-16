@@ -141,7 +141,6 @@ class AnalyticsApi extends BaseHTTPApi {
 			const creatorLogin = issue.user.login;
 			const assigneeLogin = issue.assignee ? issue.assignee.login : null;
 
-			// Fetch creator details (name)
 			const creatorResponse = await this.load(
 				this.getFullEndpoint(GithubApiPath.USERS, "/", issue.user.login, {}),
 				{
@@ -182,7 +181,7 @@ class AnalyticsApi extends BaseHTTPApi {
 				state: issue.state,
 				closedAt: issue.closed_at,
 				reactionsTotalCount: issue.reactions.total_count,
-				subIssuesTotalCount: issue.subissues ? issue.subissues.length : 0, // Assuming subissues are nested
+				subIssuesTotalCount: issue.subissues ? issue.subissues.length : 0,
 				commentsCount: issue.comments,
 				createdAt: issue.created_at,
 				updatedAt: issue.updated_at,
@@ -222,7 +221,6 @@ class AnalyticsApi extends BaseHTTPApi {
 			const creatorLogin = pull.user.login;
 			const assigneeLogin = pull.assignee ? pull.assignee.login : null;
 
-			// Fetch creator details (name)
 			const creatorResponse = await this.load(
 				this.getFullEndpoint(GithubApiPath.USERS, "/", pull.user.login, {}),
 				{

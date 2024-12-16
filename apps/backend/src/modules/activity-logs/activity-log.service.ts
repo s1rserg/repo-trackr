@@ -239,21 +239,16 @@ class ActivityLogService implements Service {
 			const dateIndex = dateRange.indexOf(formattedDate);
 
 			if (contributorMap[uniqueKey]) {
-				// Update commits number
 				const currentCommits =
 					contributorMap[uniqueKey].commitsNumber[dateIndex] ??
 					INITIAL_COMMITS_NUMBER;
 				contributorMap[uniqueKey].commitsNumber[dateIndex] =
 					currentCommits + commitsNumber;
-
-				// Update lines added
 				const currentLinesAdded =
 					contributorMap[uniqueKey].linesAdded[dateIndex] ??
 					INITIAL_LINES_NUMBER;
 				contributorMap[uniqueKey].linesAdded[dateIndex] =
 					currentLinesAdded + linesAdded;
-
-				// Update lines deleted
 				const currentLinesDeleted =
 					contributorMap[uniqueKey].linesDeleted[dateIndex] ??
 					INITIAL_LINES_NUMBER;

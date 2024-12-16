@@ -57,7 +57,11 @@ function up(knex: Knex): Promise<void> {
 		table.dateTime(ColumnName.CLOSED_AT).nullable();
 		table.dateTime(ColumnName.MERGED_AT).nullable();
 		table.boolean(ColumnName.DRAFT).notNullable().defaultTo(false);
-		table.integer(ColumnName.COMMENTS_COUNT).unsigned().notNullable().defaultTo(0);
+		table
+			.integer(ColumnName.COMMENTS_COUNT)
+			.unsigned()
+			.notNullable()
+			.defaultTo(0);
 		table
 			.integer(ColumnName.REVIEW_COMMENTS_COUNT)
 			.unsigned()
@@ -66,15 +70,13 @@ function up(knex: Knex): Promise<void> {
 		table.integer(ColumnName.ADDITIONS).unsigned().notNullable().defaultTo(0);
 		table.integer(ColumnName.DELETIONS).unsigned().notNullable().defaultTo(0);
 		table.integer(ColumnName.COMMITS).unsigned().notNullable().defaultTo(0);
-		table.integer(ColumnName.CHANGED_FILES).unsigned().notNullable().defaultTo(0);
 		table
-			.dateTime(ColumnName.CREATED_AT)
-			.nullable()
-			.defaultTo(knex.fn.now());
-		table
-			.dateTime(ColumnName.UPDATED_AT)
-			.nullable()
-			.defaultTo(knex.fn.now());
+			.integer(ColumnName.CHANGED_FILES)
+			.unsigned()
+			.notNullable()
+			.defaultTo(0);
+		table.dateTime(ColumnName.CREATED_AT).nullable().defaultTo(knex.fn.now());
+		table.dateTime(ColumnName.UPDATED_AT).nullable().defaultTo(knex.fn.now());
 	});
 }
 

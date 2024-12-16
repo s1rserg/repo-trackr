@@ -366,7 +366,6 @@ class PullService implements Service {
 
 				// eslint-disable-next-line unicorn/prefer-ternary
 				if (existingPull) {
-					// Update the existing pull
 					await this.pullRepository.updateCustom(existingPullObject?.id || 0, {
 						title: record.title,
 						body: record.body,
@@ -383,7 +382,6 @@ class PullService implements Service {
 						updatedAt: record.updatedAt,
 					});
 				} else {
-					// Create a new pull
 					await this.create({
 						logItem: record,
 						projectId: project.id,
