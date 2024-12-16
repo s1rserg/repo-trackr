@@ -1,4 +1,4 @@
-type IssueCreateItemRequestDto = {
+type PullCreateItemRequestDto = {
 	number: number;
 	creatorLogin: string;
 	assigneeLogin: string | null;
@@ -8,11 +8,16 @@ type IssueCreateItemRequestDto = {
 	body: string;
 	state: string;
 	closedAt: string | null;
-	reactionsTotalCount: number;
-	subIssuesTotalCount: number;
 	commentsCount: number;
 	createdAt: string;
 	updatedAt: string;
+	mergedAt: string | null;
+	draft: boolean;
+	reviewCommentsCount: number;
+	additions: number;
+	deletions: number;
+	commits: number;
+	changedFiles: number;
 };
 
-export { type IssueCreateItemRequestDto };
+export { type PullCreateItemRequestDto };
