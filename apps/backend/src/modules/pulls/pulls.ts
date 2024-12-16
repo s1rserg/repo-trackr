@@ -4,25 +4,25 @@ import { gitEmailService } from "~/modules/git-emails/git-emails.js";
 import { projectGroupService } from "~/modules/project-groups/project-groups.js";
 import { projectService } from "~/modules/projects/projects.js";
 
-import { IssueController } from "./pull.controller.js";
-import { IssueModel } from "./pull.model.js";
-import { IssueRepository } from "./pull.repository.js";
-import { IssueService } from "./pull.service.js";
+import { PullController } from "./pull.controller.js";
+import { PullModel } from "./pull.model.js";
+import { PullRepository } from "./pull.repository.js";
+import { PullService } from "./pull.service.js";
 import { analyticsService } from "../github-analytics/analytics.js";
 
-const issueRepository = new IssueRepository(IssueModel);
-const issueService = new IssueService({
-	issueRepository,
+const pullRepository = new PullRepository(PullModel);
+const pullService = new PullService({
+	pullRepository,
 	contributorService,
 	gitEmailService,
 	projectService,
 	analyticsService,
 });
-const issueController = new IssueController(
+const pullController = new PullController(
 	logger,
-	issueService,
+	pullService,
 	projectGroupService,
 );
 
-export { issueController, issueService };
-export { IssueService } from "./pull.service.js";
+export { pullController, pullService };
+export { PullService } from "./pull.service.js";
