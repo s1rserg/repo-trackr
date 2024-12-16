@@ -326,7 +326,7 @@ class IssueService implements Service {
 		const projects = await this.projectService.findGithubAnalyticsProjects();
 
 		for (const project of projects) {
-			const issues = await this.analyticsService.groupCommitsByAuthor(
+			const issues = await this.analyticsService.getIssues(
 				project.apiKey || "",
 				project.repositoryUrl || "",
 				formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",

@@ -1,4 +1,4 @@
-// export { type ActivityLogCreateItemRequestDto } from "./issue-create-item-request-dto.type.js";
+export { type IssueCreateItemRequestDto } from "./issue-create-item-request-dto.type.js";
 export { type IssueCreateItemResponseDto } from "./issue-create-item-response-dto.type.js";
 export { type IssueGetAllAnalyticsResponseDto } from "./issue-get-all-analytics-response-dto.type.js";
 export { type IssueGetAllItemAnalyticsResponseDto } from "./issue-get-all-item-analytics-response-dto.type.js";

@@ -1,3 +1,4 @@
+import { IssueCreateItemRequestDto } from "~/libs/types/types.js";
 import { type analyticsApi } from "./analytics.js";
 import { type ActivityLogCreateItemRequestDto } from "./libs/types/types.js";
 
@@ -70,6 +71,14 @@ class AnalyticsService {
 			date: new Date().toISOString(),
 			items,
 		};
+	}
+
+	public async getIssues(
+		authToken: string,
+		repositoryUrl: string,
+		since: string,
+	): Promise<IssueCreateItemRequestDto[]> {
+		return await this.analyticsApi.fetchIssues(authToken, repositoryUrl, since);
 	}
 }
 

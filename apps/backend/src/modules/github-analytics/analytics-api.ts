@@ -3,6 +3,7 @@ import { type HTTP } from "~/libs/modules/http/http.js";
 
 import { GithubApiPath } from "./libs/enums/enums.js";
 import { type CommitDto, type CommitResponseDto } from "./libs/types/types.js";
+import { IssueCreateItemRequestDto } from "~/libs/types/types.js";
 
 type Constructor = {
 	baseUrl: string;
@@ -27,21 +28,8 @@ interface GithubIssueResponse {
 	reactions: { total_count: number };
 	subissues?: any[]; // Adjust if sub-issues are part of your structure
 	comments: number;
-}
-
-interface EnrichedGithubIssue {
-	number: number;
-	creatorLogin: string;
-	assigneeLogin: string | null;
-	creatorName: string;
-	assigneeName: string | null;
-	title: string;
-	body: string;
-	state: string;
-	closedAt: string | null;
-	reactionsTotalCount: number;
-	subIssuesTotalCount: number;
-	commentsCount: number;
+	created_at: string;
+	updated_at: string;
 }
 
 class AnalyticsApi extends BaseHTTPApi {
@@ -100,7 +88,7 @@ class AnalyticsApi extends BaseHTTPApi {
 		authToken: string,
 		repositoryUrl: string,
 		since: string,
-	): Promise<EnrichedGithubIssue[]> {
+	): Promise<IssueCreateItemRequestDto[]> {
 		const response = await this.load(
 			this.getFullEndpoint(
 				GithubApiPath.REPOS,
@@ -120,7 +108,7 @@ class AnalyticsApi extends BaseHTTPApi {
 
 		const issues: GithubIssueResponse[] = await response.json();
 
-		const enrichedIssues: EnrichedGithubIssue[] = [];
+		const enrichedIssues: IssueCreateItemRequestDto[] = [];
 
 		for (const issue of issues) {
 			const creatorLogin = issue.user.login;
@@ -158,6 +146,8 @@ class AnalyticsApi extends BaseHTTPApi {
 				reactionsTotalCount: issue.reactions.total_count,
 				subIssuesTotalCount: issue.subissues ? issue.subissues.length : 0, // Assuming subissues are nested
 				commentsCount: issue.comments,
+				createdAt: issue.created_at,
+				updatedAt: issue.updated_at,
 			});
 		}
 
