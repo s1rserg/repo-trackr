@@ -1,4 +1,4 @@
-import { type IssueCreateItemRequestDto } from "~/libs/types/types.js";
+import { type PullCreateItemRequestDto, type IssueCreateItemRequestDto } from "~/libs/types/types.js";
 import { type analyticsApi } from "./analytics.js";
 import { type ActivityLogCreateItemRequestDto } from "./libs/types/types.js";
 
@@ -79,6 +79,14 @@ class AnalyticsService {
 		since: string,
 	): Promise<IssueCreateItemRequestDto[]> {
 		return await this.analyticsApi.fetchIssues(authToken, repositoryUrl, since);
+	}
+
+	public async getPulls(
+		authToken: string,
+		repositoryUrl: string,
+		since: string,
+	): Promise<PullCreateItemRequestDto[]> {
+		return await this.analyticsApi.fetchPulls(authToken, repositoryUrl, since);
 	}
 }
 

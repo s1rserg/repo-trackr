@@ -372,9 +372,15 @@ class PullService implements Service {
 						body: record.body,
 						state: record.state,
 						mergedAt: record.mergedAt,
-						reactionsTotalCount: record.reactionsTotalCount,
-						subPullsTotalCount: record.subPullsTotalCount,
+						closedAt: record.closedAt,
 						commentsCount: record.commentsCount,
+						reviewCommentsCount: record.reviewCommentsCount,
+						additions: record.additions,
+						deletions: record.deletions,
+						commits: record.commits,
+						changedFiles: record.changedFiles,
+						draft: record.draft,
+						updatedAt: record.updatedAt
 					});
 				} else {
 					// Create a new pull
