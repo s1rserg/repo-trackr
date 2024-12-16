@@ -13,6 +13,7 @@ import {
 	type IssueQueryParameters,
 	type IssueCreateItemResponseDto,
 	type Service,
+	type IssueGetAllResponseDto,
 } from "~/libs/types/types.js";
 import { type ContributorService } from "~/modules/contributors/contributors.js";
 import { type GitEmailService } from "~/modules/git-emails/git-emails.js";

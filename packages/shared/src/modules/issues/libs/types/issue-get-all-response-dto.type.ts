@@ -1,7 +1,7 @@
-import { type ActivityLogGetAllItemResponseDto } from "./issue-get-all-item-response-dto.type.js";
+import { type IssueGetAllItemResponseDto } from "./issue-get-all-item-response-dto.type.js";
 
-type ActivityLogGetAllResponseDto = {
-	items: ActivityLogGetAllItemResponseDto[];
+type IssueGetAllResponseDto = {
+	items: IssueGetAllItemResponseDto[];
 };
 
-export { type ActivityLogGetAllResponseDto };
+export { type IssueGetAllResponseDto };
