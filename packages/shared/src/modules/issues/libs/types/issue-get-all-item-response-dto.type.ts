@@ -22,6 +22,8 @@ type IssueGetAllItemResponseDto = {
 	reactionsTotalCount: number;
 	subIssuesTotalCount: number;
 	commentsCount: number;
+	createdAt: string;
+	updatedAt: string;
   };
   
   export { type IssueGetAllItemResponseDto };

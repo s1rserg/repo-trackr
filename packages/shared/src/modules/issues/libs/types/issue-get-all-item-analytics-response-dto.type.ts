@@ -1,12 +1,13 @@
-type ActivityLogGetAllItemAnalyticsResponseDto = {
-	commitsNumber: number[];
+type IssueGetAllItemAnalyticsResponseDto = {
 	contributor: {
 		hiddenAt: null | string;
 		id: string;
 		name: string;
 	};
-	linesAdded: number[];
-	linesDeleted: number[];
+	issuesOpened: number[];
+	issuesOpenedClosed: number[];
+	issuesAssigned: number[];
+	issuesAssignedClosed: number[];
 };
 
-export { type ActivityLogGetAllItemAnalyticsResponseDto };
+export { type IssueGetAllItemAnalyticsResponseDto };

@@ -1,14 +1,19 @@
-type ActivityLogCreateItemResponseDto = {
-	date: string;
+type IssueCreateItemResponseDto = {
 	logItem: {
-		authorEmail: string;
-		authorName: string;
-		commitsNumber: number;
-		linesAdded: number;
-		linesDeleted: number;
+		number: number;
+		creatorLogin: string;
+		assigneeLogin: string;
+		creatorName: string;
+		assigneeName: string
+		title: string;
+		body: string;
+		state: string;
+		closedAt: string;
+		reactionsTotalCount: number;
+		subIssuesTotalCount: number;
+		commentsCount: number;
 	};
 	projectId: number;
-	userId: number;
 };
 
-export { type ActivityLogCreateItemResponseDto };
+export { type IssueCreateItemResponseDto };

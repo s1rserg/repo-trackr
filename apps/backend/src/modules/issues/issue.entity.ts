@@ -19,6 +19,8 @@ class IssueEntity implements Entity {
 	private subIssuesTotalCount!: number;
 	private commentsCount!: number;
 	private id: null | number;
+	private createdAt: null | string;
+	private updatedAt: null | string;
 
 	private constructor({
 		number,
@@ -33,6 +35,7 @@ class IssueEntity implements Entity {
 		subIssuesTotalCount,
 		commentsCount,
 		id,
+		createdAt, updatedAt
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
@@ -46,6 +49,8 @@ class IssueEntity implements Entity {
 		subIssuesTotalCount: number;
 		commentsCount: number;
 		id: null | number;
+		createdAt: null | string;
+		updatedAt: null | string;
 	}) {
 		this.number = number;
 		this.creatorGitEmail = creatorGitEmail;
@@ -59,6 +64,8 @@ class IssueEntity implements Entity {
 		this.subIssuesTotalCount = subIssuesTotalCount;
 		this.commentsCount = commentsCount;
 		this.id = id;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
 	}
 
 	public static initialize({
@@ -73,7 +80,7 @@ class IssueEntity implements Entity {
 		reactionsTotalCount,
 		subIssuesTotalCount,
 		commentsCount,
-		id,
+		id,createdAt, updatedAt
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
@@ -87,6 +94,8 @@ class IssueEntity implements Entity {
 		subIssuesTotalCount: number;
 		commentsCount: number;
 		id: null | number;
+		createdAt: null | string;
+		updatedAt: null | string;
 	}): IssueEntity {
 		return new IssueEntity({
 			number,
@@ -100,7 +109,7 @@ class IssueEntity implements Entity {
 			reactionsTotalCount,
 			subIssuesTotalCount,
 			commentsCount,
-			id,
+			id,createdAt, updatedAt
 		});
 	}
 
@@ -128,7 +137,6 @@ class IssueEntity implements Entity {
 		reactionsTotalCount: number;
 		subIssuesTotalCount: number;
 		commentsCount: number;
-		id: null | number;
 	}): IssueEntity {
 		return new IssueEntity({
 			number,
@@ -143,6 +151,8 @@ class IssueEntity implements Entity {
 			subIssuesTotalCount,
 			commentsCount,
 			id: null,
+			createdAt: null,
+			updatedAt: null,
 		});
 	}
 
@@ -193,6 +203,8 @@ class IssueEntity implements Entity {
 			reactionsTotalCount: this.reactionsTotalCount,
 			subIssuesTotalCount: this.subIssuesTotalCount,
 			commentsCount: this.commentsCount,
+			createdAt: this.createdAt as string,
+			updatedAt: this.createdAt as string,
 		};
 	}
 }
