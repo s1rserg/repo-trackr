@@ -193,7 +193,7 @@ class IssueService implements Service {
 
 		const dateRange = getDateRange(formattedStartDate, formattedEndDate);
 
-		const INITIAL_ISSUES_NUMBER = 0;
+		const INITIAL_ISSUES_COUNT = 0;
 
 		const contributorMap: Record<
 			string,
@@ -210,91 +210,94 @@ class IssueService implements Service {
 			contributorMap[uniqueKey] = {
 				issuesOpened: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_NUMBER,
+					() => INITIAL_ISSUES_COUNT,
 				),
 				issuesOpenedClosed: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_NUMBER,
+					() => INITIAL_ISSUES_COUNT,
 				),
 				issuesAssigned: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_NUMBER,
+					() => INITIAL_ISSUES_COUNT,
 				),
 				issuesAssignedClosed: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_NUMBER,
+					() => INITIAL_ISSUES_COUNT,
 				),
 			};
 		}
 
 		for (const issue of issues) {
-			const { state, createdAt, closedAt, creatorGitEmail, assigneeGitEmail } =
-				issue;
+			const { createdAt, closedAt, creatorGitEmail, assigneeGitEmail } = issue;
+
 			const { id: creatorId, name: creatorName } = creatorGitEmail.contributor;
 			const { id: assigneeId, name: assigneeName } =
 				assigneeGitEmail.contributor;
 
-			const issueCreatedDate = formatDate(
-				getStartOfDay(new Date(createdAt)),
-				"yyyy-MM-dd",
-			);
-			const issueClosedDate = closedAt ? formatDate(
-				getStartOfDay(new Date(closedAt)),
-				"yyyy-MM-dd",
-			) : null;
+			const createdDateFormatted = formatDate(new Date(createdAt), "MMM d");
+			const closedDateFormatted = closedAt
+				? formatDate(new Date(closedAt), "MMM d")
+				: null;
+
+			const createdDateIndex = dateRange.indexOf(createdDateFormatted);
+			const closedDateIndex = closedDateFormatted
+				? dateRange.indexOf(closedDateFormatted)
+				: -1;
 
 			const creatorKey = `${creatorName}_${String(creatorId)}`;
 			const assigneeKey = `${assigneeName}_${String(assigneeId)}`;
 
 			if (
-				issueCreatedDate >= formattedStartDate &&
-				issueCreatedDate <= formattedEndDate &&
-				contributorMap[creatorKey]
+				createdDateIndex >= 0 &&
+				contributorMap[creatorKey] &&
+				contributorMap[creatorKey].issuesOpened[createdDateIndex]
 			) {
-				contributorMap[creatorKey].issuesOpened++;
-
-				if (
-					state === "closed" &&
-					issueClosedDate &&
-					issueClosedDate <= formattedEndDate
-				) {
-					contributorMap[creatorKey].issuesOpenedClosed++;
-				}
+				contributorMap[creatorKey].issuesOpened[createdDateIndex]++;
 			}
 
-			if (contributorMap[uniqueKey]) {
-				// Update commits number
-				const currentCommits =
-					contributorMap[uniqueKey].commitsNumber[dateIndex] ??
-					INITIAL_COMMITS_NUMBER;
-				contributorMap[uniqueKey].commitsNumber[dateIndex] =
-					currentCommits + commitsNumber;
+			if (
+				closedDateIndex >= 0 &&
+				contributorMap[creatorKey] &&
+				contributorMap[creatorKey].issuesOpenedClosed[closedDateIndex]
+			) {
+				contributorMap[creatorKey].issuesOpenedClosed[closedDateIndex]++;
+			}
 
-				// Update lines added
-				const currentLinesAdded =
-					contributorMap[uniqueKey].linesAdded[dateIndex] ??
-					INITIAL_LINES_NUMBER;
-				contributorMap[uniqueKey].linesAdded[dateIndex] =
-					currentLinesAdded + linesAdded;
+			if (
+				createdDateIndex >= 0 &&
+				contributorMap[assigneeKey] &&
+				contributorMap[assigneeKey].issuesAssigned[createdDateIndex]
+			) {
+				contributorMap[assigneeKey].issuesAssigned[createdDateIndex]++;
+			}
 
-				// Update lines deleted
-				const currentLinesDeleted =
-					contributorMap[uniqueKey].linesDeleted[dateIndex] ??
-					INITIAL_LINES_NUMBER;
-				contributorMap[uniqueKey].linesDeleted[dateIndex] =
-					currentLinesDeleted + linesDeleted;
+			if (
+				closedDateIndex >= 0 &&
+				contributorMap[assigneeKey] &&
+				contributorMap[assigneeKey].issuesAssignedClosed[closedDateIndex]
+			) {
+				contributorMap[assigneeKey].issuesAssignedClosed[closedDateIndex]++;
 			}
 		}
 
 		return {
 			items: Object.entries(contributorMap).map(
-				([uniqueKey, { commitsNumber, linesAdded, linesDeleted }]) => {
+				([
+					uniqueKey,
+					{
+						issuesOpened,
+						issuesOpenedClosed,
+						issuesAssigned,
+						issuesAssignedClosed,
+					},
+				]) => {
 					const [contributorName, contributorId] = uniqueKey.split("_");
 
 					return {
-						commitsNumber,
-						linesAdded,
-						linesDeleted,
+						issuesOpened,
+						issuesOpenedClosed,
+						issuesAssigned,
+						issuesAssignedClosed,
 						contributor: {
 							hiddenAt: null,
 							id: contributorId as string,
