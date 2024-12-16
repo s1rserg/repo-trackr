@@ -1,29 +1,30 @@
 type IssueGetAllItemResponseDto = {
 	number: number;
 	creatorGitEmail: {
-	  contributor: {
+		contributor: {
+			id: number;
+			name: string;
+		};
 		id: number;
-		name: string;
-	  };
-	  id: number;
 	};
 	assigneeGitEmail: {
-	  contributor: {
+		contributor: {
+			id: number;
+			name: string;
+		};
 		id: number;
-		name: string;
-	  };
-	  id: number;
-	};
+	} | null;
 	project: { id: number };
 	title: string;
 	body: string;
 	state: string;
-	closedAt: string;
+	closedAt: string | null;
 	reactionsTotalCount: number;
 	subIssuesTotalCount: number;
 	commentsCount: number;
 	createdAt: string;
 	updatedAt: string;
-  };
-  
-  export { type IssueGetAllItemResponseDto };
+	id: number;
+};
+
+export { type IssueGetAllItemResponseDto };

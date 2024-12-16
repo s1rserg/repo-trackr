@@ -1,18 +1,7 @@
+import { IssueCreateItemRequestDto } from "./issue-create-item-request-dto.type.js";
+
 type IssueCreateItemResponseDto = {
-	logItem: {
-		number: number;
-		creatorLogin: string;
-		assigneeLogin: string;
-		creatorName: string;
-		assigneeName: string
-		title: string;
-		body: string;
-		state: string;
-		closedAt: string;
-		reactionsTotalCount: number;
-		subIssuesTotalCount: number;
-		commentsCount: number;
-	};
+	logItem: IssueCreateItemRequestDto;
 	projectId: number;
 };
 

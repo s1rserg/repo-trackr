@@ -9,12 +9,12 @@ import { ProjectModel } from "~/modules/projects/project.model.js";
 class IssueModel extends AbstractModel {
 	public number!: number;
 	public creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
-	public assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
+	public assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id"> | null;
 	public project!: Pick<ProjectModel, "id">;
 	public title!: string;
 	public body!: string;
 	public state!: string;
-	public closedAt!: string;
+	public closedAt!: string | null;
 	public reactionsTotalCount!: number;
 	public subIssuesTotalCount!: number;
 	public commentsCount!: number;

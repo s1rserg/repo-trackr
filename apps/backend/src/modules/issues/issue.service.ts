@@ -84,18 +84,20 @@ class IssueService implements Service {
 			});
 		}
 
-		let assigneeGitEmail =
-			await this.gitEmailService.findByEmail(assigneeLogin);
+		let assigneeGitEmail;
+		if (assigneeLogin && assigneeName) {
+			assigneeGitEmail = await this.gitEmailService.findByEmail(assigneeLogin);
 
-		if (!assigneeGitEmail) {
-			const contributor = await this.contributorService.create({
-				name: assigneeName,
-			});
+			if (!assigneeGitEmail) {
+				const contributor = await this.contributorService.create({
+					name: assigneeName,
+				});
 
-			assigneeGitEmail = await this.gitEmailService.create({
-				contributorId: contributor.id,
-				email: assigneeLogin,
-			});
+				assigneeGitEmail = await this.gitEmailService.create({
+					contributorId: contributor.id,
+					email: assigneeLogin,
+				});
+			}
 		}
 
 		try {
@@ -106,10 +108,12 @@ class IssueService implements Service {
 						contributor: creatorGitEmail.contributor,
 						id: creatorGitEmail.id,
 					},
-					assigneeGitEmail: {
-						contributor: assigneeGitEmail.contributor,
-						id: assigneeGitEmail.id,
-					},
+					assigneeGitEmail: assigneeGitEmail
+						? {
+								contributor: assigneeGitEmail.contributor,
+								id: assigneeGitEmail.id,
+							}
+						: null,
 					project: { id: projectId },
 					title,
 					body,
@@ -232,8 +236,13 @@ class IssueService implements Service {
 			const { createdAt, closedAt, creatorGitEmail, assigneeGitEmail } = issue;
 
 			const { id: creatorId, name: creatorName } = creatorGitEmail.contributor;
-			const { id: assigneeId, name: assigneeName } =
-				assigneeGitEmail.contributor;
+
+			let assigneeId,
+				assigneeName = "";
+			if (assigneeGitEmail) {
+				assigneeId = assigneeGitEmail.contributor.id;
+				assigneeName = assigneeGitEmail.contributor.name;
+			}
 
 			const createdDateFormatted = formatDate(new Date(createdAt), "MMM d");
 			const closedDateFormatted = closedAt
@@ -336,21 +345,34 @@ class IssueService implements Service {
 				items: [],
 			};
 
-			for (const record of issues.items) {
-				const issue = await this.createIssue({
-					date: issues.date,
-					logItem: record,
-					projectId: project.id,
-					userId: 1,
-				});
+			for (const record of issues) {
+				const existingIssue = await this.issueRepository.findByNumber(
+					record.number,
+					project.id,
+				);
 
-				createdIssues.items.push(issue.toObject());
+				const existingIssueObject = existingIssue?.toObject();
 
-				if (issues.items.length > EMPTY_LENGTH) {
-					await this.projectService.updateLastActivityDate(
-						project.id,
-						issues.date,
+				if (existingIssue) {
+					// Update the existing issue
+					await this.issueRepository.updateCustom(
+						existingIssueObject?.id || 0,
+						{
+							title: record.title,
+							body: record.body,
+							state: record.state,
+							closedAt: record.closedAt,
+							reactionsTotalCount: record.reactionsTotalCount,
+							subIssuesTotalCount: record.subIssuesTotalCount,
+							commentsCount: record.commentsCount,
+						},
 					);
+				} else {
+					// Create a new issue
+					await this.create({
+						logItem: record,
+						projectId: project.id,
+					});
 				}
 			}
 		}

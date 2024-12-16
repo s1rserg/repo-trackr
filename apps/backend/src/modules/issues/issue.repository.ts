@@ -1,5 +1,6 @@
 import { EMPTY_LENGTH } from "~/libs/constants/constants.js";
 import {
+	IssueCreateItemRequestDto,
 	type IssueQueryParameters,
 	type Repository,
 } from "~/libs/types/types.js";
@@ -54,10 +55,6 @@ class IssueRepository implements Repository {
 
 	public delete(): ReturnType<Repository["delete"]> {
 		return Promise.resolve(true);
-	}
-
-	public find(): ReturnType<Repository["find"]> {
-		return Promise.resolve(null);
 	}
 
 	public async findAll({
@@ -129,6 +126,34 @@ class IssueRepository implements Repository {
 		return {
 			items: issues.map((issue) => IssueEntity.initialize(issue)),
 		};
+	}
+
+	public async findByNumber(
+		issueNumber: number,
+		projectId: number,
+	): Promise<IssueEntity | null> {
+		const issue = await this.issueModel
+			.query()
+			.where("number", issueNumber)
+			.andWhere("projectId", projectId)
+			.first();
+
+		return issue ? IssueEntity.initialize(issue) : null;
+	}
+
+	public async updateCustom(
+		id: number,
+		updatedData: Partial<IssueCreateItemRequestDto>,
+	): Promise<IssueEntity> {
+		const updatedIssue = await this.issueModel
+			.query()
+			.patchAndFetchById(id, updatedData);
+
+		return IssueEntity.initialize(updatedIssue);
+	}
+
+	public find(): ReturnType<Repository["find"]> {
+		return Promise.resolve(null);
 	}
 
 	public update(): ReturnType<Repository["update"]> {

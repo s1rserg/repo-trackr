@@ -13,6 +13,6 @@ type IssueCreateItemRequestDto = {
 	commentsCount: number;
 	createdAt: string;
 	updatedAt: string;
-  };
+};
 
 export { type IssueCreateItemRequestDto };

@@ -9,12 +9,12 @@ import { type ProjectModel } from "../projects/project.model.js";
 class IssueEntity implements Entity {
 	private number!: number;
 	private creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
-	private assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
+	private assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id"> | null;
 	private project!: Pick<ProjectModel, "id">;
 	private title!: string;
 	private body!: string;
 	private state!: string;
-	private closedAt!: string;
+	private closedAt!: string | null;
 	private reactionsTotalCount!: number;
 	private subIssuesTotalCount!: number;
 	private commentsCount!: number;
@@ -35,16 +35,17 @@ class IssueEntity implements Entity {
 		subIssuesTotalCount,
 		commentsCount,
 		id,
-		createdAt, updatedAt
+		createdAt,
+		updatedAt,
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
 		project: Pick<ProjectModel, "id">;
 		title: string;
 		body: string;
 		state: string;
-		closedAt: string;
+		closedAt: string | null;
 		reactionsTotalCount: number;
 		subIssuesTotalCount: number;
 		commentsCount: number;
@@ -80,16 +81,18 @@ class IssueEntity implements Entity {
 		reactionsTotalCount,
 		subIssuesTotalCount,
 		commentsCount,
-		id,createdAt, updatedAt
+		id,
+		createdAt,
+		updatedAt,
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
 		project: Pick<ProjectModel, "id">;
 		title: string;
 		body: string;
 		state: string;
-		closedAt: string;
+		closedAt: string | null;
 		reactionsTotalCount: number;
 		subIssuesTotalCount: number;
 		commentsCount: number;
@@ -109,7 +112,9 @@ class IssueEntity implements Entity {
 			reactionsTotalCount,
 			subIssuesTotalCount,
 			commentsCount,
-			id,createdAt, updatedAt
+			id,
+			createdAt,
+			updatedAt,
 		});
 	}
 
@@ -128,12 +133,12 @@ class IssueEntity implements Entity {
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
 		project: Pick<ProjectModel, "id">;
 		title: string;
 		body: string;
 		state: string;
-		closedAt: string;
+		closedAt: string | null;
 		reactionsTotalCount: number;
 		subIssuesTotalCount: number;
 		commentsCount: number;
@@ -159,12 +164,12 @@ class IssueEntity implements Entity {
 	public toNewObject(): {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
 		project: Pick<ProjectModel, "id">;
 		title: string;
 		body: string;
 		state: string;
-		closedAt: string;
+		closedAt: string | null;
 		reactionsTotalCount: number;
 		subIssuesTotalCount: number;
 		commentsCount: number;
@@ -191,10 +196,12 @@ class IssueEntity implements Entity {
 				contributor: this.creatorGitEmail.contributor,
 				id: this.creatorGitEmail.id,
 			},
-			assigneeGitEmail: {
-				contributor: this.assigneeGitEmail.contributor,
-				id: this.assigneeGitEmail.id,
-			},
+			assigneeGitEmail: this.assigneeGitEmail
+				? {
+						contributor: this.assigneeGitEmail.contributor,
+						id: this.assigneeGitEmail.id,
+					}
+				: null,
 			project: { id: this.project.id },
 			title: this.title,
 			body: this.body,
@@ -205,6 +212,7 @@ class IssueEntity implements Entity {
 			commentsCount: this.commentsCount,
 			createdAt: this.createdAt as string,
 			updatedAt: this.createdAt as string,
+			id: this.id as number,
 		};
 	}
 }
