@@ -8,11 +8,11 @@ type PullCreateItemRequestDto = {
 	body: string;
 	state: string;
 	closedAt: string | null;
-	commentsCount: number;
 	createdAt: string;
 	updatedAt: string;
 	mergedAt: string | null;
 	draft: boolean;
+	commentsCount: number;
 	reviewCommentsCount: number;
 	additions: number;
 	deletions: number;

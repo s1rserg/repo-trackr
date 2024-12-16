@@ -2,7 +2,7 @@ const GithubApiPath = {
 	REPOS: "/repos",
 	COMMITS: "/commits",
 	ISSUES: "/issues",
-	PULL_REQUESTS: "/pulls",
+	PULLS: "/pulls",
 	USERS: "/users",
 } as const;
 
