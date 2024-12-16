@@ -12,7 +12,7 @@ const APIPath = {
 	PROJECTS: "/projects",
 	USERS: "/users",
 	ISSUES: "/issues",
-	PULL_REQUESTS: "/pulls"
+	PULL_REQUESTS: "/pulls",
 } as const;
 
 export { APIPath };

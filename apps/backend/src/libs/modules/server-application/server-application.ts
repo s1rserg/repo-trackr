@@ -42,7 +42,7 @@ const apiV1 = new BaseServerApplicationApi(
 	...userController.routes,
 	...groupController.routes,
 	...projectApiKeyController.routes,
-	...issueController.routes
+	...issueController.routes,
 );
 const serverApplication = new BaseServerApplication({
 	apis: [apiV1],

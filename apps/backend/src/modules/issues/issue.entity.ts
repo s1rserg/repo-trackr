@@ -193,10 +193,11 @@ class IssueEntity implements Entity {
 		return {
 			number: this.number,
 			creatorGitEmail: this.creatorGitEmail
-			? {
-				contributor: this.creatorGitEmail.contributor,
-				id: this.creatorGitEmail.id,
-			} : null,
+				? {
+						contributor: this.creatorGitEmail.contributor,
+						id: this.creatorGitEmail.id,
+					}
+				: null,
 			assigneeGitEmail: this.assigneeGitEmail
 				? {
 						contributor: this.assigneeGitEmail.contributor,

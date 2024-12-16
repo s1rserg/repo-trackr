@@ -1,4 +1,4 @@
-type IssueGetAllItemResponseDto = {
+type PullGetAllItemResponseDto = {
 	number: number;
 	creatorGitEmail: {
 		contributor: {
@@ -19,12 +19,17 @@ type IssueGetAllItemResponseDto = {
 	body: string;
 	state: string;
 	closedAt: string | null;
-	reactionsTotalCount: number;
-	subIssuesTotalCount: number;
+	mergedAt: string | null;
+	draft: boolean;
 	commentsCount: number;
+	reviewCommentsCount: number;
+	additions: number;
+	deletions: number;
+	commits: number;
+	changedFiles: number;
 	createdAt: string;
 	updatedAt: string;
 	id: number;
 };
 
-export { type IssueGetAllItemResponseDto };
+export { type PullGetAllItemResponseDto };

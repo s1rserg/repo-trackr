@@ -1,8 +1,8 @@
-type IssueQueryParameters = {
+type PullQueryParameters = {
 	contributorName?: string | undefined;
 	endDate: string;
 	projectId?: number | undefined;
 	startDate: string;
 };
 
-export { type IssueQueryParameters };
+export { type PullQueryParameters };

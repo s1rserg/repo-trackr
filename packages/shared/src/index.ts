@@ -20,4 +20,4 @@ export * from "./modules/project-permissions/project-permissions.js";
 export * from "./modules/projects/projects.js";
 export * from "./modules/users/users.js";
 export * from "./modules/issues/issues.js";
-export * from "./modules/pulls/pulls.js"
+export * from "./modules/pulls/pulls.js";
