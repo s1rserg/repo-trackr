@@ -1,45 +1,55 @@
 import { EMPTY_LENGTH } from "~/libs/constants/constants.js";
-import { type Repository } from "~/libs/types/types.js";
+import {
+	type IssueQueryParameters,
+	type Repository,
+} from "~/libs/types/types.js";
 
-import { ActivityLogEntity } from "./issue.entity.js";
-import { type ActivityLogModel } from "./issue.model.js";
-import { type ActivityLogQueryParameters } from "./libs/types/types.js";
+import { IssueEntity } from "./issue.entity.js";
+import { type IssueModel } from "./issue.model.js";
 
-class ActivityLogRepository implements Repository {
-	private activityLogModel: typeof ActivityLogModel;
+class IssueRepository implements Repository {
+	private issueModel: typeof IssueModel;
 
-	public constructor(activityLogModel: typeof ActivityLogModel) {
-		this.activityLogModel = activityLogModel;
+	public constructor(issueModel: typeof IssueModel) {
+		this.issueModel = issueModel;
 	}
 
-	public async create(entity: ActivityLogEntity): Promise<ActivityLogEntity> {
+	public async create(entity: IssueEntity): Promise<IssueEntity> {
 		const {
-			commitsNumber,
-			createdByUser,
-			date,
-			gitEmail,
+			number,
+			creatorGitEmail,
+			assigneeGitEmail,
 			project,
-			linesAdded,
-			linesDeleted,
+			title,
+			body,
+			state,
+			closedAt,
+			reactionsTotalCount,
+			subIssuesTotalCount,
+			commentsCount,
 		} = entity.toNewObject();
 
-		const activityLogData = {
-			commitsNumber,
-			createdByUser,
-			date,
-			gitEmail,
+		const issueData = {
+			number,
+			creatorGitEmail,
+			assigneeGitEmail,
 			project,
-			linesAdded,
-			linesDeleted,
+			title,
+			body,
+			state,
+			closedAt,
+			reactionsTotalCount,
+			subIssuesTotalCount,
+			commentsCount,
 		};
 
-		const createdActivityLog = await this.activityLogModel
+		const createdIssue = await this.issueModel
 			.query()
-			.insertGraph(activityLogData, { relate: true })
+			.insertGraph(issueData, { relate: true })
 			.returning("*")
 			.execute();
 
-		return ActivityLogEntity.initialize(createdActivityLog);
+		return IssueEntity.initialize(createdIssue);
 	}
 
 	public delete(): ReturnType<Repository["delete"]> {
@@ -58,20 +68,32 @@ class ActivityLogRepository implements Repository {
 		startDate,
 	}: {
 		permittedProjectIds: number[] | undefined;
-	} & ActivityLogQueryParameters): Promise<{ items: ActivityLogEntity[] }> {
-		const query = this.activityLogModel
+	} & IssueQueryParameters): Promise<{ items: IssueEntity[] }> {
+		const query = this.issueModel
 			.query()
-			.withGraphFetched("[project, createdByUser]")
-			.withGraphJoined("gitEmail.contributor")
-			.modifyGraph("gitEmail.contributor", (builder) => {
+			.withGraphFetched("[project]")
+			.withGraphJoined("assigneeGitEmail.contributor")
+			.modifyGraph("assigneeGitEmail.contributor", (builder) => {
 				builder.select("id", "name", "hiddenAt");
 			})
-			.whereNull("gitEmail:contributor.hiddenAt")
-			.whereBetween("activityLogs.date", [startDate, endDate])
+			.whereNull("assigneeGitEmail:contributor.hiddenAt")
+			.withGraphJoined("creatorGitEmail.contributor")
+			.modifyGraph("creatorGitEmail.contributor", (builder) => {
+				builder.select("id", "name", "hiddenAt");
+			})
+			.whereNull("creatorGitEmail:contributor.hiddenAt")
+			.whereBetween("issues.date", [startDate, endDate])
 			.orderBy("date");
 
 		if (contributorName) {
-			query.whereILike("gitEmail:contributor.name", `%${contributorName}%`);
+			query.whereILike(
+				"creatorGitEmail:contributor.name",
+				`%${contributorName}%`,
+			);
+			query.whereILike(
+				"assigneeGitEmail:contributor.name",
+				`%${contributorName}%`,
+			);
 		}
 
 		const hasPermissionedProjects =
@@ -83,28 +105,29 @@ class ActivityLogRepository implements Repository {
 			query.whereIn("projectId", permittedProjectIds);
 		}
 
-		const activityLogs = await query.orderBy("date");
+		const issues = await query.orderBy("date");
 
 		return {
-			items: activityLogs.map((activityLog) =>
-				ActivityLogEntity.initialize(activityLog),
-			),
+			items: issues.map((issue) => IssueEntity.initialize(issue)),
 		};
 	}
 
-	public async findAllWithoutFilter(): Promise<{ items: ActivityLogEntity[] }> {
-		const activityLogs = await this.activityLogModel
+	public async findAllWithoutFilter(): Promise<{ items: IssueEntity[] }> {
+		const issues = await this.issueModel
 			.query()
-			.withGraphFetched("[gitEmail.contributor, project, createdByUser]")
-			.modifyGraph("gitEmail.contributor", (builder) => {
+			.withGraphFetched(
+				"[assigneeGitEmail.contributor, creatorGitEmail.contributor, project]",
+			)
+			.modifyGraph("assigneeGitEmail.contributor", (builder) => {
+				builder.select("id", "name");
+			})
+			.modifyGraph("creatorGitEmail.contributor", (builder) => {
 				builder.select("id", "name");
 			})
 			.execute();
 
 		return {
-			items: activityLogs.map((activityLog) =>
-				ActivityLogEntity.initialize(activityLog),
-			),
+			items: issues.map((issue) => IssueEntity.initialize(issue)),
 		};
 	}
 
@@ -113,4 +136,4 @@ class ActivityLogRepository implements Repository {
 	}
 }
 
-export { ActivityLogRepository };
+export { IssueRepository };

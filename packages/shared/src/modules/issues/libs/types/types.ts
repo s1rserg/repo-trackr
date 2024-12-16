@@ -5,4 +5,4 @@
 // export { type ActivityLogGetAllItemAnalyticsResponseDto } from "./issue-get-all-item-analytics-response-dto.type.js";
 export { type IssueGetAllItemResponseDto } from "./issue-get-all-item-response-dto.type.js";
 // export { type ActivityLogGetAllResponseDto } from "./issue-get-all-response-dto.type.js";
-// export { type ActivityLogQueryParameters } from "./issue-query-parameters.type.js";
+export { type IssueQueryParameters } from "./issue-query-parameters.type.js";
