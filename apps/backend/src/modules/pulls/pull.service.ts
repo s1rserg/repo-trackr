@@ -380,7 +380,7 @@ class PullService implements Service {
 						commits: record.commits,
 						changedFiles: record.changedFiles,
 						draft: record.draft,
-						updatedAt: record.updatedAt
+						updatedAt: record.updatedAt,
 					});
 				} else {
 					// Create a new pull

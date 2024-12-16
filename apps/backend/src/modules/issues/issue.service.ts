@@ -367,7 +367,7 @@ class IssueService implements Service {
 							reactionsTotalCount: record.reactionsTotalCount,
 							subIssuesTotalCount: record.subIssuesTotalCount,
 							commentsCount: record.commentsCount,
-							updatedAt: record.updatedAt
+							updatedAt: record.updatedAt,
 						},
 					);
 				} else {

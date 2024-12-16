@@ -46,7 +46,7 @@ class PullEntity implements Entity {
 		changedFiles,
 		createdAt,
 		updatedAt,
-		id
+		id,
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
@@ -108,7 +108,7 @@ class PullEntity implements Entity {
 		changedFiles,
 		createdAt,
 		updatedAt,
-		id
+		id,
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
@@ -149,7 +149,7 @@ class PullEntity implements Entity {
 			changedFiles,
 			createdAt,
 			updatedAt,
-			id
+			id,
 		});
 	}
 

@@ -18,10 +18,7 @@ import { type UserAuthResponseDto } from "~/modules/users/users.js";
 import { type PermissionGetAllItemResponseDto } from "../permissions/libs/types/types.js";
 import { type PullService } from "./pull.service.js";
 import {} from "./libs/types/types.js";
-import {
-	PullsApiPath,
-	type PullQueryParameters,
-} from "~/libs/types/types.js";
+import { PullsApiPath, type PullQueryParameters } from "~/libs/types/types.js";
 
 class PullController extends BaseController {
 	private pullService: PullService;

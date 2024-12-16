@@ -32,6 +32,7 @@ import {
 } from "./libs/types/types.js";
 import { type IssueService } from "~/modules/issues/issue.service.js";
 import { issueService } from "~/modules/issues/issues.js";
+import { type PullService } from "~/modules/pulls/pull.service.js";
 
 type Constructor = {
 	apis: ServerApplicationApi[];
@@ -43,6 +44,7 @@ type Constructor = {
 		userService: UserService;
 		activityLogService: ActivityLogService;
 		issueService: IssueService;
+		pullService: PullService;
 	};
 	taskScheduler: TaskScheduler;
 	title: string;
@@ -66,6 +68,7 @@ class BaseServerApplication implements ServerApplication {
 		userService: UserService;
 		activityLogService: ActivityLogService;
 		issueService: IssueService;
+		pullService: PullService;
 	};
 
 	private taskScheduler: TaskScheduler;
@@ -200,10 +203,12 @@ class BaseServerApplication implements ServerApplication {
 	}
 
 	public addRoute(parameters: ServerApplicationRouteParameters): void {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		const { handler, method, path, preHandlers, validation } = parameters;
 
 		const routeOptions = {
 			handler,
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			method,
 			preHandler: preHandlers ?? [],
 			schema: {
@@ -215,6 +220,7 @@ class BaseServerApplication implements ServerApplication {
 
 		this.app.route(routeOptions);
 
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		this.logger.info(`Route: ${method} ${path} is registered.`);
 	}
 
@@ -267,6 +273,7 @@ class BaseServerApplication implements ServerApplication {
 
 		void this.services.activityLogService.collectGithubAnalytics();
 		void this.services.issueService.collectGithubAnalytics();
+		void this.services.pullService.collectGithubAnalytics();
 	}
 
 	public async initMiddlewares(): Promise<void> {
