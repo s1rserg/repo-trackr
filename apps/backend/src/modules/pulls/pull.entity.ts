@@ -25,6 +25,7 @@ class PullEntity implements Entity {
 	public changedFiles!: number;
 	private createdAt: null | string;
 	private updatedAt: null | string;
+	private id: null | number;
 
 	private constructor({
 		number,
@@ -45,6 +46,7 @@ class PullEntity implements Entity {
 		changedFiles,
 		createdAt,
 		updatedAt,
+		id
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
@@ -64,6 +66,7 @@ class PullEntity implements Entity {
 		changedFiles: number;
 		createdAt: null | string;
 		updatedAt: null | string;
+		id: null | number;
 	}) {
 		this.number = number;
 		this.creatorGitEmail = creatorGitEmail;
@@ -83,9 +86,74 @@ class PullEntity implements Entity {
 		this.changedFiles = changedFiles;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
+		this.id = id;
 	}
 
 	public static initialize({
+		number,
+		creatorGitEmail,
+		assigneeGitEmail,
+		project,
+		title,
+		body,
+		state,
+		closedAt,
+		mergedAt,
+		draft,
+		commentsCount,
+		reviewCommentsCount,
+		additions,
+		deletions,
+		commits,
+		changedFiles,
+		createdAt,
+		updatedAt,
+		id
+	}: {
+		number: number;
+		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
+		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
+		project: Pick<ProjectModel, "id">;
+		title: string;
+		body: string;
+		state: string;
+		closedAt: string | null;
+		mergedAt: string | null;
+		draft: boolean;
+		commentsCount: number;
+		reviewCommentsCount: number;
+		additions: number;
+		deletions: number;
+		commits: number;
+		changedFiles: number;
+		createdAt: null | string;
+		updatedAt: null | string;
+		id: null | number;
+	}): PullEntity {
+		return new PullEntity({
+			number,
+			creatorGitEmail,
+			assigneeGitEmail,
+			project,
+			title,
+			body,
+			state,
+			closedAt,
+			mergedAt,
+			draft,
+			commentsCount,
+			reviewCommentsCount,
+			additions,
+			deletions,
+			commits,
+			changedFiles,
+			createdAt,
+			updatedAt,
+			id
+		});
+	}
+
+	public static initializeNew({
 		number,
 		creatorGitEmail,
 		assigneeGitEmail,
@@ -143,63 +211,7 @@ class PullEntity implements Entity {
 			changedFiles,
 			createdAt,
 			updatedAt,
-		});
-	}
-
-	public static initializeNew({
-		number,
-		creatorGitEmail,
-		assigneeGitEmail,
-		project,
-		title,
-		body,
-		state,
-		closedAt,
-		mergedAt,
-		draft,
-		commentsCount,
-		reviewCommentsCount,
-		additions,
-		deletions,
-		commits,
-		changedFiles,
-	}: {
-		number: number;
-		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
-		project: Pick<ProjectModel, "id">;
-		title: string;
-		body: string;
-		state: string;
-		closedAt: string | null;
-		mergedAt: string | null;
-		draft: boolean;
-		commentsCount: number;
-		reviewCommentsCount: number;
-		additions: number;
-		deletions: number;
-		commits: number;
-		changedFiles: number;
-	}): PullEntity {
-		return new PullEntity({
-			number,
-			creatorGitEmail,
-			assigneeGitEmail,
-			project,
-			title,
-			body,
-			state,
-			closedAt,
-			mergedAt,
-			draft,
-			commentsCount,
-			reviewCommentsCount,
-			additions,
-			deletions,
-			commits,
-			changedFiles,
-			createdAt: null,
-			updatedAt: null,
+			id: null,
 		});
 	}
 
@@ -257,7 +269,8 @@ class PullEntity implements Entity {
 						id: this.assigneeGitEmail.id,
 					}
 				: null,
-			project: { id: this.project.id },
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			project: this.project ? { id: this.project.id } : null,
 			title: this.title,
 			body: this.body,
 			state: this.state,
@@ -272,6 +285,7 @@ class PullEntity implements Entity {
 			changedFiles: this.changedFiles,
 			createdAt: this.createdAt as string,
 			updatedAt: this.updatedAt as string,
+			id: this.id as number,
 		};
 	}
 }

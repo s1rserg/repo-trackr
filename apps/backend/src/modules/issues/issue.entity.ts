@@ -130,6 +130,8 @@ class IssueEntity implements Entity {
 		reactionsTotalCount,
 		subIssuesTotalCount,
 		commentsCount,
+		createdAt,
+		updatedAt,
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
@@ -142,6 +144,8 @@ class IssueEntity implements Entity {
 		reactionsTotalCount: number;
 		subIssuesTotalCount: number;
 		commentsCount: number;
+		createdAt: null | string;
+		updatedAt: null | string;
 	}): IssueEntity {
 		return new IssueEntity({
 			number,
@@ -156,8 +160,8 @@ class IssueEntity implements Entity {
 			subIssuesTotalCount,
 			commentsCount,
 			id: null,
-			createdAt: null,
-			updatedAt: null,
+			createdAt,
+			updatedAt,
 		});
 	}
 

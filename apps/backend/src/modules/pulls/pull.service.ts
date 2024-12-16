@@ -8,43 +8,43 @@ import {
 import { HTTPCode } from "~/libs/modules/http/http.js";
 import {
 	ActivityLogError,
-	type IssueGetAllAnalyticsResponseDto,
-	type IssueQueryParameters,
-	type IssueCreateItemResponseDto,
+	type PullGetAllAnalyticsResponseDto,
+	type PullQueryParameters,
+	type PullCreateItemResponseDto,
 	type Service,
-	type IssueGetAllResponseDto,
+	type PullGetAllResponseDto,
 } from "~/libs/types/types.js";
 import { type ContributorService } from "~/modules/contributors/contributors.js";
 import { type GitEmailService } from "~/modules/git-emails/git-emails.js";
 import { type ProjectService } from "~/modules/projects/project.service.js";
 
-import { IssueEntity } from "./pull.entity.js";
-import { type IssueRepository } from "./pull.repository.js";
+import { PullEntity } from "./pull.entity.js";
+import { type PullRepository } from "./pull.repository.js";
 import { type AnalyticsService } from "../github-analytics/analytics.js";
 
 type Constructor = {
-	issueRepository: IssueRepository;
+	pullRepository: PullRepository;
 	contributorService: ContributorService;
 	gitEmailService: GitEmailService;
 	projectService: ProjectService;
 	analyticsService: AnalyticsService;
 };
 
-class IssueService implements Service {
-	private issueRepository: IssueRepository;
+class PullService implements Service {
+	private pullRepository: PullRepository;
 	private contributorService: ContributorService;
 	private gitEmailService: GitEmailService;
 	private projectService: ProjectService;
 	private analyticsService: AnalyticsService;
 
 	public constructor({
-		issueRepository,
+		pullRepository,
 		contributorService,
 		gitEmailService,
 		projectService,
 		analyticsService,
 	}: Constructor) {
-		this.issueRepository = issueRepository;
+		this.pullRepository = pullRepository;
 		this.contributorService = contributorService;
 		this.gitEmailService = gitEmailService;
 		this.projectService = projectService;
@@ -54,7 +54,7 @@ class IssueService implements Service {
 	public async create({
 		logItem,
 		projectId,
-	}: IssueCreateItemResponseDto): Promise<IssueEntity> {
+	}: PullCreateItemResponseDto): Promise<PullEntity> {
 		const {
 			number,
 			creatorLogin,
@@ -65,9 +65,16 @@ class IssueService implements Service {
 			body,
 			state,
 			closedAt,
-			reactionsTotalCount,
-			subIssuesTotalCount,
 			commentsCount,
+			createdAt,
+			updatedAt,
+			mergedAt,
+			draft,
+			reviewCommentsCount,
+			additions,
+			deletions,
+			commits,
+			changedFiles,
 		} = logItem;
 
 		let creatorGitEmail = await this.gitEmailService.findByEmail(creatorLogin);
@@ -101,8 +108,8 @@ class IssueService implements Service {
 		}
 
 		try {
-			return await this.issueRepository.create(
-				IssueEntity.initializeNew({
+			return await this.pullRepository.create(
+				PullEntity.initializeNew({
 					number,
 					creatorGitEmail: {
 						contributor: creatorGitEmail.contributor,
@@ -119,9 +126,16 @@ class IssueService implements Service {
 					body,
 					state,
 					closedAt,
-					reactionsTotalCount,
-					subIssuesTotalCount,
 					commentsCount,
+					createdAt,
+					updatedAt,
+					mergedAt,
+					draft,
+					reviewCommentsCount,
+					additions,
+					deletions,
+					commits,
+					changedFiles,
 				}),
 			);
 		} catch {
@@ -150,7 +164,7 @@ class IssueService implements Service {
 	}: {
 		hasRootPermission: boolean;
 		userProjectIds: number[];
-	} & IssueQueryParameters): Promise<IssueGetAllAnalyticsResponseDto> {
+	} & PullQueryParameters): Promise<PullGetAllAnalyticsResponseDto> {
 		const projectIdParsed = projectId ? Number(projectId) : undefined;
 
 		let permittedProjectIds: number[];
@@ -180,7 +194,7 @@ class IssueService implements Service {
 			"yyyy-MM-dd",
 		);
 
-		const issueEntities = await this.issueRepository.findAll({
+		const pullEntities = await this.pullRepository.findAll({
 			contributorName,
 			endDate: formattedEndDate,
 			permittedProjectIds,
@@ -188,7 +202,7 @@ class IssueService implements Service {
 			startDate: formattedStartDate,
 		});
 
-		const issues = issueEntities.items.map((item) => item.toObject());
+		const pulls = pullEntities.items.map((item) => item.toObject());
 
 		const allContributors = await this.contributorService.findAll({
 			contributorName,
@@ -198,42 +212,42 @@ class IssueService implements Service {
 
 		const dateRange = getDateRange(formattedStartDate, formattedEndDate);
 
-		const INITIAL_ISSUES_COUNT = 0;
+		const INITIAL_PULLS_COUNT = 0;
 
 		const contributorMap: Record<
 			string,
 			{
-				issuesOpened: number[];
-				issuesOpenedClosed: number[];
-				issuesAssigned: number[];
-				issuesAssignedClosed: number[];
+				pullsOpened: number[];
+				pullsOpenedMerged: number[];
+				pullsAssigned: number[];
+				pullsAssignedMerged: number[];
 			}
 		> = {};
 
 		for (const contributor of allContributors.items) {
 			const uniqueKey = `${contributor.name}_${String(contributor.id)}`;
 			contributorMap[uniqueKey] = {
-				issuesOpened: Array.from(
+				pullsOpened: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_COUNT,
+					() => INITIAL_PULLS_COUNT,
 				),
-				issuesOpenedClosed: Array.from(
+				pullsOpenedMerged: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_COUNT,
+					() => INITIAL_PULLS_COUNT,
 				),
-				issuesAssigned: Array.from(
+				pullsAssigned: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_COUNT,
+					() => INITIAL_PULLS_COUNT,
 				),
-				issuesAssignedClosed: Array.from(
+				pullsAssignedMerged: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_COUNT,
+					() => INITIAL_PULLS_COUNT,
 				),
 			};
 		}
 
-		for (const issue of issues) {
-			const { createdAt, closedAt, creatorGitEmail, assigneeGitEmail } = issue;
+		for (const pull of pulls) {
+			const { createdAt, mergedAt, creatorGitEmail, assigneeGitEmail } = pull;
 
 			const { id: creatorId, name: creatorName } = creatorGitEmail.contributor;
 
@@ -246,13 +260,13 @@ class IssueService implements Service {
 			}
 
 			const createdDateFormatted = formatDate(new Date(createdAt), "MMM d");
-			const closedDateFormatted = closedAt
-				? formatDate(new Date(closedAt), "MMM d")
+			const mergedDateFormatted = mergedAt
+				? formatDate(new Date(mergedAt), "MMM d")
 				: null;
 
 			const createdDateIndex = dateRange.indexOf(createdDateFormatted);
-			const closedDateIndex = closedDateFormatted
-				? dateRange.indexOf(closedDateFormatted)
+			const mergedDateIndex = mergedDateFormatted
+				? dateRange.indexOf(mergedDateFormatted)
 				: -1;
 
 			const creatorKey = `${creatorName}_${String(creatorId)}`;
@@ -261,33 +275,33 @@ class IssueService implements Service {
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].issuesOpened[createdDateIndex]
+				contributorMap[creatorKey].pullsOpened[createdDateIndex]
 			) {
-				contributorMap[creatorKey].issuesOpened[createdDateIndex]++;
+				contributorMap[creatorKey].pullsOpened[createdDateIndex]++;
 			}
 
 			if (
-				closedDateIndex >= 0 &&
+				mergedDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].issuesOpenedClosed[closedDateIndex]
+				contributorMap[creatorKey].pullsOpenedMerged[mergedDateIndex]
 			) {
-				contributorMap[creatorKey].issuesOpenedClosed[closedDateIndex]++;
+				contributorMap[creatorKey].pullsOpenedMerged[mergedDateIndex]++;
 			}
 
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].issuesAssigned[createdDateIndex]
+				contributorMap[assigneeKey].pullsAssigned[createdDateIndex]
 			) {
-				contributorMap[assigneeKey].issuesAssigned[createdDateIndex]++;
+				contributorMap[assigneeKey].pullsAssigned[createdDateIndex]++;
 			}
 
 			if (
-				closedDateIndex >= 0 &&
+				mergedDateIndex >= 0 &&
 				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].issuesAssignedClosed[closedDateIndex]
+				contributorMap[assigneeKey].pullsAssignedMerged[mergedDateIndex]
 			) {
-				contributorMap[assigneeKey].issuesAssignedClosed[closedDateIndex]++;
+				contributorMap[assigneeKey].pullsAssignedMerged[mergedDateIndex]++;
 			}
 		}
 
@@ -296,19 +310,19 @@ class IssueService implements Service {
 				([
 					uniqueKey,
 					{
-						issuesOpened,
-						issuesOpenedClosed,
-						issuesAssigned,
-						issuesAssignedClosed,
+						pullsOpened,
+						pullsOpenedMerged,
+						pullsAssigned,
+						pullsAssignedMerged,
 					},
 				]) => {
 					const [contributorName, contributorId] = uniqueKey.split("_");
 
 					return {
-						issuesOpened,
-						issuesOpenedClosed,
-						issuesAssigned,
-						issuesAssignedClosed,
+						pullsOpened,
+						pullsOpenedMerged,
+						pullsAssigned,
+						pullsAssignedMerged,
 						contributor: {
 							hiddenAt: null,
 							id: contributorId as string,
@@ -320,11 +334,11 @@ class IssueService implements Service {
 		};
 	}
 
-	public async findAllWithoutFilter(): Promise<IssueGetAllResponseDto> {
-		const issues = await this.issueRepository.findAllWithoutFilter();
+	public async findAllWithoutFilter(): Promise<PullGetAllResponseDto> {
+		const pulls = await this.pullRepository.findAllWithoutFilter();
 
 		return {
-			items: issues.items.map((item) => item.toObject()),
+			items: pulls.items.map((item) => item.toObject()),
 		};
 	}
 
@@ -336,37 +350,34 @@ class IssueService implements Service {
 		const projects = await this.projectService.findGithubAnalyticsProjects();
 
 		for (const project of projects) {
-			const issues = await this.analyticsService.getIssues(
+			const pulls = await this.analyticsService.getPulls(
 				project.apiKey || "",
 				project.repositoryUrl || "",
 				formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
 			);
 
-			for (const record of issues) {
-				const existingIssue = await this.issueRepository.findByNumber(
+			for (const record of pulls) {
+				const existingPull = await this.pullRepository.findByNumber(
 					record.number,
 					project.id,
 				);
 
-				const existingIssueObject = existingIssue?.toObject();
+				const existingPullObject = existingPull?.toObject();
 
 				// eslint-disable-next-line unicorn/prefer-ternary
-				if (existingIssue) {
-					// Update the existing issue
-					await this.issueRepository.updateCustom(
-						existingIssueObject?.id || 0,
-						{
-							title: record.title,
-							body: record.body,
-							state: record.state,
-							closedAt: record.closedAt,
-							reactionsTotalCount: record.reactionsTotalCount,
-							subIssuesTotalCount: record.subIssuesTotalCount,
-							commentsCount: record.commentsCount,
-						},
-					);
+				if (existingPull) {
+					// Update the existing pull
+					await this.pullRepository.updateCustom(existingPullObject?.id || 0, {
+						title: record.title,
+						body: record.body,
+						state: record.state,
+						mergedAt: record.mergedAt,
+						reactionsTotalCount: record.reactionsTotalCount,
+						subPullsTotalCount: record.subPullsTotalCount,
+						commentsCount: record.commentsCount,
+					});
 				} else {
-					// Create a new issue
+					// Create a new pull
 					await this.create({
 						logItem: record,
 						projectId: project.id,
@@ -377,4 +388,4 @@ class IssueService implements Service {
 	}
 }
 
-export { IssueService };
+export { PullService };

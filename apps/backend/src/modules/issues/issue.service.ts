@@ -68,6 +68,8 @@ class IssueService implements Service {
 			reactionsTotalCount,
 			subIssuesTotalCount,
 			commentsCount,
+			createdAt,
+			updatedAt,
 		} = logItem;
 
 		let creatorGitEmail = await this.gitEmailService.findByEmail(creatorLogin);
@@ -122,6 +124,8 @@ class IssueService implements Service {
 					reactionsTotalCount,
 					subIssuesTotalCount,
 					commentsCount,
+					createdAt,
+					updatedAt,
 				}),
 			);
 		} catch {
@@ -363,6 +367,7 @@ class IssueService implements Service {
 							reactionsTotalCount: record.reactionsTotalCount,
 							subIssuesTotalCount: record.subIssuesTotalCount,
 							commentsCount: record.commentsCount,
+							updatedAt: record.updatedAt
 						},
 					);
 				} else {
