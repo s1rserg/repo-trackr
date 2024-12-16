@@ -16,37 +16,37 @@ import { type ProjectGroupService } from "~/modules/project-groups/project-group
 import { type UserAuthResponseDto } from "~/modules/users/users.js";
 
 import { type PermissionGetAllItemResponseDto } from "../permissions/libs/types/types.js";
-import { type IssueService } from "./pull.service.js";
+import { type PullService } from "./pull.service.js";
 import {} from "./libs/types/types.js";
 import {
-	IssuesApiPath,
-	type IssueQueryParameters,
+	PullsApiPath,
+	type PullQueryParameters,
 } from "~/libs/types/types.js";
 
-class IssueController extends BaseController {
-	private issueService: IssueService;
+class PullController extends BaseController {
+	private pullService: PullService;
 	private projectGroupService: ProjectGroupService;
 
 	public constructor(
 		logger: Logger,
-		issueService: IssueService,
+		pullService: PullService,
 		projectGroupService: ProjectGroupService,
 	) {
-		super(logger, APIPath.ISSUES);
+		super(logger, APIPath.PULLS);
 
-		this.issueService = issueService;
+		this.pullService = pullService;
 		this.projectGroupService = projectGroupService;
 
 		this.addRoute({
 			handler: (options) =>
 				this.findAll(
 					options as APIHandlerOptions<{
-						query: IssueQueryParameters;
+						query: PullQueryParameters;
 						user: UserAuthResponseDto;
 					}>,
 				),
 			method: "GET",
-			path: IssuesApiPath.ROOT,
+			path: PullsApiPath.ROOT,
 			preHandlers: [
 				checkUserPermissions(
 					[PermissionKey.VIEW_ALL_PROJECTS, PermissionKey.MANAGE_ALL_PROJECTS],
@@ -62,7 +62,7 @@ class IssueController extends BaseController {
 
 	private async findAll(
 		options: APIHandlerOptions<{
-			query: IssueQueryParameters;
+			query: PullQueryParameters;
 			user: UserAuthResponseDto;
 		}>,
 	): Promise<APIHandlerResponse> {
@@ -86,7 +86,7 @@ class IssueController extends BaseController {
 		const userProjectIds = groups.map(({ projectId }) => projectId.id);
 
 		return {
-			payload: await this.issueService.findAll({
+			payload: await this.pullService.findAll({
 				endDate,
 				hasRootPermission,
 				startDate,
@@ -99,4 +99,4 @@ class IssueController extends BaseController {
 	}
 }
 
-export { IssueController };
+export { PullController };
