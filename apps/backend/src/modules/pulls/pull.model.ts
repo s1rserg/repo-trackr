@@ -6,7 +6,7 @@ import {
 import { GitEmailModel } from "~/modules/git-emails/git-emails.js";
 import { ProjectModel } from "~/modules/projects/project.model.js";
 
-class IssueModel extends AbstractModel {
+class PullModel extends AbstractModel {
 	public number!: number;
 	public creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
 	public assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id"> | null;
@@ -58,4 +58,4 @@ class IssueModel extends AbstractModel {
 	}
 }
 
-export { IssueModel };
+export { PullModel };

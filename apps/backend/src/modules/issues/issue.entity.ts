@@ -192,6 +192,7 @@ class IssueEntity implements Entity {
 	public toObject(): IssueGetAllItemResponseDto {
 		return {
 			number: this.number,
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			creatorGitEmail: this.creatorGitEmail
 				? {
 						contributor: this.creatorGitEmail.contributor,
@@ -204,6 +205,7 @@ class IssueEntity implements Entity {
 						id: this.assigneeGitEmail.id,
 					}
 				: null,
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			project: this.project ? { id: this.project.id } : null,
 			title: this.title,
 			body: this.body,

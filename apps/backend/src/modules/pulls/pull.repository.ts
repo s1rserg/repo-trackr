@@ -1,21 +1,21 @@
 import { EMPTY_LENGTH } from "~/libs/constants/constants.js";
 import {
-	type IssueCreateItemRequestDto,
-	type IssueQueryParameters,
+	type PullCreateItemRequestDto,
+	type PullQueryParameters,
 	type Repository,
 } from "~/libs/types/types.js";
 
-import { IssueEntity } from "./pull.entity.js";
-import { type IssueModel } from "./pull.model.js";
+import { PullEntity } from "./pull.entity.js";
+import { type PullModel } from "./pull.model.js";
 
-class IssueRepository implements Repository {
-	private issueModel: typeof IssueModel;
+class PullRepository implements Repository {
+	private pullModel: typeof PullModel;
 
-	public constructor(issueModel: typeof IssueModel) {
-		this.issueModel = issueModel;
+	public constructor(pullModel: typeof PullModel) {
+		this.pullModel = pullModel;
 	}
 
-	public async create(entity: IssueEntity): Promise<IssueEntity> {
+	public async create(entity: PullEntity): Promise<PullEntity> {
 		const {
 			number,
 			creatorGitEmail,
@@ -25,34 +25,44 @@ class IssueRepository implements Repository {
 			body,
 			state,
 			closedAt,
-			reactionsTotalCount,
-			subIssuesTotalCount,
+			mergedAt,
+			draft,
 			commentsCount,
+			reviewCommentsCount,
+			additions,
+			deletions,
+			commits,
+			changedFiles,
 		} = entity.toNewObject();
 
-		const issueData = {
+		const pullData = {
 			number,
-			creatorGitEmail: { id: creatorGitEmail.id }, // Only pass the id for creatorGitEmail
+			creatorGitEmail: { id: creatorGitEmail.id },
 			assigneeGitEmail: assigneeGitEmail
 				? { id: assigneeGitEmail.id }
-				: { id: 1 }, // Only pass id or null for assigneeGitEmail
-			project: { id: project.id }, // Only pass the id for project
+				: { id: 1 },
+			project: { id: project.id },
 			title,
 			body,
 			state,
 			closedAt,
-			reactionsTotalCount,
-			subIssuesTotalCount,
+			mergedAt,
+			draft,
 			commentsCount,
+			reviewCommentsCount,
+			additions,
+			deletions,
+			commits,
+			changedFiles,
 		};
 
-		const createdIssue = await this.issueModel
+		const createdPull = await this.pullModel
 			.query()
-			.insertGraph(issueData, { relate: true })
+			.insertGraph(pullData, { relate: true })
 			.returning("*")
 			.execute();
 
-		return IssueEntity.initialize(createdIssue);
+		return PullEntity.initialize(createdPull);
 	}
 
 	public delete(): ReturnType<Repository["delete"]> {
@@ -67,8 +77,8 @@ class IssueRepository implements Repository {
 		startDate,
 	}: {
 		permittedProjectIds: number[] | undefined;
-	} & IssueQueryParameters): Promise<{ items: IssueEntity[] }> {
-		const query = this.issueModel
+	} & PullQueryParameters): Promise<{ items: PullEntity[] }> {
+		const query = this.pullModel
 			.query()
 			.withGraphFetched("[project]")
 			.withGraphJoined("assigneeGitEmail.contributor")
@@ -81,7 +91,7 @@ class IssueRepository implements Repository {
 				builder.select("id", "name", "hiddenAt");
 			})
 			.whereNull("creatorGitEmail:contributor.hiddenAt")
-			.whereBetween("issues.date", [startDate, endDate])
+			.whereBetween("pulls.date", [startDate, endDate])
 			.orderBy("date");
 
 		if (contributorName) {
@@ -104,15 +114,15 @@ class IssueRepository implements Repository {
 			query.whereIn("projectId", permittedProjectIds);
 		}
 
-		const issues = await query.orderBy("date");
+		const pulls = await query.orderBy("date");
 
 		return {
-			items: issues.map((issue) => IssueEntity.initialize(issue)),
+			items: pulls.map((pull) => PullEntity.initialize(pull)),
 		};
 	}
 
-	public async findAllWithoutFilter(): Promise<{ items: IssueEntity[] }> {
-		const issues = await this.issueModel
+	public async findAllWithoutFilter(): Promise<{ items: PullEntity[] }> {
+		const pulls = await this.pullModel
 			.query()
 			.withGraphFetched(
 				"[assigneeGitEmail.contributor, creatorGitEmail.contributor, project]",
@@ -126,32 +136,32 @@ class IssueRepository implements Repository {
 			.execute();
 
 		return {
-			items: issues.map((issue) => IssueEntity.initialize(issue)),
+			items: pulls.map((pull) => PullEntity.initialize(pull)),
 		};
 	}
 
 	public async findByNumber(
-		issueNumber: number,
+		pullNumber: number,
 		projectId: number,
-	): Promise<IssueEntity | null> {
-		const issue = await this.issueModel
+	): Promise<PullEntity | null> {
+		const pull = await this.pullModel
 			.query()
-			.where("number", issueNumber)
+			.where("number", pullNumber)
 			.andWhere("projectId", projectId)
 			.first();
 
-		return issue ? IssueEntity.initialize(issue) : null;
+		return pull ? PullEntity.initialize(pull) : null;
 	}
 
 	public async updateCustom(
 		id: number,
-		updatedData: Partial<IssueCreateItemRequestDto>,
-	): Promise<IssueEntity> {
-		const updatedIssue = await this.issueModel
+		updatedData: Partial<PullCreateItemRequestDto>,
+	): Promise<PullEntity> {
+		const updatedPull = await this.pullModel
 			.query()
 			.patchAndFetchById(id, updatedData);
 
-		return IssueEntity.initialize(updatedIssue);
+		return PullEntity.initialize(updatedPull);
 	}
 
 	public find(): ReturnType<Repository["find"]> {
@@ -163,4 +173,4 @@ class IssueRepository implements Repository {
 	}
 }
 
-export { IssueRepository };
+export { PullRepository };
