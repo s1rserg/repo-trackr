@@ -11,6 +11,8 @@ const APIPath = {
 	PROJECT_PERMISSIONS: "/project-permissions",
 	PROJECTS: "/projects",
 	USERS: "/users",
+	ISSUES: "/issues",
+	PULL_REQUESTS: "/pulls"
 } as const;
 
 export { APIPath };

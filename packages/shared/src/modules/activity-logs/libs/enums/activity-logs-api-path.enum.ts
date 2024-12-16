@@ -1,5 +1,5 @@
-const IssuesApiPath = {
+const ActivityLogsApiPath = {
 	ROOT: "/",
 } as const;
 
-export { IssuesApiPath };
+export { ActivityLogsApiPath };

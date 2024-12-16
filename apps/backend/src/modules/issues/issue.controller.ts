@@ -32,7 +32,7 @@ class IssueController extends BaseController {
 		issueService: IssueService,
 		projectGroupService: ProjectGroupService,
 	) {
-		super(logger, APIPath.ACTIVITY_LOGS);
+		super(logger, APIPath.ISSUES);
 
 		this.issueService = issueService;
 		this.projectGroupService = projectGroupService;
