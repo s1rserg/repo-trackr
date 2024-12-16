@@ -18,8 +18,8 @@ interface GithubUser {
 
 interface GithubIssueResponse {
 	number: number;
-	user: { login: string }; // creator
-	assignee: { login: string } | null; // assignee
+	user: { login: string; url: string }; // creator
+	assignee: { login: string; url: string } | null; // assignee
 	title: string;
 	body: string;
 	state: string;
@@ -43,9 +43,6 @@ interface EnrichedGithubIssue {
 	subIssuesTotalCount: number;
 	commentsCount: number;
 }
-
-// Assuming CommitResponseDto is an array of enriched issues
-type CommitResponseDto = EnrichedGithubIssue[];
 
 class AnalyticsApi extends BaseHTTPApi {
 	public constructor({ baseUrl, http, serverUrl }: Constructor) {
@@ -99,13 +96,11 @@ class AnalyticsApi extends BaseHTTPApi {
 		return commits;
 	}
 
-	// Function to fetch issues from GitHub
 	public async fetchIssues(
 		authToken: string,
 		repositoryUrl: string,
 		since: string,
-	): Promise<CommitResponseDto> {
-		// Fetch issues from GitHub
+	): Promise<EnrichedGithubIssue[]> {
 		const response = await this.load(
 			this.getFullEndpoint(
 				GithubApiPath.REPOS,
@@ -125,7 +120,6 @@ class AnalyticsApi extends BaseHTTPApi {
 
 		const issues: GithubIssueResponse[] = await response.json();
 
-		// Create an array to store issues with additional details
 		const enrichedIssues: EnrichedGithubIssue[] = [];
 
 		for (const issue of issues) {
@@ -133,32 +127,24 @@ class AnalyticsApi extends BaseHTTPApi {
 			const assigneeLogin = issue.assignee ? issue.assignee.login : null;
 
 			// Fetch creator details (name)
-			const creatorResponse = await this.load(
-				this.getFullEndpoint(GithubApiPath.USERS, "/", creatorLogin, {}),
-				{
+			const creatorResponse = await this.load(issue.user.url, {
+				authToken,
+				method: "GET",
+			});
+			const creatorDetails: GithubUser = await creatorResponse.json();
+			const creatorName = creatorDetails.name || creatorLogin;
+
+			let assigneeName: string | null = null;
+
+			if (assigneeLogin && issue.assignee) {
+				const assigneeResponse = await this.load(issue.assignee.url, {
 					authToken,
 					method: "GET",
-				},
-			);
-			const creatorDetails: GithubUser = await creatorResponse.json();
-			const creatorName = creatorDetails.name || creatorLogin; // Use login if name is missing
-
-			// Fetch assignee details (name), if assignee exists
-			let assigneeName: string | null = null;
-			
-			if (assigneeLogin) {
-				const assigneeResponse = await this.load(
-					this.getFullEndpoint(GithubApiPath.USERS, "/", assigneeLogin, {}),
-					{
-						authToken,
-						method: "GET",
-					},
-				);
+				});
 				const assigneeDetails: GithubUser = await assigneeResponse.json();
-				assigneeName = assigneeDetails.name || assigneeLogin; // Use login if name is missing
+				assigneeName = assigneeDetails.name || assigneeLogin;
 			}
 
-			// Create the enriched issue object with required properties
 			enrichedIssues.push({
 				number: issue.number,
 				creatorLogin,
