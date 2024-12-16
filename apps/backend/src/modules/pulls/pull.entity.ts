@@ -7,18 +7,22 @@ import { type GitEmailModel } from "~/modules/git-emails/git-emails.js";
 import { type ProjectModel } from "../projects/project.model.js";
 
 class PullEntity implements Entity {
-	private number!: number;
-	private creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
-	private assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id"> | null;
-	private project!: Pick<ProjectModel, "id">;
-	private title!: string;
-	private body!: string;
-	private state!: string;
-	private closedAt!: string | null;
-	private reactionsTotalCount!: number;
-	private subPullsTotalCount!: number;
-	private commentsCount!: number;
-	private id: null | number;
+	public number!: number;
+	public creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
+	public assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id"> | null;
+	public project!: Pick<ProjectModel, "id">;
+	public title!: string;
+	public body!: string;
+	public state!: string;
+	public closedAt!: string | null;
+	public mergedAt!: string | null;
+	public draft!: boolean;
+	public commentsCount!: number;
+	public reviewCommentsCount!: number;
+	public additions!: number;
+	public deletions!: number;
+	public commits!: number;
+	public changedFiles!: number;
 	private createdAt: null | string;
 	private updatedAt: null | string;
 
@@ -31,10 +35,14 @@ class PullEntity implements Entity {
 		body,
 		state,
 		closedAt,
-		reactionsTotalCount,
-		subPullsTotalCount,
+		mergedAt,
+		draft,
 		commentsCount,
-		id,
+		reviewCommentsCount,
+		additions,
+		deletions,
+		commits,
+		changedFiles,
 		createdAt,
 		updatedAt,
 	}: {
@@ -46,10 +54,14 @@ class PullEntity implements Entity {
 		body: string;
 		state: string;
 		closedAt: string | null;
-		reactionsTotalCount: number;
-		subPullsTotalCount: number;
+		mergedAt: string | null;
+		draft: boolean;
 		commentsCount: number;
-		id: null | number;
+		reviewCommentsCount: number;
+		additions: number;
+		deletions: number;
+		commits: number;
+		changedFiles: number;
 		createdAt: null | string;
 		updatedAt: null | string;
 	}) {
@@ -61,10 +73,14 @@ class PullEntity implements Entity {
 		this.body = body;
 		this.state = state;
 		this.closedAt = closedAt;
-		this.reactionsTotalCount = reactionsTotalCount;
-		this.subPullsTotalCount = subPullsTotalCount;
+		this.mergedAt = mergedAt;
+		this.draft = draft;
 		this.commentsCount = commentsCount;
-		this.id = id;
+		this.reviewCommentsCount = reviewCommentsCount;
+		this.additions = additions;
+		this.deletions = deletions;
+		this.commits = commits;
+		this.changedFiles = changedFiles;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
@@ -78,10 +94,14 @@ class PullEntity implements Entity {
 		body,
 		state,
 		closedAt,
-		reactionsTotalCount,
-		subPullsTotalCount,
+		mergedAt,
+		draft,
 		commentsCount,
-		id,
+		reviewCommentsCount,
+		additions,
+		deletions,
+		commits,
+		changedFiles,
 		createdAt,
 		updatedAt,
 	}: {
@@ -93,10 +113,14 @@ class PullEntity implements Entity {
 		body: string;
 		state: string;
 		closedAt: string | null;
-		reactionsTotalCount: number;
-		subPullsTotalCount: number;
+		mergedAt: string | null;
+		draft: boolean;
 		commentsCount: number;
-		id: null | number;
+		reviewCommentsCount: number;
+		additions: number;
+		deletions: number;
+		commits: number;
+		changedFiles: number;
 		createdAt: null | string;
 		updatedAt: null | string;
 	}): PullEntity {
@@ -109,10 +133,14 @@ class PullEntity implements Entity {
 			body,
 			state,
 			closedAt,
-			reactionsTotalCount,
-			subPullsTotalCount,
+			mergedAt,
+			draft,
 			commentsCount,
-			id,
+			reviewCommentsCount,
+			additions,
+			deletions,
+			commits,
+			changedFiles,
 			createdAt,
 			updatedAt,
 		});
@@ -127,9 +155,14 @@ class PullEntity implements Entity {
 		body,
 		state,
 		closedAt,
-		reactionsTotalCount,
-		subPullsTotalCount,
+		mergedAt,
+		draft,
 		commentsCount,
+		reviewCommentsCount,
+		additions,
+		deletions,
+		commits,
+		changedFiles,
 	}: {
 		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
@@ -139,9 +172,14 @@ class PullEntity implements Entity {
 		body: string;
 		state: string;
 		closedAt: string | null;
-		reactionsTotalCount: number;
-		subPullsTotalCount: number;
+		mergedAt: string | null;
+		draft: boolean;
 		commentsCount: number;
+		reviewCommentsCount: number;
+		additions: number;
+		deletions: number;
+		commits: number;
+		changedFiles: number;
 	}): PullEntity {
 		return new PullEntity({
 			number,
@@ -152,10 +190,14 @@ class PullEntity implements Entity {
 			body,
 			state,
 			closedAt,
-			reactionsTotalCount,
-			subPullsTotalCount,
+			mergedAt,
+			draft,
 			commentsCount,
-			id: null,
+			reviewCommentsCount,
+			additions,
+			deletions,
+			commits,
+			changedFiles,
 			createdAt: null,
 			updatedAt: null,
 		});
@@ -170,9 +212,14 @@ class PullEntity implements Entity {
 		body: string;
 		state: string;
 		closedAt: string | null;
-		reactionsTotalCount: number;
-		subPullsTotalCount: number;
+		mergedAt: string | null;
+		draft: boolean;
 		commentsCount: number;
+		reviewCommentsCount: number;
+		additions: number;
+		deletions: number;
+		commits: number;
+		changedFiles: number;
 	} {
 		return {
 			number: this.number,
@@ -183,37 +230,48 @@ class PullEntity implements Entity {
 			body: this.body,
 			state: this.state,
 			closedAt: this.closedAt,
-			reactionsTotalCount: this.reactionsTotalCount,
-			subPullsTotalCount: this.subPullsTotalCount,
+			mergedAt: this.mergedAt,
+			draft: this.draft,
 			commentsCount: this.commentsCount,
+			reviewCommentsCount: this.reviewCommentsCount,
+			additions: this.additions,
+			deletions: this.deletions,
+			commits: this.commits,
+			changedFiles: this.changedFiles,
 		};
 	}
 
 	public toObject(): PullGetAllItemResponseDto {
 		return {
 			number: this.number,
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			creatorGitEmail: this.creatorGitEmail
-			? {
-				contributor: this.creatorGitEmail.contributor,
-				id: this.creatorGitEmail.id,
-			} : null,
+				? {
+						contributor: this.creatorGitEmail.contributor,
+						id: this.creatorGitEmail.id,
+					}
+				: null,
 			assigneeGitEmail: this.assigneeGitEmail
 				? {
 						contributor: this.assigneeGitEmail.contributor,
 						id: this.assigneeGitEmail.id,
 					}
 				: null,
-			project: this.project ? { id: this.project.id } : null,
+			project: { id: this.project.id },
 			title: this.title,
 			body: this.body,
 			state: this.state,
 			closedAt: this.closedAt,
-			reactionsTotalCount: this.reactionsTotalCount,
-			subPullsTotalCount: this.subPullsTotalCount,
+			mergedAt: this.mergedAt,
+			draft: this.draft,
 			commentsCount: this.commentsCount,
+			reviewCommentsCount: this.reviewCommentsCount,
+			additions: this.additions,
+			deletions: this.deletions,
+			commits: this.commits,
+			changedFiles: this.changedFiles,
 			createdAt: this.createdAt as string,
-			updatedAt: this.createdAt as string,
-			id: this.id as number,
+			updatedAt: this.updatedAt as string,
 		};
 	}
 }
