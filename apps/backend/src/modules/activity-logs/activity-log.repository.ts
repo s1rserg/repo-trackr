@@ -67,7 +67,10 @@ class ActivityLogRepository implements Repository {
 				builder.select("id", "name", "hiddenAt");
 			})
 			.whereNull("gitEmail:contributor.hiddenAt")
-			.whereBetween("activityLogs.date", [startDate, endDate])
+			.whereBetween("activityLogs.date", [
+				startDate,
+				endDate + "T17:59:59.999Z",
+			])
 			.orderBy("date");
 
 		if (contributorName) {
@@ -83,12 +86,28 @@ class ActivityLogRepository implements Repository {
 			query.whereIn("projectId", permittedProjectIds);
 		}
 
-		const activityLogs = await query.orderBy("date");
+		const activityLogs = await query;
+
+		const lastLogPerDay = new Map<string, ActivityLogEntity>();
+
+		for (const log of activityLogs) {
+			const [logDate] = new Date(log.date).toISOString().split("T");
+
+			const existingLog = lastLogPerDay.get(logDate || "");
+
+			if (
+				!existingLog ||
+				new Date(log.date).getTime() >
+					new Date(existingLog.toObject().date).getTime()
+			) {
+				lastLogPerDay.set(logDate || "", ActivityLogEntity.initialize(log));
+			}
+		}
+
+		const filteredLogs = [...lastLogPerDay.values()];
 
 		return {
-			items: activityLogs.map((activityLog) =>
-				ActivityLogEntity.initialize(activityLog),
-			),
+			items: filteredLogs,
 		};
 	}
 

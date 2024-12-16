@@ -3,6 +3,7 @@ const GithubApiPath = {
 	COMMITS: "/commits",
 	ISSUES: "/issues",
 	PULL_REQUESTS: "/pulls",
+	USERS: "/users"
 } as const;
 
 export { GithubApiPath };

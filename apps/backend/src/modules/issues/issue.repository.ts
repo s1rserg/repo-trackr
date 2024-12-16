@@ -1,6 +1,6 @@
 import { EMPTY_LENGTH } from "~/libs/constants/constants.js";
 import {
-	IssueCreateItemRequestDto,
+	type IssueCreateItemRequestDto,
 	type IssueQueryParameters,
 	type Repository,
 } from "~/libs/types/types.js";
@@ -32,9 +32,9 @@ class IssueRepository implements Repository {
 
 		const issueData = {
 			number,
-			creatorGitEmail,
-			assigneeGitEmail,
-			project,
+			creatorGitEmail: { id: creatorGitEmail.id },  // Only pass the id for creatorGitEmail
+			assigneeGitEmail: assigneeGitEmail ? { id: assigneeGitEmail.id } : { id: 1 }, // Only pass id or null for assigneeGitEmail
+			project: { id: project.id },  // Only pass the id for project
 			title,
 			body,
 			state,

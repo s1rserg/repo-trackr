@@ -23,7 +23,7 @@ class IssueModel extends AbstractModel {
 		return {
 			creatorGitEmail: {
 				join: {
-					from: `${DatabaseTableName.ACTIVITY_LOGS}.creatorGitEmailId`,
+					from: `${DatabaseTableName.ISSUES}.creatorGitEmailId`,
 					to: `${DatabaseTableName.GIT_EMAILS}.id`,
 				},
 				modelClass: GitEmailModel,
@@ -31,7 +31,7 @@ class IssueModel extends AbstractModel {
 			},
 			assigneeGitEmail: {
 				join: {
-					from: `${DatabaseTableName.ACTIVITY_LOGS}.assigneeGitEmailId`,
+					from: `${DatabaseTableName.ISSUES}.assigneeGitEmailId`,
 					to: `${DatabaseTableName.GIT_EMAILS}.id`,
 				},
 				modelClass: GitEmailModel,
@@ -39,7 +39,7 @@ class IssueModel extends AbstractModel {
 			},
 			project: {
 				join: {
-					from: `${DatabaseTableName.ACTIVITY_LOGS}.projectId`,
+					from: `${DatabaseTableName.ISSUES}.projectId`,
 					to: `${DatabaseTableName.PROJECTS}.id`,
 				},
 				modelClass: ProjectModel,
@@ -49,7 +49,7 @@ class IssueModel extends AbstractModel {
 	}
 
 	public static override get tableName(): string {
-		return DatabaseTableName.ACTIVITY_LOGS;
+		return DatabaseTableName.ISSUES;
 	}
 }
 

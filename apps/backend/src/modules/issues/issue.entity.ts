@@ -192,17 +192,18 @@ class IssueEntity implements Entity {
 	public toObject(): IssueGetAllItemResponseDto {
 		return {
 			number: this.number,
-			creatorGitEmail: {
+			creatorGitEmail: this.creatorGitEmail
+			? {
 				contributor: this.creatorGitEmail.contributor,
 				id: this.creatorGitEmail.id,
-			},
+			} : null,
 			assigneeGitEmail: this.assigneeGitEmail
 				? {
 						contributor: this.assigneeGitEmail.contributor,
 						id: this.assigneeGitEmail.id,
 					}
 				: null,
-			project: { id: this.project.id },
+			project: this.project ? { id: this.project.id } : null,
 			title: this.title,
 			body: this.body,
 			state: this.state,

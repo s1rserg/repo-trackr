@@ -342,10 +342,6 @@ class IssueService implements Service {
 				formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
 			);
 
-			const createdIssues: IssueGetAllResponseDto = {
-				items: [],
-			};
-
 			for (const record of issues) {
 				const existingIssue = await this.issueRepository.findByNumber(
 					record.number,
@@ -354,6 +350,7 @@ class IssueService implements Service {
 
 				const existingIssueObject = existingIssue?.toObject();
 
+				// eslint-disable-next-line unicorn/prefer-ternary
 				if (existingIssue) {
 					// Update the existing issue
 					await this.issueRepository.updateCustom(

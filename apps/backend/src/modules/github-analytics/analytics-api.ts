@@ -19,8 +19,8 @@ interface GithubUser {
 
 interface GithubIssueResponse {
 	number: number;
-	user: { login: string; url: string }; // creator
-	assignee: { login: string; url: string } | null; // assignee
+	user: { login: string }; // creator
+	assignee: { login: string } | null; // assignee
 	title: string;
 	body: string;
 	state: string;
@@ -115,20 +115,31 @@ class AnalyticsApi extends BaseHTTPApi {
 			const assigneeLogin = issue.assignee ? issue.assignee.login : null;
 
 			// Fetch creator details (name)
-			const creatorResponse = await this.load(issue.user.url, {
-				authToken,
-				method: "GET",
-			});
+			const creatorResponse = await this.load(
+				this.getFullEndpoint(GithubApiPath.USERS, "/", issue.user.login, {}),
+				{
+					authToken,
+					method: "GET",
+				},
+			);
 			const creatorDetails: GithubUser = await creatorResponse.json();
 			const creatorName = creatorDetails.name || creatorLogin;
 
 			let assigneeName: string | null = null;
 
 			if (assigneeLogin && issue.assignee) {
-				const assigneeResponse = await this.load(issue.assignee.url, {
-					authToken,
-					method: "GET",
-				});
+				const assigneeResponse = await this.load(
+					this.getFullEndpoint(
+						GithubApiPath.USERS,
+						"/",
+						issue.assignee.login,
+						{},
+					),
+					{
+						authToken,
+						method: "GET",
+					},
+				);
 				const assigneeDetails: GithubUser = await assigneeResponse.json();
 				assigneeName = assigneeDetails.name || assigneeLogin;
 			}
