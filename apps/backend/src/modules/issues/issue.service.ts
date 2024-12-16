@@ -1,4 +1,3 @@
-import { EMPTY_LENGTH } from "~/libs/constants/constants.js";
 import { ExceptionMessage } from "~/libs/enums/enums.js";
 import {
 	formatDate,
@@ -85,6 +84,7 @@ class IssueService implements Service {
 		}
 
 		let assigneeGitEmail;
+
 		if (assigneeLogin && assigneeName) {
 			assigneeGitEmail = await this.gitEmailService.findByEmail(assigneeLogin);
 
@@ -239,6 +239,7 @@ class IssueService implements Service {
 
 			let assigneeId,
 				assigneeName = "";
+
 			if (assigneeGitEmail) {
 				assigneeId = assigneeGitEmail.contributor.id;
 				assigneeName = assigneeGitEmail.contributor.name;

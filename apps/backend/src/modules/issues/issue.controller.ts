@@ -16,89 +16,37 @@ import { type ProjectGroupService } from "~/modules/project-groups/project-group
 import { type UserAuthResponseDto } from "~/modules/users/users.js";
 
 import { type PermissionGetAllItemResponseDto } from "../permissions/libs/types/types.js";
-import { type ActivityLogService } from "./issue.service.js";
-import { ActivityLogsApiPath } from "./libs/enums/enums.js";
+import { type IssueService } from "./issue.service.js";
+import {} from "./libs/types/types.js";
 import {
-	type ActivityLogCreateRequestDto,
-	type ActivityLogQueryParameters,
-} from "./libs/types/types.js";
-import {
-	activityLogCreateValidationSchema,
-	activityLogGetValidationSchema,
-} from "./libs/validation-schemas/validation-schemas.js";
+	IssuesApiPath,
+	type IssueQueryParameters,
+} from "~/libs/types/types.js";
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     ActivityLog:
- *       type: object
- *       properties:
- *         id:
- *           type: number
- *           minimum: 1
- *         commitsNumber:
- *           type: number
- *           minimum: 1
- *         createdByUserId:
- *           type: number
- *           minimum: 1
- *         date:
- *           type: string
- *           format: date-time
- *         gitEmailId:
- *           type: number
- *           minimum: 1
- *         projectId :
- *           type: number
- *           minimum: 1
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- */
-
-class ActivityLogController extends BaseController {
-	private activityLogService: ActivityLogService;
+class IssueController extends BaseController {
+	private issueService: IssueService;
 	private projectGroupService: ProjectGroupService;
 
 	public constructor(
 		logger: Logger,
-		activityLogService: ActivityLogService,
+		issueService: IssueService,
 		projectGroupService: ProjectGroupService,
 	) {
 		super(logger, APIPath.ACTIVITY_LOGS);
 
-		this.activityLogService = activityLogService;
+		this.issueService = issueService;
 		this.projectGroupService = projectGroupService;
-
-		this.addRoute({
-			handler: (options) =>
-				this.create(
-					options as APIHandlerOptions<{
-						body: ActivityLogCreateRequestDto;
-						headers: Record<string, string | undefined>;
-					}>,
-				),
-			method: "POST",
-			path: ActivityLogsApiPath.ROOT,
-			validation: {
-				body: activityLogCreateValidationSchema,
-			},
-		});
 
 		this.addRoute({
 			handler: (options) =>
 				this.findAll(
 					options as APIHandlerOptions<{
-						query: ActivityLogQueryParameters;
+						query: IssueQueryParameters;
 						user: UserAuthResponseDto;
 					}>,
 				),
 			method: "GET",
-			path: ActivityLogsApiPath.ROOT,
+			path: IssuesApiPath.ROOT,
 			preHandlers: [
 				checkUserPermissions(
 					[PermissionKey.VIEW_ALL_PROJECTS, PermissionKey.MANAGE_ALL_PROJECTS],
@@ -109,89 +57,12 @@ class ActivityLogController extends BaseController {
 					],
 				),
 			],
-			validation: {
-				query: activityLogGetValidationSchema,
-			},
 		});
 	}
 
-	/**
-	 * @swagger
-	 * /activity-logs:
-	 *   post:
-	 *     description: Save new activity logs
-	 *     requestBody:
-	 *       description: Payload for saving activity logs
-	 *       required: true
-	 *       content:
-	 *         application/json:
-	 *           schema:
-	 *             type: object
-	 *             properties:
-	 *               items:
-	 *                 type: array
-	 *                 items:
-	 *                   type: object
-	 *                   properties:
-	 *                     authorEmail:
-	 *                       type: string
-	 *                     authorName:
-	 *                       type: string
-	 *                     commitsNumber:
-	 *                       type: integer
-	 *               date:
-	 *                 type: string
-	 *                 format: date-time
-	 *     responses:
-	 *       201:
-	 *         description: Activity log saved successfully
-	 *         content:
-	 *           application/json:
-	 *             schema:
-	 *               $ref: '#/components/schemas/ActivityLog'
-	 */
-
-	private async create(
-		options: APIHandlerOptions<{
-			body: ActivityLogCreateRequestDto;
-			headers: Record<string, string | undefined>;
-		}>,
-	): Promise<APIHandlerResponse> {
-		const authorizationHeader = options.headers["authorization"];
-		const apiKey = authorizationHeader?.replace("Bearer ", "") ?? "";
-
-		const payload = {
-			apiKey,
-			...options.body,
-		};
-
-		return {
-			payload: await this.activityLogService.create(payload),
-			status: HTTPCode.CREATED,
-		};
-	}
-
-	/**
-	 * @swagger
-	 * /activity-logs:
-	 *   get:
-	 *     description: Returns an array of activity logs
-	 *     responses:
-	 *       200:
-	 *         description: Successful operation
-	 *         content:
-	 *           application/json:
-	 *             schema:
-	 *               type: object
-	 *               properties:
-	 *                 items:
-	 *                   type: array
-	 *                   items:
-	 *                     $ref: "#/components/schemas/ActivityLog"
-	 */
 	private async findAll(
 		options: APIHandlerOptions<{
-			query: ActivityLogQueryParameters;
+			query: IssueQueryParameters;
 			user: UserAuthResponseDto;
 		}>,
 	): Promise<APIHandlerResponse> {
@@ -215,7 +86,7 @@ class ActivityLogController extends BaseController {
 		const userProjectIds = groups.map(({ projectId }) => projectId.id);
 
 		return {
-			payload: await this.activityLogService.findAll({
+			payload: await this.issueService.findAll({
 				endDate,
 				hasRootPermission,
 				startDate,
@@ -228,4 +99,4 @@ class ActivityLogController extends BaseController {
 	}
 }
 
-export { ActivityLogController };
+export { IssueController };

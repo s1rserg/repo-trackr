@@ -3,7 +3,7 @@ import { type HTTP } from "~/libs/modules/http/http.js";
 
 import { GithubApiPath } from "./libs/enums/enums.js";
 import { type CommitDto, type CommitResponseDto } from "./libs/types/types.js";
-import { IssueCreateItemRequestDto } from "~/libs/types/types.js";
+import { type IssueCreateItemRequestDto } from "~/libs/types/types.js";
 
 type Constructor = {
 	baseUrl: string;

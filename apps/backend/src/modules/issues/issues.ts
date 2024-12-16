@@ -1,30 +1,28 @@
 import { logger } from "~/libs/modules/logger/logger.js";
 import { contributorService } from "~/modules/contributors/contributors.js";
 import { gitEmailService } from "~/modules/git-emails/git-emails.js";
-import { projectApiKeyService } from "~/modules/project-api-keys/project-api-keys.js";
 import { projectGroupService } from "~/modules/project-groups/project-groups.js";
 import { projectService } from "~/modules/projects/projects.js";
 
-import { ActivityLogController } from "./issue.controller.js";
-import { ActivityLogModel } from "./issue.model.js";
-import { ActivityLogRepository } from "./issue.repository.js";
-import { ActivityLogService } from "./issue.service.js";
+import { IssueController } from "./issue.controller.js";
+import { IssueModel } from "./issue.model.js";
+import { IssueRepository } from "./issue.repository.js";
+import { IssueService } from "./issue.service.js";
 import { analyticsService } from "../github-analytics/analytics.js";
 
-const activityLogRepository = new ActivityLogRepository(ActivityLogModel);
-const activityLogService = new ActivityLogService({
-	activityLogRepository,
+const issueRepository = new IssueRepository(IssueModel);
+const issueService = new IssueService({
+	issueRepository,
 	contributorService,
 	gitEmailService,
-	projectApiKeyService,
 	projectService,
 	analyticsService,
 });
-const activityLogController = new ActivityLogController(
+const issueController = new IssueController(
 	logger,
-	activityLogService,
+	issueService,
 	projectGroupService,
 );
 
-export { activityLogController, activityLogService };
-export { ActivityLogService } from "./issue.service.js";
+export { issueController, issueService };
+export { IssueService } from "./issue.service.js";

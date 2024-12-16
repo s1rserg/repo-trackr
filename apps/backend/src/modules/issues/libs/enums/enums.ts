@@ -1,1 +1,1 @@
-export { ActivityLogsApiPath, ExceptionMessage } from "@repo-trackr/shared";
+export { IssuesApiPath, ExceptionMessage } from "@repo-trackr/shared";
