@@ -5,7 +5,6 @@ import swaggerUi from "@fastify/swagger-ui";
 import Fastify, { type FastifyError, type FastifyInstance } from "fastify";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { ServerErrorType } from "~/libs/enums/enums.js";
 import { type ValidationError } from "~/libs/exceptions/exceptions.js";
 import { type Config } from "~/libs/modules/config/config.js";
@@ -21,7 +20,6 @@ import {
 } from "~/libs/types/types.js";
 import { type ProjectService } from "~/modules/projects/projects.js";
 import { type UserService } from "~/modules/users/users.js";
-
 import { type TaskScheduler } from "../task-scheduler/task-scheduler.js";
 import { type Token } from "../token/token.js";
 import { JobCronPattern } from "./libs/enums/enums.js";
@@ -33,6 +31,8 @@ import {
 import { type IssueService } from "~/modules/issues/issue.service.js";
 import { issueService } from "~/modules/issues/issues.js";
 import { type PullService } from "~/modules/pulls/pull.service.js";
+import { textService, type TextService } from "~/modules/texts/texts.js";
+import { pullService } from "~/modules/pulls/pulls.js";
 
 type Constructor = {
 	apis: ServerApplicationApi[];
@@ -45,6 +45,7 @@ type Constructor = {
 		activityLogService: ActivityLogService;
 		issueService: IssueService;
 		pullService: PullService;
+		textService: TextService;
 	};
 	taskScheduler: TaskScheduler;
 	title: string;
@@ -69,6 +70,7 @@ class BaseServerApplication implements ServerApplication {
 		activityLogService: ActivityLogService;
 		issueService: IssueService;
 		pullService: PullService;
+		textService: TextService;
 	};
 
 	private taskScheduler: TaskScheduler;
@@ -165,6 +167,14 @@ class BaseServerApplication implements ServerApplication {
 		this.taskScheduler.start(
 			JobCronPattern.GITHUB_ANALYTICS,
 			() => void issueService.collectGithubAnalytics(),
+		);
+		this.taskScheduler.start(
+			JobCronPattern.GITHUB_ANALYTICS,
+			() => void pullService.collectGithubAnalytics(),
+		);
+		this.taskScheduler.start(
+			JobCronPattern.TEXTS_ANALYTICS,
+			() => void textService.collectGithubAnalytics(),
 		);
 	}
 
@@ -274,6 +284,7 @@ class BaseServerApplication implements ServerApplication {
 		void this.services.activityLogService.collectGithubAnalytics();
 		void this.services.issueService.collectGithubAnalytics();
 		void this.services.pullService.collectGithubAnalytics();
+		void this.services.textService.collectGithubAnalytics();
 	}
 
 	public async initMiddlewares(): Promise<void> {

@@ -16,7 +16,7 @@ import { projectGroupController } from "~/modules/project-groups/project-groups.
 import { projectPermissionsController } from "~/modules/project-permissions/project-permissions.js";
 import { issueController, issueService } from "~/modules/issues/issues.js";
 import { pullController, pullService } from "~/modules/pulls/pulls.js";
-import { textController } from "~/modules/texts/texts.js";
+import { textController, textService } from "~/modules/texts/texts.js";
 import {
 	projectController,
 	projectService,
@@ -59,6 +59,7 @@ const serverApplication = new BaseServerApplication({
 		activityLogService,
 		issueService,
 		pullService,
+		textService
 	},
 	taskScheduler,
 	title: "RepoTrackr",
