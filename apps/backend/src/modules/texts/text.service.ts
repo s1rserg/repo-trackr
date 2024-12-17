@@ -8,43 +8,43 @@ import {
 import { HTTPCode } from "~/libs/modules/http/http.js";
 import {
 	ActivityLogError,
-	type IssueGetAllAnalyticsResponseDto,
-	type IssueQueryParameters,
-	type IssueCreateItemResponseDto,
+	type TextGetAllAnalyticsResponseDto,
+	type TextQueryParameters,
+	type TextCreateItemResponseDto,
 	type Service,
-	type IssueGetAllResponseDto,
+	type TextGetAllResponseDto,
 } from "~/libs/types/types.js";
 import { type ContributorService } from "~/modules/contributors/contributors.js";
 import { type GitEmailService } from "~/modules/git-emails/git-emails.js";
 import { type ProjectService } from "~/modules/projects/project.service.js";
 
-import { IssueEntity } from "./text.entity.js";
-import { type IssueRepository } from "./text.repository.js";
+import { TextEntity } from "./text.entity.js";
+import { type TextRepository } from "./text.repository.js";
 import { type AnalyticsService } from "../github-analytics/analytics.js";
 
 type Constructor = {
-	issueRepository: IssueRepository;
+	textRepository: TextRepository;
 	contributorService: ContributorService;
 	gitEmailService: GitEmailService;
 	projectService: ProjectService;
 	analyticsService: AnalyticsService;
 };
 
-class IssueService implements Service {
-	private issueRepository: IssueRepository;
+class TextService implements Service {
+	private textRepository: TextRepository;
 	private contributorService: ContributorService;
 	private gitEmailService: GitEmailService;
 	private projectService: ProjectService;
 	private analyticsService: AnalyticsService;
 
 	public constructor({
-		issueRepository,
+		textRepository,
 		contributorService,
 		gitEmailService,
 		projectService,
 		analyticsService,
 	}: Constructor) {
-		this.issueRepository = issueRepository;
+		this.textRepository = textRepository;
 		this.contributorService = contributorService;
 		this.gitEmailService = gitEmailService;
 		this.projectService = projectService;
@@ -54,20 +54,17 @@ class IssueService implements Service {
 	public async create({
 		logItem,
 		projectId,
-	}: IssueCreateItemResponseDto): Promise<IssueEntity> {
+	}: TextCreateItemResponseDto): Promise<TextEntity | null> {
 		const {
-			number,
 			creatorLogin,
-			assigneeLogin,
-			creatorName,
-			assigneeName,
-			title,
+			sourceType,
+			sourceNumber,
 			body,
-			state,
-			closedAt,
-			reactionsTotalCount,
-			subIssuesTotalCount,
-			commentsCount,
+			url,
+			sentimentScore,
+			sentimentLabel,
+			reactionsPlusCount,
+			reactionsMinusCount,
 			createdAt,
 			updatedAt,
 		} = logItem;
@@ -75,55 +72,25 @@ class IssueService implements Service {
 		let creatorGitEmail = await this.gitEmailService.findByEmail(creatorLogin);
 
 		if (!creatorGitEmail) {
-			const contributor = await this.contributorService.create({
-				name: creatorName,
-			});
-
-			creatorGitEmail = await this.gitEmailService.create({
-				contributorId: contributor.id,
-				email: creatorLogin,
-			});
-		}
-
-		let assigneeGitEmail;
-
-		if (assigneeLogin && assigneeName) {
-			assigneeGitEmail = await this.gitEmailService.findByEmail(assigneeLogin);
-
-			if (!assigneeGitEmail) {
-				const contributor = await this.contributorService.create({
-					name: assigneeName,
-				});
-
-				assigneeGitEmail = await this.gitEmailService.create({
-					contributorId: contributor.id,
-					email: assigneeLogin,
-				});
-			}
+			return null
 		}
 
 		try {
-			return await this.issueRepository.create(
-				IssueEntity.initializeNew({
-					number,
+			return await this.textRepository.create(
+				TextEntity.initializeNew({
 					creatorGitEmail: {
 						contributor: creatorGitEmail.contributor,
 						id: creatorGitEmail.id,
 					},
-					assigneeGitEmail: assigneeGitEmail
-						? {
-								contributor: assigneeGitEmail.contributor,
-								id: assigneeGitEmail.id,
-							}
-						: null,
 					project: { id: projectId },
-					title,
+					sourceType,
+					sourceNumber,
 					body,
-					state,
-					closedAt,
-					reactionsTotalCount,
-					subIssuesTotalCount,
-					commentsCount,
+					url,
+					sentimentScore,
+					sentimentLabel,
+					reactionsPlusCount,
+					reactionsMinusCount,
 					createdAt,
 					updatedAt,
 				}),
@@ -154,7 +121,7 @@ class IssueService implements Service {
 	}: {
 		hasRootPermission: boolean;
 		userProjectIds: number[];
-	} & IssueQueryParameters): Promise<IssueGetAllAnalyticsResponseDto> {
+	} & TextQueryParameters): Promise<TextGetAllAnalyticsResponseDto> {
 		const projectIdParsed = projectId ? Number(projectId) : undefined;
 
 		let permittedProjectIds: number[];
@@ -184,7 +151,7 @@ class IssueService implements Service {
 			"yyyy-MM-dd",
 		);
 
-		const issueEntities = await this.issueRepository.findAll({
+		const textEntities = await this.textRepository.findAll({
 			contributorName,
 			endDate: formattedEndDate,
 			permittedProjectIds,
@@ -192,7 +159,7 @@ class IssueService implements Service {
 			startDate: formattedStartDate,
 		});
 
-		const issues = issueEntities.items.map((item) => item.toObject());
+		const texts = textEntities.items.map((item) => item.toObject());
 
 		const allContributors = await this.contributorService.findAll({
 			contributorName,
@@ -207,37 +174,37 @@ class IssueService implements Service {
 		const contributorMap: Record<
 			string,
 			{
-				issuesOpened: number[];
-				issuesOpenedClosed: number[];
-				issuesAssigned: number[];
-				issuesAssignedClosed: number[];
+				textsOpened: number[];
+				textsOpenedClosed: number[];
+				textsAssigned: number[];
+				textsAssignedClosed: number[];
 			}
 		> = {};
 
 		for (const contributor of allContributors.items) {
 			const uniqueKey = `${contributor.name}_${String(contributor.id)}`;
 			contributorMap[uniqueKey] = {
-				issuesOpened: Array.from(
+				textsOpened: Array.from(
 					{ length: dateRange.length },
 					() => INITIAL_ISSUES_COUNT,
 				),
-				issuesOpenedClosed: Array.from(
+				textsOpenedClosed: Array.from(
 					{ length: dateRange.length },
 					() => INITIAL_ISSUES_COUNT,
 				),
-				issuesAssigned: Array.from(
+				textsAssigned: Array.from(
 					{ length: dateRange.length },
 					() => INITIAL_ISSUES_COUNT,
 				),
-				issuesAssignedClosed: Array.from(
+				textsAssignedClosed: Array.from(
 					{ length: dateRange.length },
 					() => INITIAL_ISSUES_COUNT,
 				),
 			};
 		}
 
-		for (const issue of issues) {
-			const { createdAt, closedAt, creatorGitEmail, assigneeGitEmail } = issue;
+		for (const text of texts) {
+			const { createdAt, closedAt, creatorGitEmail, assigneeGitEmail } = text;
 
 			const { id: creatorId, name: creatorName } = creatorGitEmail.contributor;
 
@@ -265,33 +232,33 @@ class IssueService implements Service {
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].issuesOpened[createdDateIndex]
+				contributorMap[creatorKey].textsOpened[createdDateIndex]
 			) {
-				contributorMap[creatorKey].issuesOpened[createdDateIndex]++;
+				contributorMap[creatorKey].textsOpened[createdDateIndex]++;
 			}
 
 			if (
 				closedDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].issuesOpenedClosed[closedDateIndex]
+				contributorMap[creatorKey].textsOpenedClosed[closedDateIndex]
 			) {
-				contributorMap[creatorKey].issuesOpenedClosed[closedDateIndex]++;
+				contributorMap[creatorKey].textsOpenedClosed[closedDateIndex]++;
 			}
 
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].issuesAssigned[createdDateIndex]
+				contributorMap[assigneeKey].textsAssigned[createdDateIndex]
 			) {
-				contributorMap[assigneeKey].issuesAssigned[createdDateIndex]++;
+				contributorMap[assigneeKey].textsAssigned[createdDateIndex]++;
 			}
 
 			if (
 				closedDateIndex >= 0 &&
 				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].issuesAssignedClosed[closedDateIndex]
+				contributorMap[assigneeKey].textsAssignedClosed[closedDateIndex]
 			) {
-				contributorMap[assigneeKey].issuesAssignedClosed[closedDateIndex]++;
+				contributorMap[assigneeKey].textsAssignedClosed[closedDateIndex]++;
 			}
 		}
 
@@ -300,19 +267,19 @@ class IssueService implements Service {
 				([
 					uniqueKey,
 					{
-						issuesOpened,
-						issuesOpenedClosed,
-						issuesAssigned,
-						issuesAssignedClosed,
+						textsOpened,
+						textsOpenedClosed,
+						textsAssigned,
+						textsAssignedClosed,
 					},
 				]) => {
 					const [contributorName, contributorId] = uniqueKey.split("_");
 
 					return {
-						issuesOpened,
-						issuesOpenedClosed,
-						issuesAssigned,
-						issuesAssignedClosed,
+						textsOpened,
+						textsOpenedClosed,
+						textsAssigned,
+						textsAssignedClosed,
 						contributor: {
 							hiddenAt: null,
 							id: contributorId as string,
@@ -324,11 +291,11 @@ class IssueService implements Service {
 		};
 	}
 
-	public async findAllWithoutFilter(): Promise<IssueGetAllResponseDto> {
-		const issues = await this.issueRepository.findAllWithoutFilter();
+	public async findAllWithoutFilter(): Promise<TextGetAllResponseDto> {
+		const texts = await this.textRepository.findAllWithoutFilter();
 
 		return {
-			items: issues.items.map((item) => item.toObject()),
+			items: texts.items.map((item) => item.toObject()),
 		};
 	}
 
@@ -340,35 +307,31 @@ class IssueService implements Service {
 		const projects = await this.projectService.findGithubAnalyticsProjects();
 
 		for (const project of projects) {
-			const issues = await this.analyticsService.getIssues(
+			const texts = await this.analyticsService.getTexts(
 				project.apiKey || "",
 				project.repositoryUrl || "",
 				formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
 			);
 
-			for (const record of issues) {
-				const existingIssue = await this.issueRepository.findByNumber(
+			for (const record of texts) {
+				const existingText = await this.textRepository.findByNumber(
 					record.number,
 					project.id,
 				);
 
-				const existingIssueObject = existingIssue?.toObject();
+				const existingTextObject = existingText?.toObject();
 
-				// eslint-disable-next-line unicorn/prefer-ternary
-				if (existingIssue) {
-					await this.issueRepository.updateCustom(
-						existingIssueObject?.id || 0,
-						{
-							title: record.title,
-							body: record.body,
-							state: record.state,
-							closedAt: record.closedAt,
-							reactionsTotalCount: record.reactionsTotalCount,
-							subIssuesTotalCount: record.subIssuesTotalCount,
-							commentsCount: record.commentsCount,
-							updatedAt: record.updatedAt,
-						},
-					);
+				if (existingText) {
+					await this.textRepository.updateCustom(existingTextObject?.id || 0, {
+						title: record.title,
+						body: record.body,
+						state: record.state,
+						closedAt: record.closedAt,
+						reactionsTotalCount: record.reactionsTotalCount,
+						subTextsTotalCount: record.subTextsTotalCount,
+						commentsCount: record.commentsCount,
+						updatedAt: record.updatedAt,
+					});
 				} else {
 					await this.create({
 						logItem: record,
@@ -380,4 +343,4 @@ class IssueService implements Service {
 	}
 }
 
-export { IssueService };
+export { TextService };

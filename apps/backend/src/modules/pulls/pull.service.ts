@@ -364,7 +364,6 @@ class PullService implements Service {
 
 				const existingPullObject = existingPull?.toObject();
 
-				// eslint-disable-next-line unicorn/prefer-ternary
 				if (existingPull) {
 					await this.pullRepository.updateCustom(existingPullObject?.id || 0, {
 						title: record.title,

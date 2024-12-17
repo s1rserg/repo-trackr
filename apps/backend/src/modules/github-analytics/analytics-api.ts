@@ -6,6 +6,7 @@ import { type CommitDto, type CommitResponseDto } from "./libs/types/types.js";
 import {
 	type PullCreateItemRequestDto,
 	type IssueCreateItemRequestDto,
+	type TextCreateItemRequestDto,
 } from "~/libs/types/types.js";
 
 type Constructor = {
@@ -57,6 +58,22 @@ interface GithubPullItemResponse {
 	deletions: number;
 	commits: number;
 	changedFiles: number;
+}
+
+interface GithubTextResponse {
+	user: { login: string };
+	title: string;
+	body: string;
+	url: string;
+	html_url: string;
+	created_at: string;
+	updated_at: string;
+	reactions: {
+		"+1": number;
+		"-1": number;
+	};
+	pull_request_url: string | null;
+	issue_url: string | null;
 }
 
 class AnalyticsApi extends BaseHTTPApi {
@@ -293,6 +310,76 @@ class AnalyticsApi extends BaseHTTPApi {
 		}
 
 		return enrichedPulls;
+	}
+
+	public async fetchTexts(
+		authToken: string,
+		repositoryUrl: string,
+		since: string,
+	): Promise<TextCreateItemRequestDto[]> {
+		const endpoints = [
+			{
+				path: GithubApiPath.ISSUES_COMMENTS,
+				sourceType: "issue_or_pull_comment",
+			},
+			{ path: GithubApiPath.PULLS_COMMENTS, sourceType: "pull_diff_comment" },
+		];
+
+		let allComments: TextCreateItemRequestDto[] = [];
+
+		for (const { path, sourceType } of endpoints) {
+			let page = 1;
+			let hasNextPage = true;
+
+			while (hasNextPage) {
+				const response = await this.load(
+					this.getFullEndpoint(
+						GithubApiPath.REPOS,
+						"/",
+						repositoryUrl,
+						path,
+						{},
+					),
+					{
+						authToken,
+						method: "GET",
+						query: {
+							since,
+							per_page: 100,
+							page,
+						},
+					},
+				);
+
+				const comments: GithubTextResponse[] = await response.json();
+
+				allComments = allComments.concat(
+					comments.map((comment) => ({
+						creatorLogin: comment.user.login,
+						sourceType,
+						sourceNumber: comment.issue_url
+							? parseInt(comment.issue_url.split("/").pop() || "0", 10)
+							: comment.pull_request_url
+								? parseInt(comment.pull_request_url.split("/").pop() || "0", 10)
+								: 0,
+						body: comment.body,
+						url: comment.html_url,
+						sentimentScore: null,
+						sentimentLabel: null,
+						createdAt: comment.created_at,
+						updatedAt: comment.updated_at,
+						reactionsPlusCount: comment.reactions["+1"] || 0,
+						reactionsMinusCount: comment.reactions["-1"] || 0,
+					})),
+				);
+
+				const linkHeader = response.headers.get("Link");
+				hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
+				page++;
+			}
+		}
+
+		return allComments;
 	}
 }
 

@@ -353,8 +353,7 @@ class IssueService implements Service {
 				);
 
 				const existingIssueObject = existingIssue?.toObject();
-
-				// eslint-disable-next-line unicorn/prefer-ternary
+				
 				if (existingIssue) {
 					await this.issueRepository.updateCustom(
 						existingIssueObject?.id || 0,

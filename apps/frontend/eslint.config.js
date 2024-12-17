@@ -87,13 +87,7 @@ const overridesConfigs = [
 		rules: {
 			"import/no-default-export": ["off"],
 		},
-	},
-	{
-		files: ["src/vite-env.d.ts"],
-		rules: {
-			"unicorn/prevent-abbreviations": ["off"],
-		},
-	},
+	}
 ];
 
 /** @type {FlatConfig[]} */

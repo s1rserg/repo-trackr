@@ -7,7 +7,6 @@ import * as importPlugin from "eslint-plugin-import";
 import jsdocPlugin from "eslint-plugin-jsdoc";
 import explicitGenericsPlugin from "eslint-plugin-require-explicit-generics";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
-import unicornPlugin from "eslint-plugin-unicorn";
 import globals from "globals";
 
 const JS_MAX_PARAMS_ALLOWED = 3;
@@ -97,17 +96,6 @@ const sonarConfig = {
 	rules: {
 		...sonarjsPlugin.configs.recommended.rules,
 		"sonarjs/no-duplicate-string": ["off"],
-	},
-};
-
-/** @type {FlatConfig} */
-const unicornConfig = {
-	plugins: {
-		unicorn: unicornPlugin,
-	},
-	rules: {
-		...unicornPlugin.configs.recommended.rules,
-		"unicorn/no-null": ["off"],
 	},
 };
 
@@ -221,7 +209,6 @@ const config = [
 	jsConfig,
 	importConfig,
 	sonarConfig,
-	unicornConfig,
 	stylisticConfig,
 	typescriptConfig,
 	jsdocConfig,
