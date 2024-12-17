@@ -1,58 +1,58 @@
 import { EMPTY_LENGTH } from "~/libs/constants/constants.js";
 import {
-	type IssueCreateItemRequestDto,
-	type IssueQueryParameters,
+	type TextCreateItemRequestDto,
+	type TextQueryParameters,
 	type Repository,
 } from "~/libs/types/types.js";
 
-import { IssueEntity } from "./text.entity.js";
-import { type IssueModel } from "./text.model.js";
+import { TextEntity } from "./text.entity.js";
+import { type TextModel } from "./text.model.js";
 
-class IssueRepository implements Repository {
-	private issueModel: typeof IssueModel;
+class TextRepository implements Repository {
+	private textModel: typeof TextModel;
 
-	public constructor(issueModel: typeof IssueModel) {
-		this.issueModel = issueModel;
+	public constructor(textModel: typeof TextModel) {
+		this.textModel = textModel;
 	}
 
-	public async create(entity: IssueEntity): Promise<IssueEntity> {
+	public async create(entity: TextEntity): Promise<TextEntity> {
 		const {
-			number,
 			creatorGitEmail,
-			assigneeGitEmail,
 			project,
-			title,
+			sourceType,
+			sourceNumber,
 			body,
-			state,
-			closedAt,
-			reactionsTotalCount,
-			subIssuesTotalCount,
-			commentsCount,
+			url,
+			sentimentScore,
+			sentimentLabel,
+			reactionsPlusCount,
+			reactionsMinusCount,
+			createdAt,
+			updatedAt,
 		} = entity.toNewObject();
 
-		const issueData = {
-			number,
+		const textData = {
 			creatorGitEmail: { id: creatorGitEmail.id },
-			assigneeGitEmail: assigneeGitEmail
-				? { id: assigneeGitEmail.id }
-				: { id: 1 },
 			project: { id: project.id },
-			title,
+			sourceType,
+			sourceNumber,
 			body,
-			state,
-			closedAt,
-			reactionsTotalCount,
-			subIssuesTotalCount,
-			commentsCount,
+			url,
+			sentimentScore,
+			sentimentLabel,
+			reactionsPlusCount,
+			reactionsMinusCount,
+			createdAt,
+			updatedAt,
 		};
 
-		const createdIssue = await this.issueModel
+		const createdText = await this.textModel
 			.query()
-			.insertGraph(issueData, { relate: true })
+			.insertGraph(textData, { relate: true })
 			.returning("*")
 			.execute();
 
-		return IssueEntity.initialize(createdIssue);
+		return TextEntity.initialize(createdText);
 	}
 
 	public delete(): ReturnType<Repository["delete"]> {
@@ -67,8 +67,8 @@ class IssueRepository implements Repository {
 		startDate,
 	}: {
 		permittedProjectIds: number[] | undefined;
-	} & IssueQueryParameters): Promise<{ items: IssueEntity[] }> {
-		const query = this.issueModel
+	} & TextQueryParameters): Promise<{ items: TextEntity[] }> {
+		const query = this.textModel
 			.query()
 			.withGraphFetched("[project]")
 			.withGraphJoined("assigneeGitEmail.contributor")
@@ -81,7 +81,7 @@ class IssueRepository implements Repository {
 				builder.select("id", "name", "hiddenAt");
 			})
 			.whereNull("creatorGitEmail:contributor.hiddenAt")
-			.whereBetween("issues.date", [startDate, endDate])
+			.whereBetween("texts.date", [startDate, endDate])
 			.orderBy("date");
 
 		if (contributorName) {
@@ -104,15 +104,15 @@ class IssueRepository implements Repository {
 			query.whereIn("projectId", permittedProjectIds);
 		}
 
-		const issues = await query.orderBy("date");
+		const texts = await query.orderBy("date");
 
 		return {
-			items: issues.map((issue) => IssueEntity.initialize(issue)),
+			items: texts.map((text) => TextEntity.initialize(text)),
 		};
 	}
 
-	public async findAllWithoutFilter(): Promise<{ items: IssueEntity[] }> {
-		const issues = await this.issueModel
+	public async findAllWithoutFilter(): Promise<{ items: TextEntity[] }> {
+		const texts = await this.textModel
 			.query()
 			.withGraphFetched(
 				"[assigneeGitEmail.contributor, creatorGitEmail.contributor, project]",
@@ -126,32 +126,32 @@ class IssueRepository implements Repository {
 			.execute();
 
 		return {
-			items: issues.map((issue) => IssueEntity.initialize(issue)),
+			items: texts.map((text) => TextEntity.initialize(text)),
 		};
 	}
 
 	public async findByNumber(
-		issueNumber: number,
+		textNumber: number,
 		projectId: number,
-	): Promise<IssueEntity | null> {
-		const issue = await this.issueModel
+	): Promise<TextEntity | null> {
+		const text = await this.textModel
 			.query()
-			.where("number", issueNumber)
+			.where("number", textNumber)
 			.andWhere("projectId", projectId)
 			.first();
 
-		return issue ? IssueEntity.initialize(issue) : null;
+		return text ? TextEntity.initialize(text) : null;
 	}
 
 	public async updateCustom(
 		id: number,
-		updatedData: Partial<IssueCreateItemRequestDto>,
-	): Promise<IssueEntity> {
-		const updatedIssue = await this.issueModel
+		updatedData: Partial<TextCreateItemRequestDto>,
+	): Promise<TextEntity> {
+		const updatedText = await this.textModel
 			.query()
 			.patchAndFetchById(id, updatedData);
 
-		return IssueEntity.initialize(updatedIssue);
+		return TextEntity.initialize(updatedText);
 	}
 
 	public find(): ReturnType<Repository["find"]> {
@@ -163,4 +163,4 @@ class IssueRepository implements Repository {
 	}
 }
 
-export { IssueRepository };
+export { TextRepository };

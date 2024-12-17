@@ -23,8 +23,8 @@ class PullEntity implements Entity {
 	private deletions!: number;
 	private commits!: number;
 	private changedFiles!: number;
-	private createdAt: null | string;
-	private updatedAt: null | string;
+	private createdAt: string;
+	private updatedAt: string;
 	private id: null | number;
 
 	private constructor({
@@ -64,8 +64,8 @@ class PullEntity implements Entity {
 		deletions: number;
 		commits: number;
 		changedFiles: number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 		id: null | number;
 	}) {
 		this.number = number;
@@ -126,8 +126,8 @@ class PullEntity implements Entity {
 		deletions: number;
 		commits: number;
 		changedFiles: number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 		id: null | number;
 	}): PullEntity {
 		return new PullEntity({
@@ -189,8 +189,8 @@ class PullEntity implements Entity {
 		deletions: number;
 		commits: number;
 		changedFiles: number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 	}): PullEntity {
 		return new PullEntity({
 			number,
@@ -232,6 +232,8 @@ class PullEntity implements Entity {
 		deletions: number;
 		commits: number;
 		changedFiles: number;
+		createdAt: string;
+		updatedAt: string;
 	} {
 		return {
 			number: this.number,
@@ -250,6 +252,8 @@ class PullEntity implements Entity {
 			deletions: this.deletions,
 			commits: this.commits,
 			changedFiles: this.changedFiles,
+			createdAt: this.createdAt,
+			updatedAt: this.updatedAt,
 		};
 	}
 
@@ -283,8 +287,8 @@ class PullEntity implements Entity {
 			deletions: this.deletions,
 			commits: this.commits,
 			changedFiles: this.changedFiles,
-			createdAt: this.createdAt as string,
-			updatedAt: this.updatedAt as string,
+			createdAt: this.createdAt,
+			updatedAt: this.updatedAt,
 			id: this.id as number,
 		};
 	}

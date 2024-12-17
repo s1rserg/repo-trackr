@@ -19,8 +19,8 @@ class IssueEntity implements Entity {
 	private subIssuesTotalCount!: number;
 	private commentsCount!: number;
 	private id: null | number;
-	private createdAt: null | string;
-	private updatedAt: null | string;
+	private createdAt: string;
+	private updatedAt: string;
 
 	private constructor({
 		number,
@@ -50,8 +50,8 @@ class IssueEntity implements Entity {
 		subIssuesTotalCount: number;
 		commentsCount: number;
 		id: null | number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 	}) {
 		this.number = number;
 		this.creatorGitEmail = creatorGitEmail;
@@ -97,8 +97,8 @@ class IssueEntity implements Entity {
 		subIssuesTotalCount: number;
 		commentsCount: number;
 		id: null | number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 	}): IssueEntity {
 		return new IssueEntity({
 			number,
@@ -144,8 +144,8 @@ class IssueEntity implements Entity {
 		reactionsTotalCount: number;
 		subIssuesTotalCount: number;
 		commentsCount: number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 	}): IssueEntity {
 		return new IssueEntity({
 			number,
@@ -177,6 +177,8 @@ class IssueEntity implements Entity {
 		reactionsTotalCount: number;
 		subIssuesTotalCount: number;
 		commentsCount: number;
+		createdAt: string;
+		updatedAt: string;
 	} {
 		return {
 			number: this.number,
@@ -190,6 +192,8 @@ class IssueEntity implements Entity {
 			reactionsTotalCount: this.reactionsTotalCount,
 			subIssuesTotalCount: this.subIssuesTotalCount,
 			commentsCount: this.commentsCount,
+			createdAt: this.createdAt,
+			updatedAt: this.updatedAt
 		};
 	}
 

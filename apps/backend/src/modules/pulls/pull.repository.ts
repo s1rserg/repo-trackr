@@ -33,6 +33,8 @@ class PullRepository implements Repository {
 			deletions,
 			commits,
 			changedFiles,
+			createdAt,
+			updatedAt
 		} = entity.toNewObject();
 
 		const pullData = {
@@ -54,6 +56,8 @@ class PullRepository implements Repository {
 			deletions,
 			commits,
 			changedFiles,
+			createdAt,
+			updatedAt
 		};
 
 		const createdPull = await this.pullModel

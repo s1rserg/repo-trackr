@@ -162,6 +162,8 @@ class TextEntity implements Entity {
 		sentimentLabel: string | null;
 		reactionsPlusCount: number;
 		reactionsMinusCount: number;
+		createdAt: string;
+		updatedAt: string;
 	} {
 		return {
 			creatorGitEmail: this.creatorGitEmail,
@@ -174,6 +176,8 @@ class TextEntity implements Entity {
 			sentimentLabel: this.sentimentLabel,
 			reactionsPlusCount: this.reactionsPlusCount,
 			reactionsMinusCount: this.reactionsMinusCount,
+			createdAt: this.createdAt,
+			updatedAt: this.updatedAt
 		};
 	}
 
