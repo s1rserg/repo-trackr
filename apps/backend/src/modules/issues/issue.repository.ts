@@ -29,7 +29,7 @@ class IssueRepository implements Repository {
 			subIssuesTotalCount,
 			commentsCount,
 			createdAt,
-			updatedAt
+			updatedAt,
 		} = entity.toNewObject();
 
 		const issueData = {
@@ -47,7 +47,7 @@ class IssueRepository implements Repository {
 			subIssuesTotalCount,
 			commentsCount,
 			createdAt,
-			updatedAt
+			updatedAt,
 		};
 
 		const createdIssue = await this.issueModel

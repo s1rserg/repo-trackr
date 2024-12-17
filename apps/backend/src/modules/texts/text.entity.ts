@@ -1,6 +1,9 @@
 import { type GitEmailModel } from "~/modules/git-emails/git-emails.js";
 import { type ProjectModel } from "../projects/project.model.js";
-import { type TextGetAllItemResponseDto, type Entity } from "~/libs/types/types.js";
+import {
+	type TextGetAllItemResponseDto,
+	type Entity,
+} from "~/libs/types/types.js";
 
 class TextEntity implements Entity {
 	private creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
@@ -177,7 +180,7 @@ class TextEntity implements Entity {
 			reactionsPlusCount: this.reactionsPlusCount,
 			reactionsMinusCount: this.reactionsMinusCount,
 			createdAt: this.createdAt,
-			updatedAt: this.updatedAt
+			updatedAt: this.updatedAt,
 		};
 	}
 

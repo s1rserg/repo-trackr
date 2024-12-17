@@ -72,7 +72,7 @@ class TextService implements Service {
 		let creatorGitEmail = await this.gitEmailService.findByEmail(creatorLogin);
 
 		if (!creatorGitEmail) {
-			return null
+			return null;
 		}
 
 		try {

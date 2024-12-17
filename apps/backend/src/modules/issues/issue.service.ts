@@ -353,7 +353,7 @@ class IssueService implements Service {
 				);
 
 				const existingIssueObject = existingIssue?.toObject();
-				
+
 				if (existingIssue) {
 					await this.issueRepository.updateCustom(
 						existingIssueObject?.id || 0,

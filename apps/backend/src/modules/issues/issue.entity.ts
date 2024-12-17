@@ -193,7 +193,7 @@ class IssueEntity implements Entity {
 			subIssuesTotalCount: this.subIssuesTotalCount,
 			commentsCount: this.commentsCount,
 			createdAt: this.createdAt,
-			updatedAt: this.updatedAt
+			updatedAt: this.updatedAt,
 		};
 	}
 

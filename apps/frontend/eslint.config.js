@@ -87,7 +87,7 @@ const overridesConfigs = [
 		rules: {
 			"import/no-default-export": ["off"],
 		},
-	}
+	},
 ];
 
 /** @type {FlatConfig[]} */
