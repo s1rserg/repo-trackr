@@ -23,6 +23,9 @@ type EnvironmentSchema = {
 		EXPIRATION_TIME: string;
 		SECRET: string;
 	};
+	API: {
+		GEMINI: string;
+	}
 };
 
 export { type EnvironmentSchema };

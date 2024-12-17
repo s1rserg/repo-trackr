@@ -116,6 +116,14 @@ class BaseConfig implements Config {
 					format: String,
 				},
 			},
+			API: {
+				GEMINI: {
+					default: null,
+					doc: "Gemini API key",
+					env: "API_GEMINI",
+					format: String,
+				},
+			}
 		});
 	}
 }
