@@ -1,117 +1,107 @@
-import {
-	type IssueGetAllItemResponseDto,
-	type Entity,
-} from "~/libs/types/types.js";
 import { type GitEmailModel } from "~/modules/git-emails/git-emails.js";
-
 import { type ProjectModel } from "../projects/project.model.js";
+import { type Entity } from "~/libs/types/types.js";
 
-class IssueEntity implements Entity {
-	private number!: number;
+class TextEntity implements Entity {
+	// Fields
 	private creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
-	private assigneeGitEmail!: Pick<GitEmailModel, "contributor" | "id"> | null;
 	private project!: Pick<ProjectModel, "id">;
-	private title!: string;
+	private sourceType!: string;
+	private sourceNumber!: number;
 	private body!: string;
-	private state!: string;
-	private closedAt!: string | null;
-	private reactionsTotalCount!: number;
-	private subIssuesTotalCount!: number;
-	private commentsCount!: number;
+	private url!: string;
+	private sentimentScore!: number | null;
+	private sentimentLabel!: string | null;
+	private reactionsPlusCount!: number;
+	private reactionsMinusCount!: number;
 	private id: null | number;
 	private createdAt: null | string;
 	private updatedAt: null | string;
 
 	private constructor({
-		number,
 		creatorGitEmail,
-		assigneeGitEmail,
 		project,
-		title,
+		sourceType,
+		sourceNumber,
 		body,
-		state,
-		closedAt,
-		reactionsTotalCount,
-		subIssuesTotalCount,
-		commentsCount,
+		url,
+		sentimentScore,
+		sentimentLabel,
+		reactionsPlusCount,
+		reactionsMinusCount,
 		id,
 		createdAt,
 		updatedAt,
 	}: {
-		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
 		project: Pick<ProjectModel, "id">;
-		title: string;
+		sourceType: string;
+		sourceNumber: number;
 		body: string;
-		state: string;
-		closedAt: string | null;
-		reactionsTotalCount: number;
-		subIssuesTotalCount: number;
-		commentsCount: number;
+		url: string;
+		sentimentScore: number | null;
+		sentimentLabel: string | null;
+		reactionsPlusCount: number;
+		reactionsMinusCount: number;
 		id: null | number;
 		createdAt: null | string;
 		updatedAt: null | string;
 	}) {
-		this.number = number;
 		this.creatorGitEmail = creatorGitEmail;
-		this.assigneeGitEmail = assigneeGitEmail;
 		this.project = project;
-		this.title = title;
+		this.sourceType = sourceType;
+		this.sourceNumber = sourceNumber;
 		this.body = body;
-		this.state = state;
-		this.closedAt = closedAt;
-		this.reactionsTotalCount = reactionsTotalCount;
-		this.subIssuesTotalCount = subIssuesTotalCount;
-		this.commentsCount = commentsCount;
+		this.url = url;
+		this.sentimentScore = sentimentScore;
+		this.sentimentLabel = sentimentLabel;
+		this.reactionsPlusCount = reactionsPlusCount;
+		this.reactionsMinusCount = reactionsMinusCount;
 		this.id = id;
 		this.createdAt = createdAt;
 		this.updatedAt = updatedAt;
 	}
 
 	public static initialize({
-		number,
 		creatorGitEmail,
-		assigneeGitEmail,
 		project,
-		title,
+		sourceType,
+		sourceNumber,
 		body,
-		state,
-		closedAt,
-		reactionsTotalCount,
-		subIssuesTotalCount,
-		commentsCount,
+		url,
+		sentimentScore,
+		sentimentLabel,
+		reactionsPlusCount,
+		reactionsMinusCount,
 		id,
 		createdAt,
 		updatedAt,
 	}: {
-		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
 		project: Pick<ProjectModel, "id">;
-		title: string;
+		sourceType: string;
+		sourceNumber: number;
 		body: string;
-		state: string;
-		closedAt: string | null;
-		reactionsTotalCount: number;
-		subIssuesTotalCount: number;
-		commentsCount: number;
+		url: string;
+		sentimentScore: number | null;
+		sentimentLabel: string | null;
+		reactionsPlusCount: number;
+		reactionsMinusCount: number;
 		id: null | number;
 		createdAt: null | string;
 		updatedAt: null | string;
-	}): IssueEntity {
-		return new IssueEntity({
-			number,
+	}): TextEntity {
+		return new TextEntity({
 			creatorGitEmail,
-			assigneeGitEmail,
 			project,
-			title,
+			sourceType,
+			sourceNumber,
 			body,
-			state,
-			closedAt,
-			reactionsTotalCount,
-			subIssuesTotalCount,
-			commentsCount,
+			url,
+			sentimentScore,
+			sentimentLabel,
+			reactionsPlusCount,
+			reactionsMinusCount,
 			id,
 			createdAt,
 			updatedAt,
@@ -119,46 +109,43 @@ class IssueEntity implements Entity {
 	}
 
 	public static initializeNew({
-		number,
 		creatorGitEmail,
-		assigneeGitEmail,
 		project,
-		title,
+		sourceType,
+		sourceNumber,
 		body,
-		state,
-		closedAt,
-		reactionsTotalCount,
-		subIssuesTotalCount,
-		commentsCount,
+		url,
+		sentimentScore,
+		sentimentLabel,
+		reactionsPlusCount,
+		reactionsMinusCount,
 		createdAt,
 		updatedAt,
 	}: {
-		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
 		project: Pick<ProjectModel, "id">;
-		title: string;
+		sourceType: string;
+		sourceNumber: number;
 		body: string;
-		state: string;
-		closedAt: string | null;
-		reactionsTotalCount: number;
-		subIssuesTotalCount: number;
-		commentsCount: number;
+		url: string;
+		sentimentScore: number | null;
+		sentimentLabel: string | null;
+		reactionsPlusCount: number;
+		reactionsMinusCount: number;
 		createdAt: null | string;
 		updatedAt: null | string;
-	}): IssueEntity {
-		return new IssueEntity({
-			number,
+	}): TextEntity {
+		return new TextEntity({
 			creatorGitEmail,
-			assigneeGitEmail,
 			project,
-			title,
+			sourceType,
+			sourceNumber,
 			body,
-			state,
-			closedAt,
-			reactionsTotalCount,
-			subIssuesTotalCount,
-			commentsCount,
+			url,
+			sentimentScore,
+			sentimentLabel,
+			reactionsPlusCount,
+			reactionsMinusCount,
 			id: null,
 			createdAt,
 			updatedAt,
@@ -166,63 +153,48 @@ class IssueEntity implements Entity {
 	}
 
 	public toNewObject(): {
-		number: number;
 		creatorGitEmail: Pick<GitEmailModel, "contributor" | "id">;
-		assigneeGitEmail: Pick<GitEmailModel, "contributor" | "id"> | null;
 		project: Pick<ProjectModel, "id">;
-		title: string;
+		sourceType: string;
+		sourceNumber: number;
 		body: string;
-		state: string;
-		closedAt: string | null;
-		reactionsTotalCount: number;
-		subIssuesTotalCount: number;
-		commentsCount: number;
+		url: string;
+		sentimentScore: number | null;
+		sentimentLabel: string | null;
+		reactionsPlusCount: number;
+		reactionsMinusCount: number;
 	} {
 		return {
-			number: this.number,
 			creatorGitEmail: this.creatorGitEmail,
-			assigneeGitEmail: this.assigneeGitEmail,
 			project: this.project,
-			title: this.title,
+			sourceType: this.sourceType,
+			sourceNumber: this.sourceNumber,
 			body: this.body,
-			state: this.state,
-			closedAt: this.closedAt,
-			reactionsTotalCount: this.reactionsTotalCount,
-			subIssuesTotalCount: this.subIssuesTotalCount,
-			commentsCount: this.commentsCount,
+			url: this.url,
+			sentimentScore: this.sentimentScore,
+			sentimentLabel: this.sentimentLabel,
+			reactionsPlusCount: this.reactionsPlusCount,
+			reactionsMinusCount: this.reactionsMinusCount,
 		};
 	}
 
-	public toObject(): IssueGetAllItemResponseDto {
+	public toObject(): TextGetAllItemResponseDto {
 		return {
-			number: this.number,
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-			creatorGitEmail: this.creatorGitEmail
-				? {
-						contributor: this.creatorGitEmail.contributor,
-						id: this.creatorGitEmail.id,
-					}
-				: null,
-			assigneeGitEmail: this.assigneeGitEmail
-				? {
-						contributor: this.assigneeGitEmail.contributor,
-						id: this.assigneeGitEmail.id,
-					}
-				: null,
-			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-			project: this.project ? { id: this.project.id } : null,
-			title: this.title,
+			creatorGitEmail: this.creatorGitEmail,
+			project: this.project,
+			sourceType: this.sourceType,
+			sourceNumber: this.sourceNumber,
 			body: this.body,
-			state: this.state,
-			closedAt: this.closedAt,
-			reactionsTotalCount: this.reactionsTotalCount,
-			subIssuesTotalCount: this.subIssuesTotalCount,
-			commentsCount: this.commentsCount,
-			createdAt: this.createdAt as string,
-			updatedAt: this.updatedAt as string,
-			id: this.id as number,
+			url: this.url,
+			sentimentScore: this.sentimentScore,
+			sentimentLabel: this.sentimentLabel,
+			reactionsPlusCount: this.reactionsPlusCount,
+			reactionsMinusCount: this.reactionsMinusCount,
+			id: this.id,
+			createdAt: this.createdAt,
+			updatedAt: this.updatedAt,
 		};
 	}
 }
 
-export { IssueEntity };
+export { TextEntity };
