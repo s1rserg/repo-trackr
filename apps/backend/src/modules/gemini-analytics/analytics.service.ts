@@ -1,7 +1,13 @@
+import { type TextGetAllItemResponseDto } from "~/libs/types/types.js";
 import { type GeminiAnalyticsApi } from "./analytics-api.js";
 
 type Constructor = {
 	geminiAnalyticsApi: GeminiAnalyticsApi;
+};
+
+type SentimentAnalysis = {
+	sentimentScore: number;
+	sentimentLabel: string;
 };
 
 class GeminiAnalyticsService {
@@ -11,11 +17,16 @@ class GeminiAnalyticsService {
 		this.geminiAnalyticsApi = geminiAnalyticsApi;
 	}
 
-	public async getSantimentAnalysis(
-		
-	): Promise<any> {
-		const prompt = "analyse this"
+	public async getSentimentAnalysis(
+		items: TextGetAllItemResponseDto[],
+	): Promise<SentimentAnalysis[]> {
+		let prompt = "";
 
+		for (let i = 0; i < items.length; i++) {
+			prompt += String(i) + ". " + (items[i]?.body || "");
+		}
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return await this.geminiAnalyticsApi.fetchResponse(prompt);
 	}
 }
