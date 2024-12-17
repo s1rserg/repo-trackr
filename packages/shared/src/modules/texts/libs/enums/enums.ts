@@ -1,1 +1,1 @@
-export { PullsApiPath } from "./pulls-api-path.enum.js";
+export { TextsApiPath } from "./texts-api-path.enum.js";

@@ -1,4 +1,4 @@
-import { type PullGetAllItemAnalyticsResponseDto } from "./pull-get-all-item-analytics-response-dto.type.js";
+import { type PullGetAllItemAnalyticsResponseDto } from "./text-get-all-item-analytics-response-dto.type.js";
 
 type PullGetAllAnalyticsResponseDto = {
 	items: PullGetAllItemAnalyticsResponseDto[];

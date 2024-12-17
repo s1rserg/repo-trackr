@@ -1,8 +1,8 @@
-type PullQueryParameters = {
+type TextQueryParameters = {
 	contributorName?: string | undefined;
 	endDate: string;
 	projectId?: number | undefined;
 	startDate: string;
 };
 
-export { type PullQueryParameters };
+export { type TextQueryParameters };
