@@ -45,19 +45,18 @@ interface GithubPullResponse {
 	state: string;
 	closed_at: string | null;
 	merged_at: string | null;
-	comments: number;
 	created_at: string;
 	updated_at: string;
 	draft: boolean;
 }
 
 interface GithubPullItemResponse {
-	commentsCount: number;
-	reviewCommentsCount: number;
+	comments: number;
+	review_comments: number;
 	additions: number;
 	deletions: number;
 	commits: number;
-	changedFiles: number;
+	changed_files: number;
 }
 
 interface GithubTextResponse {
@@ -99,6 +98,7 @@ class AnalyticsApi extends BaseHTTPApi {
 				method: "GET",
 				query: {
 					since,
+					per_page: 100,
 				},
 			},
 		);
@@ -146,6 +146,7 @@ class AnalyticsApi extends BaseHTTPApi {
 				method: "GET",
 				query: {
 					since,
+					per_page: 100,
 				},
 			},
 		);
@@ -226,6 +227,7 @@ class AnalyticsApi extends BaseHTTPApi {
 				method: "GET",
 				query: {
 					since,
+					per_page: 100,
 				},
 			},
 		);
@@ -300,12 +302,12 @@ class AnalyticsApi extends BaseHTTPApi {
 				updatedAt: pull.updated_at,
 				mergedAt: pull.merged_at,
 				draft: pull.draft,
-				commentsCount: pullDetails.commentsCount,
-				reviewCommentsCount: pullDetails.reviewCommentsCount,
+				commentsCount: pullDetails.comments,
+				reviewCommentsCount: pullDetails.review_comments,
 				additions: pullDetails.additions,
 				deletions: pullDetails.deletions,
 				commits: pullDetails.commits,
-				changedFiles: pullDetails.changedFiles,
+				changedFiles: pullDetails.changed_files,
 			});
 		}
 
