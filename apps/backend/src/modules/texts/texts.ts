@@ -4,25 +4,25 @@ import { gitEmailService } from "~/modules/git-emails/git-emails.js";
 import { projectGroupService } from "~/modules/project-groups/project-groups.js";
 import { projectService } from "~/modules/projects/projects.js";
 
-import { IssueController } from "./text.controller.js";
-import { IssueModel } from "./text.model.js";
-import { IssueRepository } from "./text.repository.js";
-import { IssueService } from "./text.service.js";
+import { TextController } from "./text.controller.js";
+import { TextModel } from "./text.model.js";
+import { TextRepository } from "./text.repository.js";
+import { TextService } from "./text.service.js";
 import { analyticsService } from "../github-analytics/analytics.js";
 
-const issueRepository = new IssueRepository(IssueModel);
-const issueService = new IssueService({
-	issueRepository,
+const textRepository = new TextRepository(TextModel);
+const textService = new TextService({
+	textRepository,
 	contributorService,
 	gitEmailService,
 	projectService,
 	analyticsService,
 });
-const issueController = new IssueController(
+const textController = new TextController(
 	logger,
-	issueService,
+	textService,
 	projectGroupService,
 );
 
-export { issueController, issueService };
-export { IssueService } from "./text.service.js";
+export { textController, textService };
+export { TextService } from "./text.service.js";
