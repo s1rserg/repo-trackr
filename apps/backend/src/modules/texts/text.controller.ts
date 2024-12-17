@@ -32,7 +32,7 @@ class TextController extends BaseController {
 		textService: TextService,
 		projectGroupService: ProjectGroupService,
 	) {
-		super(logger, APIPath.ISSUES);
+		super(logger, APIPath.TEXTS);
 
 		this.textService = textService;
 		this.projectGroupService = projectGroupService;

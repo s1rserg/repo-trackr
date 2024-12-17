@@ -19,4 +19,12 @@ class Abstract extends Model {
 	}
 }
 
-export { Abstract };
+class AbstractWithoutOverride extends Model {
+	public createdAt!: string;
+
+	public id!: number;
+
+	public updatedAt!: string;
+}
+
+export { Abstract, AbstractWithoutOverride };

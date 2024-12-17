@@ -1,4 +1,5 @@
 import { type RelationMappings } from "objection";
+import { AbstractWithoutOverride } from "~/libs/modules/database/abstract.model.js";
 import {
 	AbstractModel,
 	DatabaseTableName,
@@ -6,7 +7,7 @@ import {
 import { GitEmailModel } from "~/modules/git-emails/git-emails.js";
 import { ProjectModel } from "~/modules/projects/project.model.js";
 
-class TextModel extends AbstractModel {
+class TextModel extends AbstractWithoutOverride {
 	public creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
 	public project!: Pick<ProjectModel, "id">;
 	public sourceType!: string;
