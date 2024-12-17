@@ -374,7 +374,7 @@ class AnalyticsApi extends BaseHTTPApi {
 				);
 
 				const linkHeader = response.headers.get("Link");
-				hasNextPage = linkHeader?.includes('rel="next"') || false;
+				hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
 				page++;
 			}
 		}

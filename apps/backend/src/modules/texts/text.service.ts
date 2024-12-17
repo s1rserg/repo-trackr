@@ -169,96 +169,53 @@ class TextService implements Service {
 
 		const dateRange = getDateRange(formattedStartDate, formattedEndDate);
 
-		const INITIAL_ISSUES_COUNT = 0;
+		const INITIAL_COMMENTS_COUNT = 0;
 
 		const contributorMap: Record<
 			string,
 			{
-				textsOpened: number[];
-				textsOpenedClosed: number[];
-				textsAssigned: number[];
-				textsAssignedClosed: number[];
+				comments: number[];
+				pullReviews: number[];
 			}
 		> = {};
 
 		for (const contributor of allContributors.items) {
 			const uniqueKey = `${contributor.name}_${String(contributor.id)}`;
 			contributorMap[uniqueKey] = {
-				textsOpened: Array.from(
+				comments: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_COUNT,
+					() => INITIAL_COMMENTS_COUNT,
 				),
-				textsOpenedClosed: Array.from(
+				pullReviews: Array.from(
 					{ length: dateRange.length },
-					() => INITIAL_ISSUES_COUNT,
-				),
-				textsAssigned: Array.from(
-					{ length: dateRange.length },
-					() => INITIAL_ISSUES_COUNT,
-				),
-				textsAssignedClosed: Array.from(
-					{ length: dateRange.length },
-					() => INITIAL_ISSUES_COUNT,
+					() => INITIAL_COMMENTS_COUNT,
 				),
 			};
 		}
 
 		for (const text of texts) {
-			const { createdAt, closedAt, creatorGitEmail, assigneeGitEmail } = text;
+			const { createdAt, creatorGitEmail, sourceType } = text;
 
 			const { id: creatorId, name: creatorName } = creatorGitEmail.contributor;
 
-			let assigneeId,
-				assigneeName = "";
-
-			if (assigneeGitEmail) {
-				assigneeId = assigneeGitEmail.contributor.id;
-				assigneeName = assigneeGitEmail.contributor.name;
-			}
-
 			const createdDateFormatted = formatDate(new Date(createdAt), "MMM d");
-			const closedDateFormatted = closedAt
-				? formatDate(new Date(closedAt), "MMM d")
-				: null;
-
 			const createdDateIndex = dateRange.indexOf(createdDateFormatted);
-			const closedDateIndex = closedDateFormatted
-				? dateRange.indexOf(closedDateFormatted)
-				: -1;
-
 			const creatorKey = `${creatorName}_${String(creatorId)}`;
-			const assigneeKey = `${assigneeName}_${String(assigneeId)}`;
 
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].textsOpened[createdDateIndex]
+				contributorMap[creatorKey].comments[createdDateIndex] && sourceType === "issue_or_pull_comment"
 			) {
-				contributorMap[creatorKey].textsOpened[createdDateIndex]++;
-			}
-
-			if (
-				closedDateIndex >= 0 &&
-				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].textsOpenedClosed[closedDateIndex]
-			) {
-				contributorMap[creatorKey].textsOpenedClosed[closedDateIndex]++;
+				contributorMap[creatorKey].comments[createdDateIndex]++;
 			}
 
 			if (
 				createdDateIndex >= 0 &&
-				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].textsAssigned[createdDateIndex]
+				contributorMap[creatorKey] &&
+				contributorMap[creatorKey].pullReviews[createdDateIndex] && sourceType === "pull_diff_comment"
 			) {
-				contributorMap[assigneeKey].textsAssigned[createdDateIndex]++;
-			}
-
-			if (
-				closedDateIndex >= 0 &&
-				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].textsAssignedClosed[closedDateIndex]
-			) {
-				contributorMap[assigneeKey].textsAssignedClosed[closedDateIndex]++;
+				contributorMap[creatorKey].pullReviews[createdDateIndex]++;
 			}
 		}
 
@@ -267,19 +224,15 @@ class TextService implements Service {
 				([
 					uniqueKey,
 					{
-						textsOpened,
-						textsOpenedClosed,
-						textsAssigned,
-						textsAssignedClosed,
+						comments,
+						pullReviews,
 					},
 				]) => {
 					const [contributorName, contributorId] = uniqueKey.split("_");
 
 					return {
-						textsOpened,
-						textsOpenedClosed,
-						textsAssigned,
-						textsAssignedClosed,
+						comments,
+						pullReviews,
 						contributor: {
 							hiddenAt: null,
 							id: contributorId as string,
@@ -314,8 +267,8 @@ class TextService implements Service {
 			);
 
 			for (const record of texts) {
-				const existingText = await this.textRepository.findByNumber(
-					record.number,
+				const existingText = await this.textRepository.findByUrl(
+					record.url,
 					project.id,
 				);
 
@@ -323,13 +276,11 @@ class TextService implements Service {
 
 				if (existingText) {
 					await this.textRepository.updateCustom(existingTextObject?.id || 0, {
-						title: record.title,
 						body: record.body,
-						state: record.state,
-						closedAt: record.closedAt,
-						reactionsTotalCount: record.reactionsTotalCount,
-						subTextsTotalCount: record.subTextsTotalCount,
-						commentsCount: record.commentsCount,
+						sentimentScore: null,
+						sentimentLabel: null,
+						reactionsPlusCount: record.reactionsPlusCount,
+						reactionsMinusCount: record.reactionsMinusCount,
 						updatedAt: record.updatedAt,
 					});
 				} else {

@@ -1,7 +1,7 @@
-import { type PullGetAllItemAnalyticsResponseDto } from "./text-get-all-item-analytics-response-dto.type.js";
+import { type TextGetAllItemAnalyticsResponseDto } from "./text-get-all-item-analytics-response-dto.type.js";
 
-type PullGetAllAnalyticsResponseDto = {
-	items: PullGetAllItemAnalyticsResponseDto[];
+type TextGetAllAnalyticsResponseDto = {
+	items: TextGetAllItemAnalyticsResponseDto[];
 };
 
-export { type PullGetAllAnalyticsResponseDto };
+export { type TextGetAllAnalyticsResponseDto };

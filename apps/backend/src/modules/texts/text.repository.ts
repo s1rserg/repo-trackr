@@ -130,13 +130,13 @@ class TextRepository implements Repository {
 		};
 	}
 
-	public async findByNumber(
-		textNumber: number,
+	public async findByUrl(
+		url: string,
 		projectId: number,
 	): Promise<TextEntity | null> {
 		const text = await this.textModel
 			.query()
-			.where("number", textNumber)
+			.where("url", url)
 			.andWhere("projectId", projectId)
 			.first();
 
