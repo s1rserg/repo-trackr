@@ -16,37 +16,37 @@ import { type ProjectGroupService } from "~/modules/project-groups/project-group
 import { type UserAuthResponseDto } from "~/modules/users/users.js";
 
 import { type PermissionGetAllItemResponseDto } from "../permissions/libs/types/types.js";
-import { type IssueService } from "./text.service.js";
+import { type TextService } from "./text.service.js";
 import {} from "./libs/types/types.js";
 import {
-	IssuesApiPath,
-	type IssueQueryParameters,
+	TextsApiPath,
+	type TextQueryParameters,
 } from "~/libs/types/types.js";
 
-class IssueController extends BaseController {
-	private issueService: IssueService;
+class TextController extends BaseController {
+	private textService: TextService;
 	private projectGroupService: ProjectGroupService;
 
 	public constructor(
 		logger: Logger,
-		issueService: IssueService,
+		textService: TextService,
 		projectGroupService: ProjectGroupService,
 	) {
 		super(logger, APIPath.ISSUES);
 
-		this.issueService = issueService;
+		this.textService = textService;
 		this.projectGroupService = projectGroupService;
 
 		this.addRoute({
 			handler: (options) =>
 				this.findAll(
 					options as APIHandlerOptions<{
-						query: IssueQueryParameters;
+						query: TextQueryParameters;
 						user: UserAuthResponseDto;
 					}>,
 				),
 			method: "GET",
-			path: IssuesApiPath.ROOT,
+			path: TextsApiPath.ROOT,
 			preHandlers: [
 				checkUserPermissions(
 					[PermissionKey.VIEW_ALL_PROJECTS, PermissionKey.MANAGE_ALL_PROJECTS],
@@ -62,7 +62,7 @@ class IssueController extends BaseController {
 
 	private async findAll(
 		options: APIHandlerOptions<{
-			query: IssueQueryParameters;
+			query: TextQueryParameters;
 			user: UserAuthResponseDto;
 		}>,
 	): Promise<APIHandlerResponse> {
@@ -86,7 +86,7 @@ class IssueController extends BaseController {
 		const userProjectIds = groups.map(({ projectId }) => projectId.id);
 
 		return {
-			payload: await this.issueService.findAll({
+			payload: await this.textService.findAll({
 				endDate,
 				hasRootPermission,
 				startDate,
@@ -99,4 +99,4 @@ class IssueController extends BaseController {
 	}
 }
 
-export { IssueController };
+export { TextController };
