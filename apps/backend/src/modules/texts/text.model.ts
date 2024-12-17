@@ -12,6 +12,7 @@ class TextModel extends AbstractModel {
 	public sourceType!: string;
 	public sourceNumber!: number;
 	public body!: string;
+	public url!: string;
 	public sentimentScore!: number | null;
 	public sentimentLabel!: string | null;
 	public reactionsPlusCount!: number;

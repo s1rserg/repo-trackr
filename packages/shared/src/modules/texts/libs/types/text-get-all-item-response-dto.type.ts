@@ -8,10 +8,11 @@ type TextGetAllItemResponseDto = {
 	};
 	project: { id: number };
 	body: string;
+	url: string;
 	sourceType: string;
 	sourceNumber: number;
-	sentimentScore: number;
-	sentimentLabel: string;
+	sentimentScore: number | null;
+	sentimentLabel: string | null;
 	reactionsPlusCount: number;
 	reactionsMinusCount: number;
 	createdAt: string;

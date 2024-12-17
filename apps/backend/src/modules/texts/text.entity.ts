@@ -1,9 +1,8 @@
 import { type GitEmailModel } from "~/modules/git-emails/git-emails.js";
 import { type ProjectModel } from "../projects/project.model.js";
-import { type Entity } from "~/libs/types/types.js";
+import { type TextGetAllItemResponseDto, type Entity } from "~/libs/types/types.js";
 
 class TextEntity implements Entity {
-	// Fields
 	private creatorGitEmail!: Pick<GitEmailModel, "contributor" | "id">;
 	private project!: Pick<ProjectModel, "id">;
 	private sourceType!: string;
@@ -14,9 +13,9 @@ class TextEntity implements Entity {
 	private sentimentLabel!: string | null;
 	private reactionsPlusCount!: number;
 	private reactionsMinusCount!: number;
-	private id: null | number;
-	private createdAt: null | string;
-	private updatedAt: null | string;
+	private id!: number | null;
+	private createdAt!: string;
+	private updatedAt!: string;
 
 	private constructor({
 		creatorGitEmail,
@@ -44,8 +43,8 @@ class TextEntity implements Entity {
 		reactionsPlusCount: number;
 		reactionsMinusCount: number;
 		id: null | number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 	}) {
 		this.creatorGitEmail = creatorGitEmail;
 		this.project = project;
@@ -88,8 +87,8 @@ class TextEntity implements Entity {
 		reactionsPlusCount: number;
 		reactionsMinusCount: number;
 		id: null | number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 	}): TextEntity {
 		return new TextEntity({
 			creatorGitEmail,
@@ -132,8 +131,8 @@ class TextEntity implements Entity {
 		sentimentLabel: string | null;
 		reactionsPlusCount: number;
 		reactionsMinusCount: number;
-		createdAt: null | string;
-		updatedAt: null | string;
+		createdAt: string;
+		updatedAt: string;
 	}): TextEntity {
 		return new TextEntity({
 			creatorGitEmail,
@@ -190,7 +189,7 @@ class TextEntity implements Entity {
 			sentimentLabel: this.sentimentLabel,
 			reactionsPlusCount: this.reactionsPlusCount,
 			reactionsMinusCount: this.reactionsMinusCount,
-			id: this.id,
+			id: this.id as number,
 			createdAt: this.createdAt,
 			updatedAt: this.updatedAt,
 		};
