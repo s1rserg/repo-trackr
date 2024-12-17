@@ -12,11 +12,11 @@ class GeminiAnalyticsService {
 	}
 
 	public async getSantimentAnalysis(
-		authToken: string,
-		repositoryUrl: string,
-		since: string,
-	): Promise<void> {
-		return await this.geminiAnalyticsApi.fetch(authToken, repositoryUrl, since);
+		
+	): Promise<any> {
+		const prompt = "analyse this"
+
+		return await this.geminiAnalyticsApi.fetchResponse(prompt);
 	}
 }
 
