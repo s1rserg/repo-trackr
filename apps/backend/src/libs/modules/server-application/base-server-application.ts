@@ -289,7 +289,7 @@ class BaseServerApplication implements ServerApplication {
 		void this.services.issueService.collectGithubAnalytics();
 		void this.services.pullService.collectGithubAnalytics();
 		void this.services.textService.collectGithubAnalytics();
-		void this.services.textService.getSentimentAnalysis()
+		void this.services.textService.getSentimentAnalysis();
 	}
 
 	public async initMiddlewares(): Promise<void> {

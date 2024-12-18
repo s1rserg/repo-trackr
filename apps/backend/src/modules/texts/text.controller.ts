@@ -18,10 +18,7 @@ import { type UserAuthResponseDto } from "~/modules/users/users.js";
 import { type PermissionGetAllItemResponseDto } from "../permissions/libs/types/types.js";
 import { type TextService } from "./text.service.js";
 import {} from "./libs/types/types.js";
-import {
-	TextsApiPath,
-	type TextQueryParameters,
-} from "~/libs/types/types.js";
+import { TextsApiPath, type TextQueryParameters } from "~/libs/types/types.js";
 
 class TextController extends BaseController {
 	private textService: TextService;

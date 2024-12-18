@@ -45,7 +45,9 @@ const geminiAnalyticsApi = new GeminiAnalyticsApi({
 	model,
 });
 
-const geminiAnalyticsService = new GeminiAnalyticsService({ geminiAnalyticsApi });
+const geminiAnalyticsService = new GeminiAnalyticsService({
+	geminiAnalyticsApi,
+});
 
 export { geminiAnalyticsApi, geminiAnalyticsService };
 export { GeminiAnalyticsService } from "./analytics.service.js";

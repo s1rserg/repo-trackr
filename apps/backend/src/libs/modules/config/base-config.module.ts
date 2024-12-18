@@ -123,7 +123,7 @@ class BaseConfig implements Config {
 					env: "API_GEMINI",
 					format: String,
 				},
-			}
+			},
 		});
 	}
 }

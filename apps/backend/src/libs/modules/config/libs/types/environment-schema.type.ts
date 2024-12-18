@@ -25,7 +25,7 @@ type EnvironmentSchema = {
 	};
 	API: {
 		GEMINI: string;
-	}
+	};
 };
 
 export { type EnvironmentSchema };

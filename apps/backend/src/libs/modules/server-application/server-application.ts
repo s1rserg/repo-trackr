@@ -46,7 +46,7 @@ const apiV1 = new BaseServerApplicationApi(
 	...projectApiKeyController.routes,
 	...issueController.routes,
 	...pullController.routes,
-	...textController.routes
+	...textController.routes,
 );
 const serverApplication = new BaseServerApplication({
 	apis: [apiV1],
@@ -59,7 +59,7 @@ const serverApplication = new BaseServerApplication({
 		activityLogService,
 		issueService,
 		pullService,
-		textService
+		textService,
 	},
 	taskScheduler,
 	title: "RepoTrackr",

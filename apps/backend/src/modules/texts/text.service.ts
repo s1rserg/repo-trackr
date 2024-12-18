@@ -323,13 +323,12 @@ class TextService implements Service {
 			}
 
 			const { sentimentScore, sentimentLabel } = sentimentAnalysisResult;
-			console.log(sentimentScore, sentimentLabel)
 
-			// await this.textRepository.updateCustom(id, {
-			// 	sentimentScore,
-			// 	sentimentLabel,
-			// 	updatedAt: new Date().toISOString(),
-			// });
+			await this.textRepository.updateCustom(id, {
+				sentimentScore,
+				sentimentLabel,
+				updatedAt: new Date().toISOString(),
+			});
 		}
 	}
 }

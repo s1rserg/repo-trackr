@@ -105,9 +105,7 @@ class TextRepository implements Repository {
 	public async findAllWithoutFilter(): Promise<{ items: TextEntity[] }> {
 		const texts = await this.textModel
 			.query()
-			.withGraphFetched(
-				"[creatorGitEmail.contributor, project]",
-			)
+			.withGraphFetched("[creatorGitEmail.contributor, project]")
 			.modifyGraph("creatorGitEmail.contributor", (builder) => {
 				builder.select("id", "name");
 			})
@@ -121,24 +119,20 @@ class TextRepository implements Repository {
 	public async findAllForSentimentAnalysis(): Promise<{ items: TextEntity[] }> {
 		const texts = await this.textModel
 			.query()
-			.withGraphFetched(
-				"[creatorGitEmail.contributor, project]",
-			)
+			.withGraphFetched("[creatorGitEmail.contributor, project]")
 			.modifyGraph("creatorGitEmail.contributor", (builder) => {
 				builder.select("id", "name");
 			})
 			.where((builder) => {
-				builder
-					.whereNull("sentimentScore")
-					.orWhereNull("sentimentLabel");
+				builder.whereNull("sentimentScore").orWhereNull("sentimentLabel");
 			})
 			.execute();
-	
+
 		return {
 			items: texts.map((text) => TextEntity.initialize(text)),
 		};
 	}
-	
+
 	public async findByUrl(
 		url: string,
 		projectId: number,

@@ -18,7 +18,7 @@ const textService = new TextService({
 	gitEmailService,
 	projectService,
 	analyticsService,
-	geminiAnalyticsService
+	geminiAnalyticsService,
 });
 const textController = new TextController(
 	logger,
