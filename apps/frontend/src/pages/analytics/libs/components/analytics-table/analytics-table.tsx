@@ -9,40 +9,51 @@ import {
 import { type AnalyticsRow } from "../../types/types.js";
 import styles from "./styles.module.css";
 
-type Properties = {
+type MetricConfig = {
+	key: string; // e.g., 'commitsNumber', 'linesAdded'
+	label: string; // e.g., 'Commits', 'Lines Added'
+  };
+  
+  type Properties = {
 	activityLogs: ActivityLogGetAllItemAnalyticsResponseDto[];
 	dateRange: [Date, Date];
 	emptyPlaceholder: string;
 	isLoading: boolean;
-};
-
-const AnalyticsTable = ({
+	metrics: MetricConfig[];
+  };
+  
+  const AnalyticsTable = ({
 	activityLogs,
 	dateRange,
 	emptyPlaceholder,
 	isLoading,
-}: Properties): JSX.Element => {
+	metrics,
+  }: Properties): JSX.Element => {
 	const [startDate, endDate] = dateRange;
 	const dateRangeFormatted = getDateRange(startDate, endDate);
-
+  
+	const metricKeys = metrics.map((metric) => metric.key);
+  
 	const analyticsColumns = getAnalyticsColumns(
-		dateRangeFormatted,
-		styles["analytics-empty-cell"],
+	  dateRangeFormatted,
+	  metricKeys,
+	  styles["analytics-empty-cell"],
 	);
-
-	const analyticsData: AnalyticsRow[] = getAnalyticsRows(activityLogs);
-
+  
+	const analyticsData: AnalyticsRow[] = getAnalyticsRows(activityLogs, metricKeys);
+  
 	return (
-		<div className={styles["analytics-table"]}>
-			<Table<AnalyticsRow>
-				columns={analyticsColumns}
-				data={analyticsData}
-				emptyPlaceholder={emptyPlaceholder}
-				isFullHeight
-				isLoading={isLoading}
-			/>
-		</div>
+	  <div className={styles["analytics-table"]}>
+		<Table<AnalyticsRow>
+		  columns={analyticsColumns}
+		  data={analyticsData}
+		  emptyPlaceholder={emptyPlaceholder}
+		  isFullHeight
+		  isLoading={isLoading}
+		/>
+	  </div>
 	);
-};
-
-export { AnalyticsTable };
+  };
+  
+  export { AnalyticsTable };
+  

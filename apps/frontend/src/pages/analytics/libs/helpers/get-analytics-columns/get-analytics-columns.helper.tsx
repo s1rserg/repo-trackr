@@ -4,35 +4,37 @@ import { type AnalyticsRow } from "../../types/types.js";
 
 const getAnalyticsColumns = (
 	dateRange: string[],
+	metrics: string[],
 	emptyCellClassName?: string,
-): TableColumn<AnalyticsRow>[] => {
+  ): TableColumn<AnalyticsRow>[] => {
 	const columns: TableColumn<AnalyticsRow>[] = [
-		{
-			accessorKey: "contributorName",
-			header: "Name",
-			size: 220,
-		},
+	  {
+		accessorKey: "contributorName",
+		header: "Name",
+		size: 220,
+	  },
 	];
-
-	const dateColumns: TableColumn<AnalyticsRow>[] = dateRange.map(
-		(date, index) => ({
-			accessorKey: `commitsNumber.${String(index)}`,
-			cell: ({ getValue }): JSX.Element => {
-				const value = getValue() as string;
-				const isEmpty = !Number(value);
-
-				return (
-					<span className={isEmpty ? emptyCellClassName : ""}>
-						{isEmpty ? "-" : value}
-					</span>
-				);
-			},
-			header: date,
-			size: 95,
-		}),
+  
+	const metricColumns: TableColumn<AnalyticsRow>[] = metrics.flatMap((metric) =>
+	  dateRange.map((date, index) => ({
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		accessorKey: `metrics.${metric}.${index}`,
+		cell: ({ getValue }): JSX.Element => {
+		  const value = getValue() as string;
+		  const isEmpty = !Number(value);
+  
+		  return (
+			<span className={isEmpty ? emptyCellClassName : ""}>
+			  {isEmpty ? "-" : value}
+			</span>
+		  );
+		},
+		header: date,
+		size: 95,
+	  })),
 	);
-
-	return [...columns, ...dateColumns];
-};
+  
+	return [...columns, ...metricColumns];
+  };
 
 export { getAnalyticsColumns };

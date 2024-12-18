@@ -46,7 +46,7 @@ const { actions, name, reducer } = createSlice({
 		});
 	},
 	initialState,
-	name: "activity",
+	name: "pulls",
 	reducers: {},
 });
 

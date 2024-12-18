@@ -16,7 +16,7 @@ type Constructor = {
 
 class PullApi extends BaseHTTPApi {
 	public constructor({ baseUrl, http, storage }: Constructor) {
-		super({ baseUrl, http, path: APIPath.ACTIVITY_LOGS, storage });
+		super({ baseUrl, http, path: APIPath.PULLS, storage });
 	}
 
 	public async getAll(

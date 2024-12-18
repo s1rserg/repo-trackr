@@ -18,6 +18,9 @@ import {
 	useSearchParams,
 } from "~/libs/hooks/hooks.js";
 import { actions as activityLogActions } from "~/modules/activity/activity.js";
+import { actions as issueActions } from "~/modules/issues/issues.js";
+import { actions as pullActions } from "~/modules/pulls/pulls.js";
+import { actions as textActions } from "~/modules/texts/texts.js";
 
 import {
 	AnalyticsContributorsSearch,
@@ -27,6 +30,7 @@ import {
 	ANALYTICS_DATE_MAX_RANGE,
 	ANALYTICS_DEFAULT_DATE_RANGE,
 	ANALYTICS_LOOKBACK_DAYS_COUNT,
+	metricOptions,
 } from "./libs/constants/constants.js";
 import { getProjectOptions } from "./libs/helpers/helpers.js";
 import styles from "./styles.module.css";
@@ -69,6 +73,17 @@ const Analytics = (): JSX.Element => {
 		},
 	});
 
+	const { control: metricControl } = useAppForm({
+		defaultValues: {
+			metricType: "activityLogs",
+		},
+	});
+
+	const metricTypeValue = useFormWatch({
+		control: metricControl,
+		name: "metricType",
+	});
+
 	const handleSearchChange = useCallback(
 		(value: string) => {
 			onSearch(value);
@@ -84,28 +99,79 @@ const Analytics = (): JSX.Element => {
 	}, [onSelect, projectValue]);
 
 	const handleLoadLogs = useCallback(
-		([startDate, endDate]: [Date, Date], projectId?: null | number) => {
+		(
+			[startDate, endDate]: [Date, Date],
+			projectId?: null | number,
+			metricType: string = "commits",
+		) => {
 			const formattedStartDate = formatDate(
 				getStartOfDay(startDate),
 				"yyyy-MM-dd",
 			);
 			const formattedEndDate = formatDate(getEndOfDay(endDate), "yyyy-MM-dd");
 
-			void dispatch(
-				activityLogActions.loadAll({
-					contributorName: search,
-					endDate: formattedEndDate,
-					projectId: projectId ?? undefined,
-					startDate: formattedStartDate,
-				}),
-			);
+			switch (metricType) {
+				case "commits":
+				case "linesAdded":
+				case "linesDeleted":
+					void dispatch(
+						activityLogActions.loadAll({
+							contributorName: search,
+							endDate: formattedEndDate,
+							projectId: projectId ?? undefined,
+							startDate: formattedStartDate,
+						}),
+					);
+					break;
+
+				case "issuesOpened":
+				case "issuesAssigned":
+				case "issuesAssignedClosed":
+					void dispatch(
+						issueActions.loadAll({
+							contributorName: search,
+							endDate: formattedEndDate,
+							projectId: projectId ?? undefined,
+							startDate: formattedStartDate,
+						}),
+					);
+					break;
+
+				case "pullsOpened":
+				case "pullsOpenedMerged":
+				case "pullsAssigned":
+				case "pullsAssignedMerged":
+					void dispatch(
+						pullActions.loadAll({
+							contributorName: search,
+							endDate: formattedEndDate,
+							projectId: projectId ?? undefined,
+							startDate: formattedStartDate,
+						}),
+					);
+					break;
+
+				case "comments":
+				case "pullReviews":
+					void dispatch(
+						textActions.loadAll({
+							contributorName: search,
+							endDate: formattedEndDate,
+							projectId: projectId ?? undefined,
+							startDate: formattedStartDate,
+						}),
+					);
+					break;
+
+				default:
+			}
 		},
 		[dispatch, search],
 	);
 
 	useEffect(() => {
-		handleLoadLogs(dateRangeValue, projectValue);
-	}, [dateRangeValue, projectValue, handleLoadLogs]);
+		handleLoadLogs(dateRangeValue, projectValue, metricTypeValue);
+	}, [dateRangeValue, projectValue, metricTypeValue, handleLoadLogs]);
 
 	const handleFormSubmit = useCallback(
 		(event_?: React.BaseSyntheticEvent): void => {
@@ -125,6 +191,9 @@ const Analytics = (): JSX.Element => {
 	const emptyPlaceholderMessage = hasSearch
 		? "No contributors matching your search criteria."
 		: "There is nothing yet.";
+
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const selectedMetric = metricOptions[metricTypeValue] || { key: "linesAdded", label: "Lines Added" };
 
 	return (
 		<PageLayout>
@@ -159,11 +228,47 @@ const Analytics = (): JSX.Element => {
 						/>
 					</div>
 				</form>
+				<form className={styles["metric-selection-form"]}>
+					<div className={styles["select-wrapper"]}>
+						<Select
+							control={metricControl}
+							isClearable={false}
+							isLabelHidden
+							label="Select metric type"
+							name="metricType"
+							options={[
+								{ value: "commits", label: "Commits" },
+								{ value: "linesAdded", label: "Lines Added" },
+								{ value: "linesDeleted", label: "Lines Deleted" },
+								{ value: "issuesOpened", label: "Issues Opened" },
+								{ value: "issuesAssigned", label: "Issues Assigned" },
+								{
+									value: "issuesAssignedClosed",
+									label: "Issues Assigned Closed",
+								},
+								{ value: "pullsOpened", label: "Pull Requests Opened" },
+								{
+									value: "pullsOpenedMerged",
+									label: "Pull Requests Opened Merged",
+								},
+								{ value: "pullsAssigned", label: "Pull Requests Assigned" },
+								{
+									value: "pullsAssignedMerged",
+									label: "Pull Requests Assigned Merged",
+								},
+								{ value: "comments", label: "Comments" },
+								{ value: "pullReviews", label: "Pull Request Reviews" },
+							]}
+							placeholder="Select metric type"
+						/>
+					</div>
+				</form>
 				<AnalyticsTable
 					activityLogs={activityLogs}
 					dateRange={dateRangeValue}
 					emptyPlaceholder={emptyPlaceholderMessage}
 					isLoading={isLoading}
+					metrics={[selectedMetric]}
 				/>
 			</section>
 		</PageLayout>
