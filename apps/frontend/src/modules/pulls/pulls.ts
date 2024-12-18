@@ -1,21 +1,13 @@
 import { config } from "~/libs/modules/config/config.js";
 import { http } from "~/libs/modules/http/http.js";
 import { storage } from "~/libs/modules/storage/storage.js";
+import { PullApi } from "./pulls-api.js";
 
-import { ActivityLogApi } from "./pulls-api.js";
-
-const activityLogApi = new ActivityLogApi({
+const pullApi = new PullApi({
 	baseUrl: config.ENV.API.ORIGIN_URL,
 	http,
 	storage,
 });
 
-export { activityLogApi };
-export {
-	type ActivityLogGetAllAnalyticsResponseDto,
-	type ActivityLogGetAllItemAnalyticsResponseDto,
-	type ActivityLogGetAllItemResponseDto,
-	type ActivityLogGetAllResponseDto,
-	type ActivityLogQueryParameters,
-} from "./libs/types/types.js";
+export { pullApi };
 export { actions, reducer } from "./slices/pulls.js";

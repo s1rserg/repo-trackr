@@ -1,20 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-
 import { DataStatus } from "~/libs/enums/enums.js";
-import { type ValueOf } from "~/libs/types/types.js";
+import { type PullGetAllItemAnalyticsResponseDto, type ValueOf } from "~/libs/types/types.js";
 import { type ProjectGetAllItemResponseDto } from "~/modules/projects/projects.js";
-
-import { type ActivityLogGetAllItemAnalyticsResponseDto } from "../libs/types/types.js";
 import { loadAll, loadAllProjects } from "./actions.js";
 
 type State = {
-	activityLogs: ActivityLogGetAllItemAnalyticsResponseDto[];
+	pulls: PullGetAllItemAnalyticsResponseDto[];
 	dataStatus: ValueOf<typeof DataStatus>;
 	projects: ProjectGetAllItemResponseDto[];
 };
 
 const initialState: State = {
-	activityLogs: [],
+	pulls: [],
 	dataStatus: DataStatus.IDLE,
 	projects: [],
 };
@@ -25,11 +22,11 @@ const { actions, name, reducer } = createSlice({
 			state.dataStatus = DataStatus.PENDING;
 		});
 		builder.addCase(loadAll.fulfilled, (state, action) => {
-			state.activityLogs = action.payload.items;
+			state.pulls = action.payload.items;
 			state.dataStatus = DataStatus.FULFILLED;
 		});
 		builder.addCase(loadAll.rejected, (state) => {
-			state.activityLogs = [];
+			state.pulls = [];
 			state.dataStatus = DataStatus.REJECTED;
 		});
 

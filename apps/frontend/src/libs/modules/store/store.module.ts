@@ -46,7 +46,7 @@ import {
 import { reducer as scriptsReducer } from "~/modules/scripts/scripts.js";
 import { userApi, reducer as usersReducer } from "~/modules/users/users.js";
 import { issueApi, reducer as issuesReducer } from "~/modules/issues/issues.js";
-
+import { pullApi, reducer as pullsReducer } from "~/modules/pulls/pulls.js";
 import {
 	handleErrorMiddleware,
 	handleUnauthorizedErrorMiddleware,
@@ -88,7 +88,8 @@ class Store {
 				projects: projectsReducer,
 				scripts: scriptsReducer,
 				users: usersReducer,
-				issues: issuesReducer
+				issues: issuesReducer,
+				pulls: pullsReducer,
 			},
 		});
 	}
@@ -108,7 +109,8 @@ class Store {
 			storage,
 			toastNotifier,
 			userApi,
-			issueApi
+			issueApi,
+			pullApi,
 		};
 	}
 }

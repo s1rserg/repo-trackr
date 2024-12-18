@@ -1,22 +1,20 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-
-import { type AsyncThunkConfig } from "~/libs/types/types.js";
-import { type ProjectGetAllItemResponseDto } from "~/modules/projects/projects.js";
-
 import {
-	type ActivityLogGetAllAnalyticsResponseDto,
-	type ActivityLogQueryParameters,
-} from "../libs/types/types.js";
+	type PullGetAllAnalyticsResponseDto,
+	type PullQueryParameters,
+	type AsyncThunkConfig,
+} from "~/libs/types/types.js";
+import { type ProjectGetAllItemResponseDto } from "~/modules/projects/projects.js";
 import { name as sliceName } from "./pull.slice.js";
 
 const loadAll = createAsyncThunk<
-	ActivityLogGetAllAnalyticsResponseDto,
-	ActivityLogQueryParameters,
+	PullGetAllAnalyticsResponseDto,
+	PullQueryParameters,
 	AsyncThunkConfig
 >(`${sliceName}/load-all`, async (query, { extra }) => {
-	const { activityLogApi } = extra;
+	const { pullApi } = extra;
 
-	return await activityLogApi.getAll(query);
+	return await pullApi.getAll(query);
 });
 
 const loadAllProjects = createAsyncThunk<

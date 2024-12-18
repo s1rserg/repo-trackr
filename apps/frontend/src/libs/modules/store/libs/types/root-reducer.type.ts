@@ -10,6 +10,8 @@ import { type reducer as projectPermissionsReduser } from "~/modules/project-per
 import { type reducer as projectsReducer } from "~/modules/projects/projects.js";
 import { type reducer as scriptsReducer } from "~/modules/scripts/scripts.js";
 import { type reducer as usersReducer } from "~/modules/users/users.js";
+import { type reducer as issuesReducer } from "~/modules/issues/issues.js";
+import { type reducer as pullsReducer } from "~/modules/pulls/pulls.js";
 
 type RootReducer = {
 	activityLogs: ReturnType<typeof activityLogReducer>;
@@ -24,6 +26,8 @@ type RootReducer = {
 	projects: ReturnType<typeof projectsReducer>;
 	scripts: ReturnType<typeof scriptsReducer>;
 	users: ReturnType<typeof usersReducer>;
+	issues: ReturnType<typeof issuesReducer>;
+	pulls: ReturnType<typeof pullsReducer>;
 };
 
 export { type RootReducer };

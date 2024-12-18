@@ -2,12 +2,11 @@ import { APIPath } from "~/libs/enums/enums.js";
 import { BaseHTTPApi } from "~/libs/modules/api/api.js";
 import { type HTTP } from "~/libs/modules/http/http.js";
 import { type Storage } from "~/libs/modules/storage/storage.js";
-
-import { ActivityLogsApiPath } from "./libs/enums/enums.js";
 import {
-	type ActivityLogGetAllAnalyticsResponseDto,
-	type ActivityLogQueryParameters,
-} from "./libs/types/types.js";
+	type PullGetAllAnalyticsResponseDto,
+	type PullQueryParameters,
+	PullsApiPath,
+} from "~/libs/types/types.js";
 
 type Constructor = {
 	baseUrl: string;
@@ -15,14 +14,14 @@ type Constructor = {
 	storage: Storage;
 };
 
-class ActivityLogApi extends BaseHTTPApi {
+class PullApi extends BaseHTTPApi {
 	public constructor({ baseUrl, http, storage }: Constructor) {
 		super({ baseUrl, http, path: APIPath.ACTIVITY_LOGS, storage });
 	}
 
 	public async getAll(
-		query: ActivityLogQueryParameters,
-	): Promise<ActivityLogGetAllAnalyticsResponseDto> {
+		query: PullQueryParameters,
+	): Promise<PullGetAllAnalyticsResponseDto> {
 		const { contributorName, endDate, projectId, startDate } = query;
 
 		const queryToSend = {
@@ -33,7 +32,7 @@ class ActivityLogApi extends BaseHTTPApi {
 		};
 
 		const response = await this.load(
-			this.getFullEndpoint(ActivityLogsApiPath.ROOT, {}),
+			this.getFullEndpoint(PullsApiPath.ROOT, {}),
 			{
 				hasAuth: true,
 				method: "GET",
@@ -41,7 +40,7 @@ class ActivityLogApi extends BaseHTTPApi {
 			},
 		);
 
-		return await response.json<ActivityLogGetAllAnalyticsResponseDto>();
+		return await response.json<PullGetAllAnalyticsResponseDto>();
 	}
 }
-export { ActivityLogApi };
+export { PullApi };
