@@ -12,6 +12,7 @@ import { type projectGroupApi } from "~/modules/project-groups/project-groups.js
 import { type projectPermissionsApi } from "~/modules/project-permissions/project-permissions.js";
 import { type projectApi } from "~/modules/projects/projects.js";
 import { type pullApi } from "~/modules/pulls/pulls.js";
+import { type textApi } from "~/modules/texts/texts.js";
 import { type userApi } from "~/modules/users/users.js";
 
 type ExtraArguments = {
@@ -29,7 +30,8 @@ type ExtraArguments = {
 	toastNotifier: ToastNotifier;
 	userApi: typeof userApi;
 	issueApi: typeof issueApi;
-	pullApi: typeof pullApi
+	pullApi: typeof pullApi;
+	textApi: typeof textApi;
 };
 
 export { type ExtraArguments };

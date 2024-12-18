@@ -12,6 +12,7 @@ import { type reducer as scriptsReducer } from "~/modules/scripts/scripts.js";
 import { type reducer as usersReducer } from "~/modules/users/users.js";
 import { type reducer as issuesReducer } from "~/modules/issues/issues.js";
 import { type reducer as pullsReducer } from "~/modules/pulls/pulls.js";
+import { type reducer as textsReducer } from "~/modules/texts/texts.js";
 
 type RootReducer = {
 	activityLogs: ReturnType<typeof activityLogReducer>;
@@ -28,6 +29,7 @@ type RootReducer = {
 	users: ReturnType<typeof usersReducer>;
 	issues: ReturnType<typeof issuesReducer>;
 	pulls: ReturnType<typeof pullsReducer>;
+	texts: ReturnType<typeof textsReducer>;
 };
 
 export { type RootReducer };

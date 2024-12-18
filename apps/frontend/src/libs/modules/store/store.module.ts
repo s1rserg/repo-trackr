@@ -43,6 +43,7 @@ import {
 	projectApi,
 	reducer as projectsReducer,
 } from "~/modules/projects/projects.js";
+import { textApi, reducer as textsReducer } from "~/modules/texts/texts.js";
 import { reducer as scriptsReducer } from "~/modules/scripts/scripts.js";
 import { userApi, reducer as usersReducer } from "~/modules/users/users.js";
 import { issueApi, reducer as issuesReducer } from "~/modules/issues/issues.js";
@@ -90,6 +91,7 @@ class Store {
 				users: usersReducer,
 				issues: issuesReducer,
 				pulls: pullsReducer,
+				texts: textsReducer,
 			},
 		});
 	}
@@ -111,6 +113,7 @@ class Store {
 			userApi,
 			issueApi,
 			pullApi,
+			textApi,
 		};
 	}
 }
