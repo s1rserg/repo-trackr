@@ -95,8 +95,8 @@ class PullRepository implements Repository {
 				builder.select("id", "name", "hiddenAt");
 			})
 			.whereNull("creatorGitEmail:contributor.hiddenAt")
-			.whereBetween("pulls.date", [startDate, endDate])
-			.orderBy("date");
+			.whereBetween("pulls.updatedAt", [startDate, endDate])
+			.orderBy("updatedAt");
 
 		if (contributorName) {
 			query.whereILike(
@@ -118,7 +118,7 @@ class PullRepository implements Repository {
 			query.whereIn("projectId", permittedProjectIds);
 		}
 
-		const pulls = await query.orderBy("date");
+		const pulls = await query.orderBy("updatedAt");
 
 		return {
 			items: pulls.map((pull) => PullEntity.initialize(pull)),

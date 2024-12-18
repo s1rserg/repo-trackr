@@ -49,6 +49,18 @@ const Analytics = (): JSX.Element => {
 		({ activityLogs }) => activityLogs,
 	);
 
+	const { issues, dataStatus: issuesStatus } = useAppSelector(
+		({ issues }) => issues,
+	);
+
+	const { pulls, dataStatus: pullsStatus } = useAppSelector(
+		({ pulls }) => pulls,
+	);
+
+	const { texts, dataStatus: textsStatus } = useAppSelector(
+		({ texts }) => texts,
+	);
+
 	useEffect(() => {
 		void dispatch(activityLogActions.loadAllProjects());
 	}, [dispatch]);
@@ -75,7 +87,7 @@ const Analytics = (): JSX.Element => {
 
 	const { control: metricControl } = useAppForm({
 		defaultValues: {
-			metricType: "activityLogs",
+			metricType: "commits",
 		},
 	});
 
@@ -111,7 +123,7 @@ const Analytics = (): JSX.Element => {
 			const formattedEndDate = formatDate(getEndOfDay(endDate), "yyyy-MM-dd");
 
 			switch (metricType) {
-				case "commits":
+				case "commitsNumber":
 				case "linesAdded":
 				case "linesDeleted":
 					void dispatch(
@@ -184,8 +196,49 @@ const Analytics = (): JSX.Element => {
 
 	const projectOptions = getProjectOptions(projects);
 
-	const isLoading =
-		dataStatus === DataStatus.IDLE || dataStatus === DataStatus.PENDING;
+	const isLoading = (() => {
+		switch (metricTypeValue) {
+			case "issuesOpened":
+			case "issuesAssigned":
+			case "issuesAssignedClosed":
+				return issuesStatus === DataStatus.IDLE || issuesStatus === DataStatus.PENDING;
+
+			case "pullsOpened":
+			case "pullsOpenedMerged":
+			case "pullsAssigned":
+			case "pullsAssignedMerged":
+				return pullsStatus === DataStatus.IDLE || pullsStatus === DataStatus.PENDING;
+
+			case "comments":
+			case "pullReviews":
+				return textsStatus === DataStatus.IDLE || textsStatus === DataStatus.PENDING;
+
+			default:
+				return dataStatus === DataStatus.IDLE || dataStatus === DataStatus.PENDING;
+		}
+	})();
+
+	const logs = (() => {
+		switch (metricTypeValue) {
+			case "issuesOpened":
+			case "issuesAssigned":
+			case "issuesAssignedClosed":
+				return issues;
+
+			case "pullsOpened":
+			case "pullsOpenedMerged":
+			case "pullsAssigned":
+			case "pullsAssignedMerged":
+				return pulls;
+
+			case "comments":
+			case "pullReviews":
+				return texts;
+
+			default:
+				return activityLogs;
+		}
+	})();
 
 	const hasSearch = search.length !== EMPTY_LENGTH;
 	const emptyPlaceholderMessage = hasSearch
@@ -193,7 +246,7 @@ const Analytics = (): JSX.Element => {
 		: "There is nothing yet.";
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const selectedMetric = metricOptions[metricTypeValue] || { key: "linesAdded", label: "Lines Added" };
+	const selectedMetric = metricOptions[metricTypeValue] || { key: "commitsNumber", label: "commits" };
 
 	return (
 		<PageLayout>
@@ -237,7 +290,7 @@ const Analytics = (): JSX.Element => {
 							label="Select metric type"
 							name="metricType"
 							options={[
-								{ value: "commits", label: "Commits" },
+								{ value: "commitsNumber", label: "Commits" },
 								{ value: "linesAdded", label: "Lines Added" },
 								{ value: "linesDeleted", label: "Lines Deleted" },
 								{ value: "issuesOpened", label: "Issues Opened" },
@@ -264,7 +317,7 @@ const Analytics = (): JSX.Element => {
 					</div>
 				</form>
 				<AnalyticsTable
-					activityLogs={activityLogs}
+					activityLogs={logs}
 					dateRange={dateRangeValue}
 					emptyPlaceholder={emptyPlaceholderMessage}
 					isLoading={isLoading}

@@ -210,7 +210,6 @@ class TextService implements Service {
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].comments[createdDateIndex] &&
 				sourceType === "issue_or_pull_comment"
 			) {
 				contributorMap[creatorKey].comments[createdDateIndex]++;
@@ -219,7 +218,6 @@ class TextService implements Service {
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].pullReviews[createdDateIndex] &&
 				sourceType === "pull_diff_comment"
 			) {
 				contributorMap[creatorKey].pullReviews[createdDateIndex]++;

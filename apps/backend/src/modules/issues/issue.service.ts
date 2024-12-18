@@ -262,35 +262,34 @@ class IssueService implements Service {
 			const creatorKey = `${creatorName}_${String(creatorId)}`;
 			const assigneeKey = `${assigneeName}_${String(assigneeId)}`;
 
-			if (
-				createdDateIndex >= 0 &&
-				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].issuesOpened[createdDateIndex]
-			) {
+			const ensureContributorKey = (key: string): void => {
+				if (!contributorMap[key]) {
+					contributorMap[key] = {
+						issuesOpened: Array.from({ length: dateRange.length }, () => INITIAL_ISSUES_COUNT),
+						issuesOpenedClosed: Array.from({ length: dateRange.length }, () => INITIAL_ISSUES_COUNT),
+						issuesAssigned: Array.from({ length: dateRange.length }, () => INITIAL_ISSUES_COUNT),
+						issuesAssignedClosed: Array.from({ length: dateRange.length }, () => INITIAL_ISSUES_COUNT),
+					};
+				}
+			};
+			
+			if (createdDateIndex >= 0) {
+				ensureContributorKey(creatorKey);
 				contributorMap[creatorKey].issuesOpened[createdDateIndex]++;
 			}
-
-			if (
-				closedDateIndex >= 0 &&
-				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].issuesOpenedClosed[closedDateIndex]
-			) {
+			
+			if (closedDateIndex >= 0) {
+				ensureContributorKey(creatorKey);
 				contributorMap[creatorKey].issuesOpenedClosed[closedDateIndex]++;
 			}
-
-			if (
-				createdDateIndex >= 0 &&
-				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].issuesAssigned[createdDateIndex]
-			) {
+			
+			if (createdDateIndex >= 0 && assigneeKey) {
+				ensureContributorKey(assigneeKey);
 				contributorMap[assigneeKey].issuesAssigned[createdDateIndex]++;
 			}
-
-			if (
-				closedDateIndex >= 0 &&
-				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].issuesAssignedClosed[closedDateIndex]
-			) {
+			
+			if (closedDateIndex >= 0 && assigneeKey) {
+				ensureContributorKey(assigneeKey);
 				contributorMap[assigneeKey].issuesAssignedClosed[closedDateIndex]++;
 			}
 		}

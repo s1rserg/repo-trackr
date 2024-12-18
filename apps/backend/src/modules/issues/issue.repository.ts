@@ -85,8 +85,8 @@ class IssueRepository implements Repository {
 				builder.select("id", "name", "hiddenAt");
 			})
 			.whereNull("creatorGitEmail:contributor.hiddenAt")
-			.whereBetween("issues.date", [startDate, endDate])
-			.orderBy("date");
+			.whereBetween("issues.updatedAt", [startDate, endDate])
+			.orderBy("updatedAt");
 
 		if (contributorName) {
 			query.whereILike(
@@ -108,7 +108,7 @@ class IssueRepository implements Repository {
 			query.whereIn("projectId", permittedProjectIds);
 		}
 
-		const issues = await query.orderBy("date");
+		const issues = await query.orderBy("updatedAt");
 
 		return {
 			items: issues.map((issue) => IssueEntity.initialize(issue)),

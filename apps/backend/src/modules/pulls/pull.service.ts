@@ -274,32 +274,28 @@ class PullService implements Service {
 
 			if (
 				createdDateIndex >= 0 &&
-				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].pullsOpened[createdDateIndex]
+				contributorMap[creatorKey]
 			) {
 				contributorMap[creatorKey].pullsOpened[createdDateIndex]++;
 			}
 
 			if (
 				mergedDateIndex >= 0 &&
-				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].pullsOpenedMerged[mergedDateIndex]
+				contributorMap[creatorKey]
 			) {
 				contributorMap[creatorKey].pullsOpenedMerged[mergedDateIndex]++;
 			}
 
 			if (
 				createdDateIndex >= 0 &&
-				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].pullsAssigned[createdDateIndex]
+				contributorMap[assigneeKey]
 			) {
 				contributorMap[assigneeKey].pullsAssigned[createdDateIndex]++;
 			}
 
 			if (
 				mergedDateIndex >= 0 &&
-				contributorMap[assigneeKey] &&
-				contributorMap[assigneeKey].pullsAssignedMerged[mergedDateIndex]
+				contributorMap[assigneeKey]
 			) {
 				contributorMap[assigneeKey].pullsAssignedMerged[mergedDateIndex]++;
 			}

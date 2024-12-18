@@ -76,8 +76,8 @@ class TextRepository implements Repository {
 				builder.select("id", "name", "hiddenAt");
 			})
 			.whereNull("creatorGitEmail:contributor.hiddenAt")
-			.whereBetween("texts.date", [startDate, endDate])
-			.orderBy("date");
+			.whereBetween("texts.createdAt", [startDate, endDate])
+			.orderBy("createdAt");
 
 		if (contributorName) {
 			query.whereILike(
@@ -95,7 +95,7 @@ class TextRepository implements Repository {
 			query.whereIn("projectId", permittedProjectIds);
 		}
 
-		const texts = await query.orderBy("date");
+		const texts = await query.orderBy("createdAt");
 
 		return {
 			items: texts.map((text) => TextEntity.initialize(text)),
