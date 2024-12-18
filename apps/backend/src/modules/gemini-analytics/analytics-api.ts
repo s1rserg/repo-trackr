@@ -17,11 +17,12 @@ class GeminiAnalyticsApi {
 	public async fetchResponse(prompt: string): Promise<any> {
 		const result = await this.model.generateContent(prompt);
 		const response = await result.response;
-		const text = response.text();
-		console.log(text);
-		
-		return text;
-	}
+		const text = await response.text();
+		const parsedResponse = JSON.parse(text);
+		console.log(parsedResponse);
+	
+		return parsedResponse;
+	}	
 }
 
 export { GeminiAnalyticsApi };

@@ -18,7 +18,7 @@ const schema = {
 			sentimentScore: {
 				type: SchemaType.NUMBER,
 				description:
-					"Sentiment score ranging from -1 (negative) to 1 (positive)",
+					"Sentiment score ranging (spectre) from -1 (negative) to 1 (positive), try not to get all contents value 0, please be more decisive, you can use 0.1, -0.1 for this",
 				nullable: false,
 				minimum: -1,
 				maximum: 1,
@@ -26,7 +26,7 @@ const schema = {
 			sentimentLabel: {
 				type: SchemaType.STRING,
 				description:
-					"Sentiment label, e.g., 'positive', 'neutral', or 'negative' maybe a simple description or reason",
+					"Sentiment label, e.g., 'positive', 'neutral', or 'negative' also 'technical' or smth else, try be more creative here, maybe a simple description or reason",
 				nullable: false,
 			},
 		},
@@ -45,7 +45,7 @@ const geminiAnalyticsApi = new GeminiAnalyticsApi({
 	model,
 });
 
-const analyticsService = new GeminiAnalyticsService({ geminiAnalyticsApi });
+const geminiAnalyticsService = new GeminiAnalyticsService({ geminiAnalyticsApi });
 
-export { geminiAnalyticsApi, analyticsService };
+export { geminiAnalyticsApi, geminiAnalyticsService };
 export { GeminiAnalyticsService } from "./analytics.service.js";
