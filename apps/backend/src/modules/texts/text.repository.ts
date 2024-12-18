@@ -71,11 +71,6 @@ class TextRepository implements Repository {
 		const query = this.textModel
 			.query()
 			.withGraphFetched("[project]")
-			.withGraphJoined("assigneeGitEmail.contributor")
-			.modifyGraph("assigneeGitEmail.contributor", (builder) => {
-				builder.select("id", "name", "hiddenAt");
-			})
-			.whereNull("assigneeGitEmail:contributor.hiddenAt")
 			.withGraphJoined("creatorGitEmail.contributor")
 			.modifyGraph("creatorGitEmail.contributor", (builder) => {
 				builder.select("id", "name", "hiddenAt");
@@ -87,10 +82,6 @@ class TextRepository implements Repository {
 		if (contributorName) {
 			query.whereILike(
 				"creatorGitEmail:contributor.name",
-				`%${contributorName}%`,
-			);
-			query.whereILike(
-				"assigneeGitEmail:contributor.name",
 				`%${contributorName}%`,
 			);
 		}
@@ -115,11 +106,8 @@ class TextRepository implements Repository {
 		const texts = await this.textModel
 			.query()
 			.withGraphFetched(
-				"[assigneeGitEmail.contributor, creatorGitEmail.contributor, project]",
+				"[creatorGitEmail.contributor, project]",
 			)
-			.modifyGraph("assigneeGitEmail.contributor", (builder) => {
-				builder.select("id", "name");
-			})
 			.modifyGraph("creatorGitEmail.contributor", (builder) => {
 				builder.select("id", "name");
 			})
@@ -130,6 +118,27 @@ class TextRepository implements Repository {
 		};
 	}
 
+	public async findAllForSentimentAnalysis(): Promise<{ items: TextEntity[] }> {
+		const texts = await this.textModel
+			.query()
+			.withGraphFetched(
+				"[creatorGitEmail.contributor, project]",
+			)
+			.modifyGraph("creatorGitEmail.contributor", (builder) => {
+				builder.select("id", "name");
+			})
+			.where((builder) => {
+				builder
+					.whereNull("sentimentScore")
+					.orWhereNull("sentimentLabel");
+			})
+			.execute();
+	
+		return {
+			items: texts.map((text) => TextEntity.initialize(text)),
+		};
+	}
+	
 	public async findByUrl(
 		url: string,
 		projectId: number,

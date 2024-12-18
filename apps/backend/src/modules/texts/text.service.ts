@@ -21,6 +21,7 @@ import { type ProjectService } from "~/modules/projects/project.service.js";
 import { TextEntity } from "./text.entity.js";
 import { type TextRepository } from "./text.repository.js";
 import { type AnalyticsService } from "../github-analytics/analytics.js";
+import { type GeminiAnalyticsService } from "../gemini-analytics/analytics.service.js";
 
 type Constructor = {
 	textRepository: TextRepository;
@@ -28,6 +29,7 @@ type Constructor = {
 	gitEmailService: GitEmailService;
 	projectService: ProjectService;
 	analyticsService: AnalyticsService;
+	geminiAnalyticsService: GeminiAnalyticsService;
 };
 
 class TextService implements Service {
@@ -36,6 +38,7 @@ class TextService implements Service {
 	private gitEmailService: GitEmailService;
 	private projectService: ProjectService;
 	private analyticsService: AnalyticsService;
+	private geminiAnalyticsService: GeminiAnalyticsService;
 
 	public constructor({
 		textRepository,
@@ -43,12 +46,14 @@ class TextService implements Service {
 		gitEmailService,
 		projectService,
 		analyticsService,
+		geminiAnalyticsService,
 	}: Constructor) {
 		this.textRepository = textRepository;
 		this.contributorService = contributorService;
 		this.gitEmailService = gitEmailService;
 		this.projectService = projectService;
 		this.analyticsService = analyticsService;
+		this.geminiAnalyticsService = geminiAnalyticsService;
 	}
 
 	public async create({
@@ -205,7 +210,8 @@ class TextService implements Service {
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].comments[createdDateIndex] && sourceType === "issue_or_pull_comment"
+				contributorMap[creatorKey].comments[createdDateIndex] &&
+				sourceType === "issue_or_pull_comment"
 			) {
 				contributorMap[creatorKey].comments[createdDateIndex]++;
 			}
@@ -213,7 +219,8 @@ class TextService implements Service {
 			if (
 				createdDateIndex >= 0 &&
 				contributorMap[creatorKey] &&
-				contributorMap[creatorKey].pullReviews[createdDateIndex] && sourceType === "pull_diff_comment"
+				contributorMap[creatorKey].pullReviews[createdDateIndex] &&
+				sourceType === "pull_diff_comment"
 			) {
 				contributorMap[creatorKey].pullReviews[createdDateIndex]++;
 			}
@@ -221,13 +228,7 @@ class TextService implements Service {
 
 		return {
 			items: Object.entries(contributorMap).map(
-				([
-					uniqueKey,
-					{
-						comments,
-						pullReviews,
-					},
-				]) => {
+				([uniqueKey, { comments, pullReviews }]) => {
 					const [contributorName, contributorId] = uniqueKey.split("_");
 
 					return {
@@ -290,6 +291,45 @@ class TextService implements Service {
 					});
 				}
 			}
+		}
+	}
+
+	public async getSentimentAnalysis(): Promise<void> {
+		const textsToAnalyze =
+			await this.textRepository.findAllForSentimentAnalysis();
+
+		const itemsToAnalyze = textsToAnalyze.items.map((item) => item.toObject());
+
+		if (itemsToAnalyze.length === 0) {
+			return;
+		}
+
+		const sentimentResults =
+			await this.geminiAnalyticsService.getSentimentAnalysis(itemsToAnalyze);
+
+		for (let i = 0; i < itemsToAnalyze.length; i++) {
+			const item = itemsToAnalyze[i];
+
+			if (!item) {
+				continue;
+			}
+
+			const { id } = item;
+
+			const sentimentAnalysisResult = sentimentResults[i];
+
+			if (!sentimentAnalysisResult) {
+				continue;
+			}
+
+			const { sentimentScore, sentimentLabel } = sentimentAnalysisResult;
+			console.log(sentimentScore, sentimentLabel)
+
+			// await this.textRepository.updateCustom(id, {
+			// 	sentimentScore,
+			// 	sentimentLabel,
+			// 	updatedAt: new Date().toISOString(),
+			// });
 		}
 	}
 }

@@ -9,6 +9,7 @@ import { TextModel } from "./text.model.js";
 import { TextRepository } from "./text.repository.js";
 import { TextService } from "./text.service.js";
 import { analyticsService } from "../github-analytics/analytics.js";
+import { geminiAnalyticsService } from "../gemini-analytics/analytics.js";
 
 const textRepository = new TextRepository(TextModel);
 const textService = new TextService({
@@ -17,6 +18,7 @@ const textService = new TextService({
 	gitEmailService,
 	projectService,
 	analyticsService,
+	geminiAnalyticsService
 });
 const textController = new TextController(
 	logger,

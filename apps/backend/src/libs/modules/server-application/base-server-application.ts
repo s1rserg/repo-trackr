@@ -176,6 +176,10 @@ class BaseServerApplication implements ServerApplication {
 			JobCronPattern.TEXTS_ANALYTICS,
 			() => void textService.collectGithubAnalytics(),
 		);
+		this.taskScheduler.start(
+			JobCronPattern.GEMINI_ANALYTICS,
+			() => void textService.getSentimentAnalysis(),
+		);
 	}
 
 	private initPlugins(): void {
@@ -285,6 +289,7 @@ class BaseServerApplication implements ServerApplication {
 		void this.services.issueService.collectGithubAnalytics();
 		void this.services.pullService.collectGithubAnalytics();
 		void this.services.textService.collectGithubAnalytics();
+		void this.services.textService.getSentimentAnalysis()
 	}
 
 	public async initMiddlewares(): Promise<void> {
