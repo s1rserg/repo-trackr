@@ -34,6 +34,7 @@ interface GithubIssueResponse {
 	comments: number;
 	created_at: string;
 	updated_at: string;
+	pull_request?: string;
 }
 
 interface GithubPullResponse {
@@ -85,27 +86,40 @@ class AnalyticsApi extends BaseHTTPApi {
 		repositoryUrl: string,
 		since: string,
 	): Promise<CommitResponseDto> {
-		const response = await this.load(
-			this.getFullEndpoint(
-				GithubApiPath.REPOS,
-				"/",
-				repositoryUrl,
-				GithubApiPath.COMMITS,
-				{},
-			),
-			{
-				authToken,
-				method: "GET",
-				query: {
-					since,
-					per_page: 100,
+		let page = 1;
+		let hasNextPage = true;
+		const allCommits: CommitResponseDto = [];
+	
+		while (hasNextPage) {
+			const response = await this.load(
+				this.getFullEndpoint(
+					GithubApiPath.REPOS,
+					"/",
+					repositoryUrl,
+					GithubApiPath.COMMITS,
+					{},
+				),
+				{
+					authToken,
+					method: "GET",
+					query: {
+						since,
+						per_page: 100,
+						page,
+					},
 				},
-			},
-		);
+			);
+	
+			const commits: CommitResponseDto = await response.json();
+			allCommits.push(...commits);
+	
+			// Check if there's a next page
+			const linkHeader = response.headers.get("Link");
+			hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
+			page++;
+		}
 
-		const commits: CommitResponseDto = await response.json();
-
-		for (const commitItem of commits) {
+		for (const commitItem of allCommits) {
 			const detailedResponse = await this.load(
 				this.getFullEndpoint(
 					GithubApiPath.REPOS,
@@ -121,91 +135,93 @@ class AnalyticsApi extends BaseHTTPApi {
 					method: "GET",
 				},
 			);
+	
 			const detailedCommit: CommitDto = await detailedResponse.json();
 			commitItem.stats = detailedCommit.stats;
 		}
-
-		return commits;
-	}
+	
+		return allCommits;
+	}	
 
 	public async fetchIssues(
 		authToken: string,
 		repositoryUrl: string,
 		since: string,
 	): Promise<IssueCreateItemRequestDto[]> {
-		const response = await this.load(
-			this.getFullEndpoint(
-				GithubApiPath.REPOS,
-				"/",
-				repositoryUrl,
-				GithubApiPath.ISSUES,
-				{},
-			),
-			{
-				authToken,
-				method: "GET",
-				query: {
-					since,
-					per_page: 100,
-				},
-			},
-		);
-
-		const issues: GithubIssueResponse[] = await response.json();
-
+		let page = 1;
+		let hasNextPage = true;
 		const enrichedIssues: IssueCreateItemRequestDto[] = [];
-
-		for (const issue of issues) {
-			const creatorLogin = issue.user.login;
-			const assigneeLogin = issue.assignee ? issue.assignee.login : null;
-
-			const creatorResponse = await this.load(
-				this.getFullEndpoint(GithubApiPath.USERS, "/", issue.user.login, {}),
+	
+		while (hasNextPage) {
+			const response = await this.load(
+				this.getFullEndpoint(
+					GithubApiPath.REPOS,
+					"/",
+					repositoryUrl,
+					GithubApiPath.ISSUES,
+					{},
+				),
 				{
 					authToken,
 					method: "GET",
+					query: {
+						since,
+						per_page: 100,
+						page,
+						state: "all",
+					},
 				},
 			);
-			const creatorDetails: GithubUser = await creatorResponse.json();
-			const creatorName = creatorDetails.name || creatorLogin;
-
-			let assigneeName: string | null = null;
-
-			if (assigneeLogin && issue.assignee) {
-				const assigneeResponse = await this.load(
-					this.getFullEndpoint(
-						GithubApiPath.USERS,
-						"/",
-						issue.assignee.login,
-						{},
-					),
-					{
-						authToken,
-						method: "GET",
-					},
+	
+			const issues: GithubIssueResponse[] = await response.json();
+	
+			const filteredIssues = issues.filter((issue) => !issue.pull_request);
+	
+			for (const issue of filteredIssues) {
+				const creatorLogin = issue.user.login;
+				const assigneeLogin = issue.assignee ? issue.assignee.login : null;
+	
+				const creatorResponse = await this.load(
+					this.getFullEndpoint(GithubApiPath.USERS, "/", creatorLogin, {}),
+					{ authToken, method: "GET" },
 				);
-				const assigneeDetails: GithubUser = await assigneeResponse.json();
-				assigneeName = assigneeDetails.name || assigneeLogin;
+				const creatorDetails: GithubUser = await creatorResponse.json();
+				const creatorName = creatorDetails.name || creatorLogin;
+	
+				let assigneeName: string | null = null;
+				
+				if (assigneeLogin) {
+					const assigneeResponse = await this.load(
+						this.getFullEndpoint(GithubApiPath.USERS, "/", assigneeLogin, {}),
+						{ authToken, method: "GET" },
+					);
+					const assigneeDetails: GithubUser = await assigneeResponse.json();
+					assigneeName = assigneeDetails.name || assigneeLogin;
+				}
+	
+				enrichedIssues.push({
+					number: issue.number,
+					creatorLogin,
+					assigneeLogin,
+					creatorName,
+					assigneeName,
+					title: issue.title,
+					body: issue.body,
+					state: issue.state,
+					closedAt: issue.closed_at,
+					reactionsTotalCount: issue.reactions.total_count,
+					subIssuesTotalCount: issue.subissues ? issue.subissues.length : 0,
+					commentsCount: issue.comments,
+					createdAt: issue.created_at,
+					updatedAt: issue.updated_at,
+				});
 			}
-
-			enrichedIssues.push({
-				number: issue.number,
-				creatorLogin,
-				assigneeLogin,
-				creatorName,
-				assigneeName,
-				title: issue.title,
-				body: issue.body,
-				state: issue.state,
-				closedAt: issue.closed_at,
-				reactionsTotalCount: issue.reactions.total_count,
-				subIssuesTotalCount: issue.subissues ? issue.subissues.length : 0,
-				commentsCount: issue.comments,
-				createdAt: issue.created_at,
-				updatedAt: issue.updated_at,
-			});
+	
+			const linkHeader = response.headers.get("Link");
+			hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
+			page++;
 		}
-
+	
 		return enrichedIssues;
 	}
 
@@ -214,103 +230,99 @@ class AnalyticsApi extends BaseHTTPApi {
 		repositoryUrl: string,
 		since: string,
 	): Promise<PullCreateItemRequestDto[]> {
-		const response = await this.load(
-			this.getFullEndpoint(
-				GithubApiPath.REPOS,
-				"/",
-				repositoryUrl,
-				GithubApiPath.PULLS,
-				{},
-			),
-			{
-				authToken,
-				method: "GET",
-				query: {
-					since,
-					per_page: 100,
-				},
-			},
-		);
-
-		const pulls: GithubPullResponse[] = await response.json();
-
+		let page = 1;
+		let hasNextPage = true;
 		const enrichedPulls: PullCreateItemRequestDto[] = [];
-
-		for (const pull of pulls) {
-			const creatorLogin = pull.user.login;
-			const assigneeLogin = pull.assignee ? pull.assignee.login : null;
-
-			const creatorResponse = await this.load(
-				this.getFullEndpoint(GithubApiPath.USERS, "/", pull.user.login, {}),
-				{
-					authToken,
-					method: "GET",
-				},
-			);
-			const creatorDetails: GithubUser = await creatorResponse.json();
-			const creatorName = creatorDetails.name || creatorLogin;
-
-			let assigneeName: string | null = null;
-
-			if (assigneeLogin && pull.assignee) {
-				const assigneeResponse = await this.load(
-					this.getFullEndpoint(
-						GithubApiPath.USERS,
-						"/",
-						pull.assignee.login,
-						{},
-					),
-					{
-						authToken,
-						method: "GET",
-					},
-				);
-				const assigneeDetails: GithubUser = await assigneeResponse.json();
-				assigneeName = assigneeDetails.name || assigneeLogin;
-			}
-
-			const pullDetailsResponse = await this.load(
+	
+		while (hasNextPage && page < 50) {
+			const response = await this.load(
 				this.getFullEndpoint(
 					GithubApiPath.REPOS,
 					"/",
 					repositoryUrl,
 					GithubApiPath.PULLS,
-					"/",
-					pull.number.toString(),
 					{},
 				),
 				{
 					authToken,
 					method: "GET",
+					query: {
+						since,
+						per_page: 100,
+						page,
+						state: "all",
+					},
 				},
 			);
+	
+			const pulls: GithubPullResponse[] = await response.json();
+	
+			for (const pull of pulls) {
+				const creatorLogin = pull.user.login;
+				const assigneeLogin = pull.assignee ? pull.assignee.login : null;
+	
+				const creatorResponse = await this.load(
+					this.getFullEndpoint(GithubApiPath.USERS, "/", creatorLogin, {}),
+					{ authToken, method: "GET" },
+				);
+				const creatorDetails: GithubUser = await creatorResponse.json();
+				const creatorName = creatorDetails.name || creatorLogin;
+	
+				let assigneeName: string | null = null;
 
-			const pullDetails: GithubPullItemResponse =
-				await pullDetailsResponse.json();
-
-			enrichedPulls.push({
-				number: pull.number,
-				creatorLogin,
-				assigneeLogin,
-				creatorName,
-				assigneeName,
-				title: pull.title,
-				body: pull.body,
-				state: pull.state,
-				closedAt: pull.closed_at,
-				createdAt: pull.created_at,
-				updatedAt: pull.updated_at,
-				mergedAt: pull.merged_at,
-				draft: pull.draft,
-				commentsCount: pullDetails.comments,
-				reviewCommentsCount: pullDetails.review_comments,
-				additions: pullDetails.additions,
-				deletions: pullDetails.deletions,
-				commits: pullDetails.commits,
-				changedFiles: pullDetails.changed_files,
-			});
+				if (assigneeLogin) {
+					const assigneeResponse = await this.load(
+						this.getFullEndpoint(GithubApiPath.USERS, "/", assigneeLogin, {}),
+						{ authToken, method: "GET" },
+					);
+					const assigneeDetails: GithubUser = await assigneeResponse.json();
+					assigneeName = assigneeDetails.name || assigneeLogin;
+				}
+	
+				const pullDetailsResponse = await this.load(
+					this.getFullEndpoint(
+						GithubApiPath.REPOS,
+						"/",
+						repositoryUrl,
+						GithubApiPath.PULLS,
+						"/",
+						pull.number.toString(),
+						{},
+					),
+					{ authToken, method: "GET" },
+				);
+	
+				const pullDetails: GithubPullItemResponse =
+					await pullDetailsResponse.json();
+	
+				enrichedPulls.push({
+					number: pull.number,
+					creatorLogin,
+					assigneeLogin,
+					creatorName,
+					assigneeName,
+					title: pull.title,
+					body: pull.body,
+					state: pull.state,
+					closedAt: pull.closed_at,
+					createdAt: pull.created_at,
+					updatedAt: pull.updated_at,
+					mergedAt: pull.merged_at,
+					draft: pull.draft,
+					commentsCount: pullDetails.comments,
+					reviewCommentsCount: pullDetails.review_comments,
+					additions: pullDetails.additions,
+					deletions: pullDetails.deletions,
+					commits: pullDetails.commits,
+					changedFiles: pullDetails.changed_files,
+				});
+			}
+	
+			const linkHeader = response.headers.get("Link");
+			hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
+			page++;
 		}
-
+	
 		return enrichedPulls;
 	}
 
@@ -376,7 +388,7 @@ class AnalyticsApi extends BaseHTTPApi {
 				);
 
 				const linkHeader = response.headers.get("Link");
-				hasNextPage = linkHeader?.includes('rel="next"') || false;
+				hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
 				page++;
 			}
 		}

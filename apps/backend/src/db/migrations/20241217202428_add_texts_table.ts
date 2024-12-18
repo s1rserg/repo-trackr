@@ -39,7 +39,7 @@ function up(knex: Knex): Promise<void> {
 			.onDelete("CASCADE");
 		table.string(ColumnName.SOURCE_TYPE).notNullable();
 		table.integer(ColumnName.SOURCE_NUMBER).unsigned().notNullable();
-		table.text(ColumnName.BODY).notNullable();
+		table.text(ColumnName.BODY).nullable();
 		table.string(ColumnName.URL).notNullable();
 		table.float(ColumnName.SENTIMENT_SCORE).nullable();
 		table.string(ColumnName.SENTIMENT_LABEL).nullable();

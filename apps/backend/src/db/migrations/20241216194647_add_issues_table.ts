@@ -46,8 +46,8 @@ function up(knex: Knex): Promise<void> {
 			.references("id")
 			.inTable(PROJECTS_TABLE_NAME)
 			.onDelete("CASCADE");
-		table.string(ColumnName.TITLE).notNullable();
-		table.text(ColumnName.BODY).notNullable();
+		table.string(ColumnName.TITLE).nullable();
+		table.text(ColumnName.BODY).nullable();
 		table.string(ColumnName.STATE).notNullable();
 		table.dateTime(ColumnName.CLOSED_AT).nullable();
 		table.integer(ColumnName.REACTIONS_TOTAL_COUNT).unsigned().notNullable();

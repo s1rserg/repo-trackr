@@ -37,7 +37,7 @@ class IssueRepository implements Repository {
 			creatorGitEmail: { id: creatorGitEmail.id },
 			assigneeGitEmail: assigneeGitEmail
 				? { id: assigneeGitEmail.id }
-				: { id: 1 },
+				: { id: 0 },
 			project: { id: project.id },
 			title,
 			body,
