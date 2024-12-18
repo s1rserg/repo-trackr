@@ -272,31 +272,19 @@ class PullService implements Service {
 			const creatorKey = `${creatorName}_${String(creatorId)}`;
 			const assigneeKey = `${assigneeName}_${String(assigneeId)}`;
 
-			if (
-				createdDateIndex >= 0 &&
-				contributorMap[creatorKey]
-			) {
+			if (createdDateIndex >= 0 && contributorMap[creatorKey]) {
 				contributorMap[creatorKey].pullsOpened[createdDateIndex]++;
 			}
 
-			if (
-				mergedDateIndex >= 0 &&
-				contributorMap[creatorKey]
-			) {
+			if (mergedDateIndex >= 0 && contributorMap[creatorKey]) {
 				contributorMap[creatorKey].pullsOpenedMerged[mergedDateIndex]++;
 			}
 
-			if (
-				createdDateIndex >= 0 &&
-				contributorMap[assigneeKey]
-			) {
+			if (createdDateIndex >= 0 && contributorMap[assigneeKey]) {
 				contributorMap[assigneeKey].pullsAssigned[createdDateIndex]++;
 			}
 
-			if (
-				mergedDateIndex >= 0 &&
-				contributorMap[assigneeKey]
-			) {
+			if (mergedDateIndex >= 0 && contributorMap[assigneeKey]) {
 				contributorMap[assigneeKey].pullsAssignedMerged[mergedDateIndex]++;
 			}
 		}

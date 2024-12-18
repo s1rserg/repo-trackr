@@ -8,52 +8,63 @@ import {
 } from "../../helpers/helpers.js";
 import { type AnalyticsRow } from "../../types/types.js";
 import styles from "./styles.module.css";
+import {
+	type IssueGetAllItemAnalyticsResponseDto,
+	type PullGetAllItemAnalyticsResponseDto,
+	type TextGetAllItemAnalyticsResponseDto,
+} from "~/libs/types/types.js";
 
 type MetricConfig = {
 	key: string; // e.g., 'commitsNumber', 'linesAdded'
 	label: string; // e.g., 'Commits', 'Lines Added'
-  };
-  
-  type Properties = {
-	activityLogs: ActivityLogGetAllItemAnalyticsResponseDto[];
+};
+
+type Properties = {
+	activityLogs:
+		| ActivityLogGetAllItemAnalyticsResponseDto[]
+		| IssueGetAllItemAnalyticsResponseDto[]
+		| PullGetAllItemAnalyticsResponseDto[]
+		| TextGetAllItemAnalyticsResponseDto[];
 	dateRange: [Date, Date];
 	emptyPlaceholder: string;
 	isLoading: boolean;
 	metrics: MetricConfig[];
-  };
-  
-  const AnalyticsTable = ({
+};
+
+const AnalyticsTable = ({
 	activityLogs,
 	dateRange,
 	emptyPlaceholder,
 	isLoading,
 	metrics,
-  }: Properties): JSX.Element => {
+}: Properties): JSX.Element => {
 	const [startDate, endDate] = dateRange;
 	const dateRangeFormatted = getDateRange(startDate, endDate);
-  
+
 	const metricKeys = metrics.map((metric) => metric.key);
-  
+
 	const analyticsColumns = getAnalyticsColumns(
-	  dateRangeFormatted,
-	  metricKeys,
-	  styles["analytics-empty-cell"],
+		dateRangeFormatted,
+		metricKeys,
+		styles["analytics-empty-cell"],
 	);
-  
-	const analyticsData: AnalyticsRow[] = getAnalyticsRows(activityLogs, metricKeys);
-  
+
+	const analyticsData: AnalyticsRow[] = getAnalyticsRows(
+		activityLogs,
+		metricKeys,
+	);
+
 	return (
-	  <div className={styles["analytics-table"]}>
-		<Table<AnalyticsRow>
-		  columns={analyticsColumns}
-		  data={analyticsData}
-		  emptyPlaceholder={emptyPlaceholder}
-		  isFullHeight
-		  isLoading={isLoading}
-		/>
-	  </div>
+		<div className={styles["analytics-table"]}>
+			<Table<AnalyticsRow>
+				columns={analyticsColumns}
+				data={analyticsData}
+				emptyPlaceholder={emptyPlaceholder}
+				isFullHeight
+				isLoading={isLoading}
+			/>
+		</div>
 	);
-  };
-  
-  export { AnalyticsTable };
-  
+};
+
+export { AnalyticsTable };

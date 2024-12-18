@@ -196,29 +196,39 @@ const Analytics = (): JSX.Element => {
 
 	const projectOptions = getProjectOptions(projects);
 
-	const isLoading = (() => {
+	const isLoading = ((): boolean => {
 		switch (metricTypeValue) {
 			case "issuesOpened":
 			case "issuesAssigned":
 			case "issuesAssignedClosed":
-				return issuesStatus === DataStatus.IDLE || issuesStatus === DataStatus.PENDING;
+				return (
+					issuesStatus === DataStatus.IDLE ||
+					issuesStatus === DataStatus.PENDING
+				);
 
 			case "pullsOpened":
 			case "pullsOpenedMerged":
 			case "pullsAssigned":
 			case "pullsAssignedMerged":
-				return pullsStatus === DataStatus.IDLE || pullsStatus === DataStatus.PENDING;
+				return (
+					pullsStatus === DataStatus.IDLE || pullsStatus === DataStatus.PENDING
+				);
 
 			case "comments":
 			case "pullReviews":
-				return textsStatus === DataStatus.IDLE || textsStatus === DataStatus.PENDING;
+				return (
+					textsStatus === DataStatus.IDLE || textsStatus === DataStatus.PENDING
+				);
 
 			default:
-				return dataStatus === DataStatus.IDLE || dataStatus === DataStatus.PENDING;
+				return (
+					dataStatus === DataStatus.IDLE || dataStatus === DataStatus.PENDING
+				);
 		}
 	})();
 
-	const logs = (() => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+	const logs = ((): any => {
 		switch (metricTypeValue) {
 			case "issuesOpened":
 			case "issuesAssigned":
@@ -246,76 +256,81 @@ const Analytics = (): JSX.Element => {
 		: "There is nothing yet.";
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const selectedMetric = metricOptions[metricTypeValue] || { key: "commitsNumber", label: "commits" };
+	const selectedMetric = metricOptions[metricTypeValue] || {
+		key: "commitsNumber",
+		label: "commits",
+	};
 
 	return (
 		<PageLayout>
 			<h1 className={styles["title"]}>Analytics</h1>
 			<section>
-				<form className={styles["filters-form"]} onSubmit={handleFormSubmit}>
-					<AnalyticsContributorsSearch
-						control={control}
-						errors={errors}
-						name="search"
-						onChange={handleSearchChange}
-					/>
-					<div className={styles["select-wrapper"]}>
-						<Select
+				<div className={styles["forms"]}>
+					<form className={styles["filters-form"]} onSubmit={handleFormSubmit}>
+						<AnalyticsContributorsSearch
 							control={control}
-							isClearable
-							isLabelHidden
-							isSearchable
-							label="Select project"
-							name="project"
-							options={projectOptions}
-							placeholder="Select project"
+							errors={errors}
+							name="search"
+							onChange={handleSearchChange}
 						/>
-					</div>
-					<div className={styles["date-input-wrapper"]}>
-						<DateInput
-							control={control}
-							maxDate={todayDate}
-							maxRange={ANALYTICS_DATE_MAX_RANGE}
-							minDate={minChoosableDate}
-							name="dateRange"
-						/>
-					</div>
-				</form>
-				<form className={styles["metric-selection-form"]}>
-					<div className={styles["select-wrapper"]}>
-						<Select
-							control={metricControl}
-							isClearable={false}
-							isLabelHidden
-							label="Select metric type"
-							name="metricType"
-							options={[
-								{ value: "commitsNumber", label: "Commits" },
-								{ value: "linesAdded", label: "Lines Added" },
-								{ value: "linesDeleted", label: "Lines Deleted" },
-								{ value: "issuesOpened", label: "Issues Opened" },
-								{ value: "issuesAssigned", label: "Issues Assigned" },
-								{
-									value: "issuesAssignedClosed",
-									label: "Issues Assigned Closed",
-								},
-								{ value: "pullsOpened", label: "Pull Requests Opened" },
-								{
-									value: "pullsOpenedMerged",
-									label: "Pull Requests Opened Merged",
-								},
-								{ value: "pullsAssigned", label: "Pull Requests Assigned" },
-								{
-									value: "pullsAssignedMerged",
-									label: "Pull Requests Assigned Merged",
-								},
-								{ value: "comments", label: "Comments" },
-								{ value: "pullReviews", label: "Pull Request Reviews" },
-							]}
-							placeholder="Select metric type"
-						/>
-					</div>
-				</form>
+						<div className={styles["select-wrapper"]}>
+							<Select
+								control={control}
+								isClearable
+								isLabelHidden
+								isSearchable
+								label="Select project"
+								name="project"
+								options={projectOptions}
+								placeholder="Select project"
+							/>
+						</div>
+						<div className={styles["date-input-wrapper"]}>
+							<DateInput
+								control={control}
+								maxDate={todayDate}
+								maxRange={ANALYTICS_DATE_MAX_RANGE}
+								minDate={minChoosableDate}
+								name="dateRange"
+							/>
+						</div>
+					</form>
+					<form className={styles["metric-selection-form"]}>
+						<div className={styles["select-wrapper"]}>
+							<Select
+								control={metricControl}
+								isClearable={false}
+								isLabelHidden
+								label="Select metric type"
+								name="metricType"
+								options={[
+									{ value: "commitsNumber", label: "Commits" },
+									{ value: "linesAdded", label: "Lines Added" },
+									{ value: "linesDeleted", label: "Lines Deleted" },
+									{ value: "issuesOpened", label: "Issues Opened" },
+									{ value: "issuesAssigned", label: "Issues Assigned" },
+									{
+										value: "issuesAssignedClosed",
+										label: "Issues Assigned Closed",
+									},
+									{ value: "pullsOpened", label: "Pull Requests Opened" },
+									{
+										value: "pullsOpenedMerged",
+										label: "Pull Requests Opened Merged",
+									},
+									{ value: "pullsAssigned", label: "Pull Requests Assigned" },
+									{
+										value: "pullsAssignedMerged",
+										label: "Pull Requests Assigned Merged",
+									},
+									{ value: "comments", label: "Comments" },
+									{ value: "pullReviews", label: "Pull Request Reviews" },
+								]}
+								placeholder="Select metric type"
+							/>
+						</div>
+					</form>
+				</div>
 				<AnalyticsTable
 					activityLogs={logs}
 					dateRange={dateRangeValue}

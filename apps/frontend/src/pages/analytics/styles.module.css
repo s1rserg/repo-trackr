@@ -9,7 +9,6 @@
 	display: flex;
 	gap: 12px;
 	align-items: center;
-	margin-top: 24px;
 }
 
 .select-wrapper {
@@ -20,4 +19,11 @@
 .date-input-wrapper {
 	flex-grow: 1;
 	max-width: 270px;
+}
+
+.forms {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+	margin-top: 24px;
 }
