@@ -49,8 +49,8 @@ import {
 } from "./libs/components/components.js";
 import { checkIsProjectPermitted } from "./libs/helpers/helpers.js";
 import styles from "./styles.module.css";
-import AnalyticsGraphs from "./analytics-chart.js";
 import { type ProjectConfigureAnalyticsRequestDto } from "@repo-trackr/shared";
+import { ProjectAnalytics } from "./libs/components/project-analytics/project-analytics.js";
 
 const Project = (): JSX.Element => {
 	const dispatch = useAppDispatch();
@@ -432,9 +432,7 @@ const Project = (): JSX.Element => {
 								/>
 							</div>
 						)}
-
-						<AnalyticsGraphs />
-
+						<ProjectAnalytics projectId={project.id}/>
 						<div className={styles["contributors-list-wrapper"]}>
 							<ContributorsList
 								activityLogs={projectContributorsActivity}

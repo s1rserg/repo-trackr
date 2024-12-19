@@ -11,12 +11,17 @@ import { actions as pullActions } from "~/modules/pulls/pulls.js";
 import { actions as textActions } from "~/modules/texts/texts.js";
 import { DataStatus } from "~/libs/enums/data-status.enum.js";
 import styles from "./styles.module.css";
+import { Loader } from "~/libs/components/components.js";
+import { AnalyticsChart } from "../analytics-chart/analytics-chart.js";
+import { aggregateAnalytics } from "../../helpers/helpers.js";
 
 type Properties = {
 	projectId: number;
 };
 
-const ProjectAnalytics = ({ projectId }: Properties): JSX.Element => {
+const ProjectAnalytics = ({
+	projectId,
+}: Properties): JSX.Element | undefined => {
 	const dispatch = useAppDispatch();
 
 	const { activityLogs, dataStatus: activityLogStatus } = useAppSelector(
@@ -80,11 +85,32 @@ const ProjectAnalytics = ({ projectId }: Properties): JSX.Element => {
 		handleLoadPulls();
 		handleLoadTexts();
 	}, [
-		projectId,
-		handleLoadActivityLogs,
-		handleLoadIssues,
-		handleLoadPulls,
-		handleLoadTexts,
+		projectId
+	]);
+
+	const aggregatedActivityLogs = aggregateAnalytics(activityLogs, [
+		"commitsNumber",
+		"linesAdded",
+		"linesDeleted",
+	]);
+
+	const aggregatedIssues = aggregateAnalytics(issues, [
+		"issuesOpened",
+		"issuesOpenedClosed",
+		"issuesAssigned",
+		"issuesAssignedClosed",
+	]);
+
+	const aggregatedPulls = aggregateAnalytics(pulls, [
+		"pullsOpened",
+		"pullsOpenedMerged",
+		"pullsAssigned",
+		"pullsAssignedMerged",
+	]);
+
+	const aggregatedTexts = aggregateAnalytics(texts, [
+		"comments",
+		"pullReviews",
 	]);
 
 	const isLoading =
@@ -97,7 +123,18 @@ const ProjectAnalytics = ({ projectId }: Properties): JSX.Element => {
 		pullsStatus === DataStatus.PENDING ||
 		textsStatus === DataStatus.PENDING;
 
-	return <></>;
+	if (isLoading) {
+		return <Loader />;
+	}
+
+	return (
+		<>
+			<AnalyticsChart data={aggregatedActivityLogs.commitsNumber} title="Activity Logs" />
+			{/* <AnalyticsChart data={aggregatedIssues} title="Issues" />
+			<AnalyticsChart data={aggregatedPulls} title="Pull Requests" />
+			<AnalyticsChart data={aggregatedTexts} title="Texts" /> */}
+		</>
+	);
 };
 
 export { ProjectAnalytics };
