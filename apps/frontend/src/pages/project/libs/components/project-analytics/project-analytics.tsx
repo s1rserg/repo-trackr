@@ -84,9 +84,7 @@ const ProjectAnalytics = ({
 		handleLoadIssues();
 		handleLoadPulls();
 		handleLoadTexts();
-	}, [
-		projectId
-	]);
+	}, [projectId]);
 
 	const aggregatedActivityLogs = aggregateAnalytics(activityLogs, [
 		"commitsNumber",
@@ -129,7 +127,11 @@ const ProjectAnalytics = ({
 
 	return (
 		<>
-			<AnalyticsChart data={aggregatedActivityLogs.commitsNumber} title="Activity Logs" />
+			<AnalyticsChart data={aggregatedActivityLogs.commitsNumber} title="Commits Number" />
+			<AnalyticsChart data={aggregatedActivityLogs.linesAdded} title="Lines added" />
+			<AnalyticsChart data={aggregatedActivityLogs.linesDeleted} title="Lines deleted" />
+			<AnalyticsChart data={aggregatedActivityLogs.commitsNumber} title="Commits Number" />
+			<AnalyticsChart data={aggregatedActivityLogs.commitsNumber} title="Commits Number" />
 			{/* <AnalyticsChart data={aggregatedIssues} title="Issues" />
 			<AnalyticsChart data={aggregatedPulls} title="Pull Requests" />
 			<AnalyticsChart data={aggregatedTexts} title="Texts" /> */}
