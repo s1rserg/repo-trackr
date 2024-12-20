@@ -10,11 +10,6 @@ const schema = {
 	items: {
 		type: SchemaType.OBJECT,
 		properties: {
-			content: {
-				type: SchemaType.STRING,
-				description: "The content or text being analyzed",
-				nullable: false,
-			},
 			sentimentScore: {
 				type: SchemaType.NUMBER,
 				description:
@@ -30,7 +25,7 @@ const schema = {
 				nullable: false,
 			},
 		},
-		required: ["content", "sentimentScore", "sentimentLabel"],
+		required: ["sentimentScore", "sentimentLabel"],
 	},
 };
 const model = genAI.getGenerativeModel({
