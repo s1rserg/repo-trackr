@@ -1,7 +1,7 @@
 :root {
 	/* Background Colors */
 	--color-background-primary: #010409;
-	--color-background-secondary: #1A2028;
+	--color-background-secondary: #1a2028;
 	--color-background-hover: #ffffff0f;
 	--color-border-secondary: #303030;
 	--color-border-primary: #3e424d;
@@ -12,8 +12,8 @@
 	--color-text-secondary: #7e8082;
 
 	/* Brand Colors */
-	--color-brand-primary: #2044DA;
-	--color-brand-primary-hover: #1933A4;
+	--color-brand-primary: #2044da;
+	--color-brand-primary-hover: #1933a4;
 
 	/* State Colors */
 	--color-success: #0d9c00;

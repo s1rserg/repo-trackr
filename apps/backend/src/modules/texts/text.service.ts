@@ -100,11 +100,12 @@ class TextService implements Service {
 					updatedAt,
 				}),
 			);
-		} catch {
-			throw new ActivityLogError({
-				message: ExceptionMessage.ACTIVITY_LOG_CREATE_FAILED,
-				status: HTTPCode.FORBIDDEN,
-			});
+		} catch (error) {
+			// throw new ActivityLogError({
+			// 	message: ExceptionMessage.ACTIVITY_LOG_CREATE_FAILED,
+			// 	status: HTTPCode.FORBIDDEN,
+			// });
+			console.error(error);
 		}
 	}
 
@@ -181,6 +182,9 @@ class TextService implements Service {
 			{
 				comments: number[];
 				pullReviews: number[];
+				totalSentimentScore: number;
+				sentimentCount: number;
+				sentimentLabels: {};
 			}
 		> = {};
 
@@ -195,39 +199,86 @@ class TextService implements Service {
 					{ length: dateRange.length },
 					() => INITIAL_COMMENTS_COUNT,
 				),
+				totalSentimentScore: 0,
+				sentimentCount: 0,
+				sentimentLabels: {},
 			};
 		}
 
 		for (const text of texts) {
-			const { createdAt, creatorGitEmail, sourceType } = text;
+			const {
+				createdAt,
+				creatorGitEmail,
+				sourceType,
+				sentimentLabel,
+				sentimentScore,
+			} = text;
 
 			const { id: creatorId, name: creatorName } = creatorGitEmail.contributor;
 
 			const createdDateFormatted = formatDate(new Date(createdAt), "MMM d");
 			const createdDateIndex = dateRange.indexOf(createdDateFormatted);
+
 			const creatorKey = `${creatorName}_${String(creatorId)}`;
 
-			if (
-				createdDateIndex >= 0 &&
-				contributorMap[creatorKey] &&
-				sourceType === "issue_or_pull_comment"
-			) {
-				contributorMap[creatorKey].comments[createdDateIndex]++;
-			}
+			if (createdDateIndex >= 0 && creatorKey) {
+				if (!contributorMap[creatorKey]) {
+					contributorMap[creatorKey] = {
+						comments: new Array(dateRange.length).fill(0),
+						pullReviews: new Array(dateRange.length).fill(0),
+						totalSentimentScore: 0,
+						sentimentCount: 0,
+						sentimentLabels: {},
+					};
+				}
 
-			if (
-				createdDateIndex >= 0 &&
-				contributorMap[creatorKey] &&
-				sourceType === "pull_diff_comment"
-			) {
-				contributorMap[creatorKey].pullReviews[createdDateIndex]++;
+				if (sourceType === "issue_or_pull_comment") {
+					contributorMap[creatorKey].comments[createdDateIndex]++;
+				}
+
+				if (sourceType === "pull_diff_comment") {
+					contributorMap[creatorKey].pullReviews[createdDateIndex]++;
+				}
+
+				// Update sentiment calculations
+				if (sentimentScore !== null && sentimentScore !== undefined) {
+					contributorMap[creatorKey].totalSentimentScore += sentimentScore;
+					contributorMap[creatorKey].sentimentCount++;
+				}
+
+				// Update sentiment labels count
+				if (sentimentLabel) {
+					contributorMap[creatorKey].sentimentLabels[sentimentLabel] =
+						(contributorMap[creatorKey].sentimentLabels[sentimentLabel] || 0) +
+						1;
+				}
 			}
 		}
 
+		// Prepare the result
 		return {
 			items: Object.entries(contributorMap).map(
-				([uniqueKey, { comments, pullReviews }]) => {
+				([
+					uniqueKey,
+					{
+						comments,
+						pullReviews,
+						totalSentimentScore,
+						sentimentCount,
+						sentimentLabels,
+					},
+				]) => {
 					const [contributorName, contributorId] = uniqueKey.split("_");
+
+					// Calculate average sentiment score
+					const averageSentimentScore =
+						sentimentCount > 0 ? totalSentimentScore / sentimentCount : null;
+
+					// Find top 5 sentiment labels
+					const topSentimentLabels = Object.entries(sentimentLabels)
+						.sort(([, countA], [, countB]) => countB - countA)
+						.slice(0, 5)
+						.map(([label]) => label);
 
 					return {
 						comments,
@@ -237,6 +288,8 @@ class TextService implements Service {
 							id: contributorId as string,
 							name: contributorName as string,
 						},
+						averageSentimentScore,
+						topSentimentLabels,
 					};
 				},
 			),
@@ -262,8 +315,7 @@ class TextService implements Service {
 			const texts = await this.analyticsService.getTexts(
 				project.apiKey || "",
 				project.repositoryUrl || "",
-				// formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
-				"2024-12-01T00:00:00"
+				formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
 			);
 
 			for (const record of texts) {

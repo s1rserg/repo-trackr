@@ -9,6 +9,7 @@ export { usePagination } from "./use-pagination/use-pagination.hook.js";
 export { usePopover } from "./use-popover/use-popover.hook.js";
 export { useSearchFilters } from "./use-search-filters/use-search-filters.hook.js";
 export { useSelectedItems } from "./use-selected-items/use-selected-items.hook.js";
+export { useScrollTriggeredCountUp } from "./use-scroll-triggered-countup/use-scroll-triggered-countup.hook.js";
 export { useCallback, useEffect, useMemo, useRef, useState } from "react";
 export {
 	useController as useFormController,

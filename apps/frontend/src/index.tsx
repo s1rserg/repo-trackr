@@ -25,6 +25,7 @@ import { Profile } from "~/pages/profile/profile.jsx";
 import { Project } from "~/pages/project/project.jsx";
 import { ProjectAccessManagement } from "~/pages/project-access-management/project-access-management.jsx";
 import { Projects } from "~/pages/projects/projects.jsx";
+import { Contributor } from "./pages/contributor/contributor.js";
 
 createRoot(document.querySelector("#root") as HTMLElement).render(
 	<StrictMode>
@@ -134,6 +135,24 @@ createRoot(document.querySelector("#root") as HTMLElement).render(
 									</ProtectedRoute>
 								),
 								path: AppRoute.PROJECT,
+							},
+							{
+								element: (
+									<ProtectedRoute
+										routePermissions={[
+											PermissionKey.VIEW_ALL_PROJECTS,
+											PermissionKey.MANAGE_ALL_PROJECTS,
+										]}
+										routeProjectPermissions={[
+											ProjectPermissionKey.VIEW_PROJECT,
+											ProjectPermissionKey.EDIT_PROJECT,
+											ProjectPermissionKey.MANAGE_PROJECT,
+										]}
+									>
+										<Contributor />
+									</ProtectedRoute>
+								),
+								path: AppRoute.CONTRIBUTOR,
 							},
 							{
 								element: (

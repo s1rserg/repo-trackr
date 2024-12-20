@@ -12,6 +12,7 @@ const UserValidationMessage = {
 	PASSWORD_PATTERN:
 		"Password must contain only Latin letters and include at least one uppercase letter, one lowercase letter, one number and one special character.",
 	PASSWORD_TOO_LONG: `Password must be less than ${String(UserValidationRule.PASSWORD_MAXIMUM_LENGTH)} characters long.`,
+	PASSWORDS_DO_NOT_MATCH: "Passwords do not match.",
 } as const;
 
 export { UserValidationMessage };

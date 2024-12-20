@@ -432,7 +432,7 @@ const Project = (): JSX.Element => {
 								/>
 							</div>
 						)}
-						<ProjectAnalytics projectId={project.id}/>
+						<ProjectAnalytics projectId={project.id} />
 						<div className={styles["contributors-list-wrapper"]}>
 							<ContributorsList
 								activityLogs={projectContributorsActivity}

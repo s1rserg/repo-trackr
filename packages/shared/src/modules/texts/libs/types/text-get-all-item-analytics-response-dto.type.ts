@@ -6,6 +6,8 @@ type TextGetAllItemAnalyticsResponseDto = {
 	};
 	comments: number[];
 	pullReviews: number[];
+	averageSentimentScore: number | null;
+	topSentimentLabels: string[];
 };
 
 export { type TextGetAllItemAnalyticsResponseDto };

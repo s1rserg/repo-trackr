@@ -161,15 +161,15 @@ class BaseServerApplication implements ServerApplication {
 			() => void projectService.processInactiveProjects(),
 		);
 		this.taskScheduler.start(
-			JobCronPattern.GITHUB_ANALYTICS,
+			JobCronPattern.COMMIT_ANALYTICS,
 			() => void activityLogService.collectGithubAnalytics(),
 		);
 		this.taskScheduler.start(
-			JobCronPattern.GITHUB_ANALYTICS,
+			JobCronPattern.ISSUES_ANALYTICS,
 			() => void issueService.collectGithubAnalytics(),
 		);
 		this.taskScheduler.start(
-			JobCronPattern.GITHUB_ANALYTICS,
+			JobCronPattern.PULLS_ANALYTICS,
 			() => void pullService.collectGithubAnalytics(),
 		);
 		this.taskScheduler.start(
@@ -289,7 +289,7 @@ class BaseServerApplication implements ServerApplication {
 		void this.services.issueService.collectGithubAnalytics();
 		void this.services.pullService.collectGithubAnalytics();
 		void this.services.textService.collectGithubAnalytics();
-		// void this.services.textService.getSentimentAnalysis();
+		void this.services.textService.getSentimentAnalysis();
 	}
 
 	public async initMiddlewares(): Promise<void> {

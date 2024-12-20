@@ -41,7 +41,12 @@ const userSignUp: z.ZodType<UserSignUpRequestDto> = z
 			.regex(UserValidationRule.PASSWORD_PATTERN, {
 				message: UserValidationMessage.PASSWORD_PATTERN,
 			}),
+		confirmPassword: z.string().trim(),
 	})
-	.required();
+	.required()
+	.refine((data) => data.password === data.confirmPassword, {
+		message: UserValidationMessage.PASSWORDS_DO_NOT_MATCH,
+		path: ["confirmPassword"],
+	});
 
 export { userSignUp };

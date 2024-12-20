@@ -81,6 +81,23 @@ const SignUpForm = ({ onSubmit }: Properties): JSX.Element => {
 					type={isPasswordVisible ? "text" : "password"}
 				/>
 			</div>
+			<div className={styles["password-container"]}>
+				<Input
+					autoComplete="one-time-code"
+					control={control}
+					errors={errors}
+					label="Confirm Password"
+					name="confirmPassword"
+					rightIcon={
+						<IconButton
+							iconName={isPasswordVisible ? "strikedEye" : "eye"}
+							label={isPasswordVisible ? "Hide password" : "Show password"}
+							onClick={handleTogglePasswordVisibility}
+						/>
+					}
+					type={isPasswordVisible ? "text" : "password"}
+				/>
+			</div>
 			<Button label="Create Account" type="submit" />
 		</form>
 	);

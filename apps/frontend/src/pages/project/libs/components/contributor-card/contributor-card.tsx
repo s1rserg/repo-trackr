@@ -13,7 +13,7 @@ import {
 	getStartOfDay,
 } from "~/libs/helpers/helpers.js";
 import { useCallback, useMemo } from "~/libs/hooks/hooks.js";
-import { type ChartData } from "~/libs/types/types.js";
+import { configureString, type ChartData } from "~/libs/types/types.js";
 import {
 	type ContributorActivity,
 	type ContributorGetAllItemResponseDto,
@@ -49,6 +49,10 @@ const ContributorCard = ({
 		[QueryParameterName.PROJECT_ID, projectId],
 		[QueryParameterName.SEARCH, contributor.name],
 	]);
+	const contributorRoute = configureString(AppRoute.CONTRIBUTOR, {
+		projectId,
+		contributorName: contributor.name,
+	});
 
 	const currentDate = getStartOfDay(new Date());
 	const lastActivityDate = contributor.lastActivityDate
@@ -90,7 +94,7 @@ const ContributorCard = ({
 
 	return (
 		<div className={styles["card-container"]}>
-			<NavLink className={styles["card"] as string} to={analyticsRoute} />
+			<NavLink className={styles["card"] as string} to={contributorRoute} />
 			<span className={styles["name"]}>{contributor.name}</span>
 			{hasActivityIndicator && (
 				<ActivityIndicator label={lastUpdateLabel} status={colorStatus} />

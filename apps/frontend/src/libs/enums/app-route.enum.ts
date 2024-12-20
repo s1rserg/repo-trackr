@@ -6,6 +6,7 @@ const AppRoute = {
 	NO_ACCESS: "/no-access",
 	PROFILE: "/profile",
 	PROJECT: "/projects/:id",
+	CONTRIBUTOR: "/projects/:projectId/contributors/:contributorName",
 	PROJECT_ACCESS_MANAGEMENT: "/projects/:id/access-management",
 	PROJECTS: "/projects",
 	ROOT: "/",

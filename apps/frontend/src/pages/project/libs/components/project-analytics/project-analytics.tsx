@@ -10,10 +10,11 @@ import { actions as issueActions } from "~/modules/issues/issues.js";
 import { actions as pullActions } from "~/modules/pulls/pulls.js";
 import { actions as textActions } from "~/modules/texts/texts.js";
 import { DataStatus } from "~/libs/enums/data-status.enum.js";
-import styles from "./styles.module.css";
 import { Loader } from "~/libs/components/components.js";
 import { AnalyticsChart } from "../analytics-chart/analytics-chart.js";
 import { aggregateAnalytics } from "../../helpers/helpers.js";
+import { MetricsCards } from "../metrics-cards/metrics-cards.js";
+import { calculateMetrics } from "../../helpers/calculate-metrics.js";
 
 type Properties = {
 	projectId: number;
@@ -127,14 +128,77 @@ const ProjectAnalytics = ({
 
 	return (
 		<>
-			<AnalyticsChart data={aggregatedActivityLogs.commitsNumber} title="Commits Number" />
-			<AnalyticsChart data={aggregatedActivityLogs.linesAdded} title="Lines added" />
-			<AnalyticsChart data={aggregatedActivityLogs.linesDeleted} title="Lines deleted" />
-			<AnalyticsChart data={aggregatedActivityLogs.commitsNumber} title="Commits Number" />
-			<AnalyticsChart data={aggregatedActivityLogs.commitsNumber} title="Commits Number" />
-			{/* <AnalyticsChart data={aggregatedIssues} title="Issues" />
-			<AnalyticsChart data={aggregatedPulls} title="Pull Requests" />
-			<AnalyticsChart data={aggregatedTexts} title="Texts" /> */}
+			<AnalyticsChart
+				data={aggregatedActivityLogs.commitsNumber || []}
+				title="Commits Number"
+			/>
+			<MetricsCards
+				{...calculateMetrics(aggregatedActivityLogs.commitsNumber || [])}
+			/>
+			<AnalyticsChart
+				data={aggregatedActivityLogs.linesAdded || []}
+				title="Lines added"
+			/>
+			<MetricsCards
+				{...calculateMetrics(aggregatedActivityLogs.linesAdded || [])}
+			/>
+			<AnalyticsChart
+				data={aggregatedActivityLogs.linesDeleted || []}
+				title="Lines deleted"
+			/>
+			<MetricsCards
+				{...calculateMetrics(aggregatedActivityLogs.linesDeleted || [])}
+			/>
+			<AnalyticsChart
+				data={aggregatedIssues.issuesOpened || []}
+				title="Issues opened"
+			/>
+			<MetricsCards
+				{...calculateMetrics(aggregatedIssues.issuesOpened || [])}
+			/>
+			<AnalyticsChart
+				data={aggregatedIssues.issuesAssigned || []}
+				title="Issues assigned"
+			/>
+			<MetricsCards
+				{...calculateMetrics(aggregatedIssues.issuesAssigned || [])}
+			/>
+			<AnalyticsChart
+				data={aggregatedIssues.issuesOpenedClosed || []}
+				title="Issues closed"
+			/>
+			<MetricsCards
+				{...calculateMetrics(aggregatedIssues.issuesOpenedClosed || [])}
+			/>
+			<AnalyticsChart
+				data={aggregatedPulls.pullsOpened || []}
+				title="Pull requests opened"
+			/>
+			<MetricsCards {...calculateMetrics(aggregatedPulls.pullsOpened || [])} />
+			<AnalyticsChart
+				data={aggregatedPulls.pullsAssigned || []}
+				title="Pull requests assigned"
+			/>
+			<MetricsCards
+				{...calculateMetrics(aggregatedPulls.pullsAssigned || [])}
+			/>
+			<AnalyticsChart
+				data={aggregatedPulls.pullsOpenedMerged || []}
+				title="Pull requests closed"
+			/>
+			<MetricsCards
+				{...calculateMetrics(aggregatedPulls.pullsOpenedMerged || [])}
+			/>
+			<AnalyticsChart
+				data={aggregatedTexts.comments || []}
+				title="Comments written"
+			/>
+			<MetricsCards {...calculateMetrics(aggregatedTexts.comments || [])} />
+			<AnalyticsChart
+				data={aggregatedTexts.pullReviews || []}
+				title="Pull reviews written"
+			/>
+			<MetricsCards {...calculateMetrics(aggregatedTexts.pullReviews || [])} />
 		</>
 	);
 };

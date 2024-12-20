@@ -128,11 +128,12 @@ class IssueService implements Service {
 					updatedAt,
 				}),
 			);
-		} catch {
-			throw new ActivityLogError({
-				message: ExceptionMessage.ACTIVITY_LOG_CREATE_FAILED,
-				status: HTTPCode.FORBIDDEN,
-			});
+		} catch (error) {
+			// throw new ActivityLogError({
+			// 	message: ExceptionMessage.ACTIVITY_LOG_CREATE_FAILED,
+			// 	status: HTTPCode.FORBIDDEN,
+			// });
+			console.error(error);
 		}
 	}
 
@@ -354,8 +355,7 @@ class IssueService implements Service {
 			const issues = await this.analyticsService.getIssues(
 				project.apiKey || "",
 				project.repositoryUrl || "",
-				// formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
-				"2024-12-01T00:00:00"
+				formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
 			);
 
 			for (const record of issues) {

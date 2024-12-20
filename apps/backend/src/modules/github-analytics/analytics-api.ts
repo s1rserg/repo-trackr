@@ -91,7 +91,7 @@ class AnalyticsApi extends BaseHTTPApi {
 		const allCommits: CommitResponseDto = [];
 
 		try {
-			while (hasNextPage) {
+			while (hasNextPage && page <= 10) {
 				const response = await this.load(
 					this.getFullEndpoint(
 						GithubApiPath.REPOS,
@@ -149,7 +149,7 @@ class AnalyticsApi extends BaseHTTPApi {
 			}
 		} catch (error) {
 			console.error("Error fetching commits:", error);
-			return []
+			return [];
 		}
 
 		return allCommits;
@@ -165,7 +165,7 @@ class AnalyticsApi extends BaseHTTPApi {
 		const enrichedIssues: IssueCreateItemRequestDto[] = [];
 
 		try {
-			while (hasNextPage) {
+			while (hasNextPage && page <= 10) {
 				const response = await this.load(
 					this.getFullEndpoint(
 						GithubApiPath.REPOS,
@@ -255,7 +255,7 @@ class AnalyticsApi extends BaseHTTPApi {
 			}
 		} catch (error) {
 			console.error("Error fetching issues:", error);
-			return []
+			return [];
 		}
 
 		return enrichedIssues;
@@ -270,7 +270,7 @@ class AnalyticsApi extends BaseHTTPApi {
 		const enrichedPulls: PullCreateItemRequestDto[] = [];
 
 		try {
-			while (hasNextPage && page < 50) {
+			while (hasNextPage && page < 10) {
 				const response = await this.load(
 					this.getFullEndpoint(
 						GithubApiPath.REPOS,
@@ -362,7 +362,7 @@ class AnalyticsApi extends BaseHTTPApi {
 			return enrichedPulls;
 		} catch (error) {
 			console.error("Error fetching issues:", error);
-			return []
+			return [];
 		}
 	}
 
@@ -386,7 +386,7 @@ class AnalyticsApi extends BaseHTTPApi {
 				let page = 1;
 				let hasNextPage = true;
 
-				while (hasNextPage) {
+				while (hasNextPage && page <= 10) {
 					const response = await this.load(
 						this.getFullEndpoint(
 							GithubApiPath.REPOS,
@@ -440,7 +440,7 @@ class AnalyticsApi extends BaseHTTPApi {
 			return allComments;
 		} catch (error) {
 			console.error("Error fetching issues:", error);
-			return []
+			return [];
 		}
 	}
 }

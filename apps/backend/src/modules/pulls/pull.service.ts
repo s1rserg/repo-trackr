@@ -138,11 +138,12 @@ class PullService implements Service {
 					changedFiles,
 				}),
 			);
-		} catch {
-			throw new ActivityLogError({
-				message: ExceptionMessage.ACTIVITY_LOG_CREATE_FAILED,
-				status: HTTPCode.FORBIDDEN,
-			});
+		} catch (error) {
+			// throw new ActivityLogError({
+			// 	message: ExceptionMessage.ACTIVITY_LOG_CREATE_FAILED,
+			// 	status: HTTPCode.FORBIDDEN,
+			// });
+			console.error(error);
 		}
 	}
 
@@ -337,8 +338,7 @@ class PullService implements Service {
 			const pulls = await this.analyticsService.getPulls(
 				project.apiKey || "",
 				project.repositoryUrl || "",
-				// formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
-				"2024-12-01T00:00:00"
+				formatDate(new Date(), "yyyy-MM-dd") + "T00:00:00",
 			);
 
 			for (const record of pulls) {
