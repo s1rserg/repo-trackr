@@ -57,7 +57,6 @@ const jsConfig = {
 		],
 		"object-shorthand": ["error"],
 		"prefer-destructuring": ["error"],
-		quotes: ["error", "double"],
 	},
 };
 
