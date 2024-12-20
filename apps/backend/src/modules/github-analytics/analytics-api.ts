@@ -89,59 +89,71 @@ class AnalyticsApi extends BaseHTTPApi {
 		let page = 1;
 		let hasNextPage = true;
 		const allCommits: CommitResponseDto = [];
-	
-		while (hasNextPage) {
-			const response = await this.load(
-				this.getFullEndpoint(
-					GithubApiPath.REPOS,
-					"/",
-					repositoryUrl,
-					GithubApiPath.COMMITS,
-					{},
-				),
-				{
-					authToken,
-					method: "GET",
-					query: {
-						since,
-						per_page: 100,
-						page,
+
+		try {
+			while (hasNextPage) {
+				const response = await this.load(
+					this.getFullEndpoint(
+						GithubApiPath.REPOS,
+						"/",
+						repositoryUrl,
+						GithubApiPath.COMMITS,
+						{},
+					),
+					{
+						authToken,
+						method: "GET",
+						query: {
+							since,
+							per_page: 100,
+							page,
+						},
 					},
-				},
-			);
-	
-			const commits: CommitResponseDto = await response.json();
-			allCommits.push(...commits);
-	
-			// Check if there's a next page
-			const linkHeader = response.headers.get("Link");
-			hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
-			page++;
+				);
+
+				const commits: CommitResponseDto = await response.json();
+				allCommits.push(...commits);
+
+				// Check if there's a next page
+				const linkHeader = response.headers.get("Link");
+				hasNextPage = linkHeader?.includes('rel="next"') || false;
+				page++;
+			}
+
+			for (const commitItem of allCommits) {
+				try {
+					const detailedResponse = await this.load(
+						this.getFullEndpoint(
+							GithubApiPath.REPOS,
+							"/",
+							repositoryUrl,
+							GithubApiPath.COMMITS,
+							"/",
+							commitItem.sha,
+							{},
+						),
+						{
+							authToken,
+							method: "GET",
+						},
+					);
+
+					const detailedCommit: CommitDto = await detailedResponse.json();
+					commitItem.stats = detailedCommit.stats;
+				} catch (innerError) {
+					console.error(
+						`Error fetching commit details for ${commitItem.sha}:`,
+						innerError,
+					);
+				}
+			}
+		} catch (error) {
+			console.error("Error fetching commits:", error);
+			return []
 		}
 
-		for (const commitItem of allCommits) {
-			const detailedResponse = await this.load(
-				this.getFullEndpoint(
-					GithubApiPath.REPOS,
-					"/",
-					repositoryUrl,
-					GithubApiPath.COMMITS,
-					"/",
-					commitItem.sha,
-					{},
-				),
-				{
-					authToken,
-					method: "GET",
-				},
-			);
-	
-			const detailedCommit: CommitDto = await detailedResponse.json();
-			commitItem.stats = detailedCommit.stats;
-		}
-	
 		return allCommits;
-	}	
+	}
 
 	public async fetchIssues(
 		authToken: string,
@@ -151,80 +163,103 @@ class AnalyticsApi extends BaseHTTPApi {
 		let page = 1;
 		let hasNextPage = true;
 		const enrichedIssues: IssueCreateItemRequestDto[] = [];
-	
-		while (hasNextPage) {
-			const response = await this.load(
-				this.getFullEndpoint(
-					GithubApiPath.REPOS,
-					"/",
-					repositoryUrl,
-					GithubApiPath.ISSUES,
-					{},
-				),
-				{
-					authToken,
-					method: "GET",
-					query: {
-						since,
-						per_page: 100,
-						page,
-						state: "all",
+
+		try {
+			while (hasNextPage) {
+				const response = await this.load(
+					this.getFullEndpoint(
+						GithubApiPath.REPOS,
+						"/",
+						repositoryUrl,
+						GithubApiPath.ISSUES,
+						{},
+					),
+					{
+						authToken,
+						method: "GET",
+						query: {
+							since,
+							per_page: 100,
+							page,
+							state: "all",
+						},
 					},
-				},
-			);
-	
-			const issues: GithubIssueResponse[] = await response.json();
-	
-			const filteredIssues = issues.filter((issue) => !issue.pull_request);
-	
-			for (const issue of filteredIssues) {
-				const creatorLogin = issue.user.login;
-				const assigneeLogin = issue.assignee ? issue.assignee.login : null;
-	
-				const creatorResponse = await this.load(
-					this.getFullEndpoint(GithubApiPath.USERS, "/", creatorLogin, {}),
-					{ authToken, method: "GET" },
 				);
-				const creatorDetails: GithubUser = await creatorResponse.json();
-				const creatorName = creatorDetails.name || creatorLogin;
-	
-				let assigneeName: string | null = null;
-				
-				if (assigneeLogin) {
-					const assigneeResponse = await this.load(
-						this.getFullEndpoint(GithubApiPath.USERS, "/", assigneeLogin, {}),
-						{ authToken, method: "GET" },
-					);
-					const assigneeDetails: GithubUser = await assigneeResponse.json();
-					assigneeName = assigneeDetails.name || assigneeLogin;
+
+				const issues: GithubIssueResponse[] = await response.json();
+				const filteredIssues = issues.filter((issue) => !issue.pull_request);
+
+				for (const issue of filteredIssues) {
+					try {
+						const creatorLogin = issue.user.login;
+						const assigneeLogin = issue.assignee ? issue.assignee.login : null;
+
+						const creatorResponse = await this.load(
+							this.getFullEndpoint(GithubApiPath.USERS, "/", creatorLogin, {}),
+							{ authToken, method: "GET" },
+						);
+						const creatorDetails: GithubUser = await creatorResponse.json();
+						const creatorName = creatorDetails.name || creatorLogin;
+
+						let assigneeName: string | null = null;
+
+						if (assigneeLogin) {
+							try {
+								const assigneeResponse = await this.load(
+									this.getFullEndpoint(
+										GithubApiPath.USERS,
+										"/",
+										assigneeLogin,
+										{},
+									),
+									{ authToken, method: "GET" },
+								);
+								const assigneeDetails: GithubUser =
+									await assigneeResponse.json();
+								assigneeName = assigneeDetails.name || assigneeLogin;
+							} catch (assigneeError) {
+								console.error(
+									`Error fetching assignee details for ${assigneeLogin}:`,
+									assigneeError,
+								);
+							}
+						}
+
+						enrichedIssues.push({
+							number: issue.number,
+							creatorLogin,
+							assigneeLogin,
+							creatorName,
+							assigneeName,
+							title: issue.title,
+							body: issue.body,
+							state: issue.state,
+							closedAt: issue.closed_at,
+							reactionsTotalCount: issue.reactions.total_count,
+							subIssuesTotalCount: issue.subissues ? issue.subissues.length : 0,
+							commentsCount: issue.comments,
+							createdAt: issue.created_at,
+							updatedAt: issue.updated_at,
+						});
+					} catch (innerError) {
+						console.error(
+							`Error processing issue ${issue.number}:`,
+							innerError,
+						);
+					}
 				}
-	
-				enrichedIssues.push({
-					number: issue.number,
-					creatorLogin,
-					assigneeLogin,
-					creatorName,
-					assigneeName,
-					title: issue.title,
-					body: issue.body,
-					state: issue.state,
-					closedAt: issue.closed_at,
-					reactionsTotalCount: issue.reactions.total_count,
-					subIssuesTotalCount: issue.subissues ? issue.subissues.length : 0,
-					commentsCount: issue.comments,
-					createdAt: issue.created_at,
-					updatedAt: issue.updated_at,
-				});
+
+				const linkHeader = response.headers.get("Link");
+				hasNextPage = linkHeader?.includes('rel="next"') || false;
+				page++;
 			}
-	
-			const linkHeader = response.headers.get("Link");
-			hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
-			page++;
+		} catch (error) {
+			console.error("Error fetching issues:", error);
+			return []
 		}
-	
+
 		return enrichedIssues;
 	}
-
 	public async fetchPulls(
 		authToken: string,
 		repositoryUrl: string,
@@ -233,97 +268,102 @@ class AnalyticsApi extends BaseHTTPApi {
 		let page = 1;
 		let hasNextPage = true;
 		const enrichedPulls: PullCreateItemRequestDto[] = [];
-	
-		while (hasNextPage && page < 50) {
-			const response = await this.load(
-				this.getFullEndpoint(
-					GithubApiPath.REPOS,
-					"/",
-					repositoryUrl,
-					GithubApiPath.PULLS,
-					{},
-				),
-				{
-					authToken,
-					method: "GET",
-					query: {
-						since,
-						per_page: 100,
-						page,
-						state: "all",
-					},
-				},
-			);
-	
-			const pulls: GithubPullResponse[] = await response.json();
-	
-			for (const pull of pulls) {
-				const creatorLogin = pull.user.login;
-				const assigneeLogin = pull.assignee ? pull.assignee.login : null;
-	
-				const creatorResponse = await this.load(
-					this.getFullEndpoint(GithubApiPath.USERS, "/", creatorLogin, {}),
-					{ authToken, method: "GET" },
-				);
-				const creatorDetails: GithubUser = await creatorResponse.json();
-				const creatorName = creatorDetails.name || creatorLogin;
-	
-				let assigneeName: string | null = null;
 
-				if (assigneeLogin) {
-					const assigneeResponse = await this.load(
-						this.getFullEndpoint(GithubApiPath.USERS, "/", assigneeLogin, {}),
-						{ authToken, method: "GET" },
-					);
-					const assigneeDetails: GithubUser = await assigneeResponse.json();
-					assigneeName = assigneeDetails.name || assigneeLogin;
-				}
-	
-				const pullDetailsResponse = await this.load(
+		try {
+			while (hasNextPage && page < 50) {
+				const response = await this.load(
 					this.getFullEndpoint(
 						GithubApiPath.REPOS,
 						"/",
 						repositoryUrl,
 						GithubApiPath.PULLS,
-						"/",
-						pull.number.toString(),
 						{},
 					),
-					{ authToken, method: "GET" },
+					{
+						authToken,
+						method: "GET",
+						query: {
+							since,
+							per_page: 100,
+							page,
+							state: "all",
+						},
+					},
 				);
-	
-				const pullDetails: GithubPullItemResponse =
-					await pullDetailsResponse.json();
-	
-				enrichedPulls.push({
-					number: pull.number,
-					creatorLogin,
-					assigneeLogin,
-					creatorName,
-					assigneeName,
-					title: pull.title,
-					body: pull.body,
-					state: pull.state,
-					closedAt: pull.closed_at,
-					createdAt: pull.created_at,
-					updatedAt: pull.updated_at,
-					mergedAt: pull.merged_at,
-					draft: pull.draft,
-					commentsCount: pullDetails.comments,
-					reviewCommentsCount: pullDetails.review_comments,
-					additions: pullDetails.additions,
-					deletions: pullDetails.deletions,
-					commits: pullDetails.commits,
-					changedFiles: pullDetails.changed_files,
-				});
+
+				const pulls: GithubPullResponse[] = await response.json();
+
+				for (const pull of pulls) {
+					const creatorLogin = pull.user.login;
+					const assigneeLogin = pull.assignee ? pull.assignee.login : null;
+
+					const creatorResponse = await this.load(
+						this.getFullEndpoint(GithubApiPath.USERS, "/", creatorLogin, {}),
+						{ authToken, method: "GET" },
+					);
+					const creatorDetails: GithubUser = await creatorResponse.json();
+					const creatorName = creatorDetails.name || creatorLogin;
+
+					let assigneeName: string | null = null;
+
+					if (assigneeLogin) {
+						const assigneeResponse = await this.load(
+							this.getFullEndpoint(GithubApiPath.USERS, "/", assigneeLogin, {}),
+							{ authToken, method: "GET" },
+						);
+						const assigneeDetails: GithubUser = await assigneeResponse.json();
+						assigneeName = assigneeDetails.name || assigneeLogin;
+					}
+
+					const pullDetailsResponse = await this.load(
+						this.getFullEndpoint(
+							GithubApiPath.REPOS,
+							"/",
+							repositoryUrl,
+							GithubApiPath.PULLS,
+							"/",
+							pull.number.toString(),
+							{},
+						),
+						{ authToken, method: "GET" },
+					);
+
+					const pullDetails: GithubPullItemResponse =
+						await pullDetailsResponse.json();
+
+					enrichedPulls.push({
+						number: pull.number,
+						creatorLogin,
+						assigneeLogin,
+						creatorName,
+						assigneeName,
+						title: pull.title,
+						body: pull.body,
+						state: pull.state,
+						closedAt: pull.closed_at,
+						createdAt: pull.created_at,
+						updatedAt: pull.updated_at,
+						mergedAt: pull.merged_at,
+						draft: pull.draft,
+						commentsCount: pullDetails.comments,
+						reviewCommentsCount: pullDetails.review_comments,
+						additions: pullDetails.additions,
+						deletions: pullDetails.deletions,
+						commits: pullDetails.commits,
+						changedFiles: pullDetails.changed_files,
+					});
+				}
+
+				const linkHeader = response.headers.get("Link");
+				hasNextPage = linkHeader?.includes('rel="next"') || false;
+				page++;
 			}
-	
-			const linkHeader = response.headers.get("Link");
-			hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
-			page++;
+
+			return enrichedPulls;
+		} catch (error) {
+			console.error("Error fetching issues:", error);
+			return []
 		}
-	
-		return enrichedPulls;
 	}
 
 	public async fetchTexts(
@@ -341,59 +381,67 @@ class AnalyticsApi extends BaseHTTPApi {
 
 		let allComments: TextCreateItemRequestDto[] = [];
 
-		for (const { path, sourceType } of endpoints) {
-			let page = 1;
-			let hasNextPage = true;
+		try {
+			for (const { path, sourceType } of endpoints) {
+				let page = 1;
+				let hasNextPage = true;
 
-			while (hasNextPage) {
-				const response = await this.load(
-					this.getFullEndpoint(
-						GithubApiPath.REPOS,
-						"/",
-						repositoryUrl,
-						path,
-						{},
-					),
-					{
-						authToken,
-						method: "GET",
-						query: {
-							since,
-							per_page: 100,
-							page,
+				while (hasNextPage) {
+					const response = await this.load(
+						this.getFullEndpoint(
+							GithubApiPath.REPOS,
+							"/",
+							repositoryUrl,
+							path,
+							{},
+						),
+						{
+							authToken,
+							method: "GET",
+							query: {
+								since,
+								per_page: 100,
+								page,
+							},
 						},
-					},
-				);
+					);
 
-				const comments: GithubTextResponse[] = await response.json();
+					const comments: GithubTextResponse[] = await response.json();
 
-				allComments = allComments.concat(
-					comments.map((comment) => ({
-						creatorLogin: comment.user.login,
-						sourceType,
-						sourceNumber: comment.issue_url
-							? parseInt(comment.issue_url.split("/").pop() || "0", 10)
-							: comment.pull_request_url
-								? parseInt(comment.pull_request_url.split("/").pop() || "0", 10)
-								: 0,
-						body: comment.body,
-						url: comment.html_url,
-						sentimentScore: null,
-						sentimentLabel: null,
-						createdAt: comment.created_at,
-						updatedAt: comment.updated_at,
-						reactionsPlusCount: comment.reactions["+1"] || 0,
-						reactionsMinusCount: comment.reactions["-1"] || 0,
-					})),
-				);
+					allComments = allComments.concat(
+						comments.map((comment) => ({
+							creatorLogin: comment.user.login,
+							sourceType,
+							sourceNumber: comment.issue_url
+								? parseInt(comment.issue_url.split("/").pop() || "0", 10)
+								: comment.pull_request_url
+									? parseInt(
+											comment.pull_request_url.split("/").pop() || "0",
+											10,
+										)
+									: 0,
+							body: comment.body,
+							url: comment.html_url,
+							sentimentScore: null,
+							sentimentLabel: null,
+							createdAt: comment.created_at,
+							updatedAt: comment.updated_at,
+							reactionsPlusCount: comment.reactions["+1"] || 0,
+							reactionsMinusCount: comment.reactions["-1"] || 0,
+						})),
+					);
 
-				const linkHeader = response.headers.get("Link");
-				hasNextPage = linkHeader?.includes("rel=\"next\"") || false;
-				page++;
+					const linkHeader = response.headers.get("Link");
+					hasNextPage = linkHeader?.includes('rel="next"') || false;
+					page++;
+				}
 			}
-		}
 
-		return allComments;
+			return allComments;
+		} catch (error) {
+			console.error("Error fetching issues:", error);
+			return []
+		}
 	}
 }
 
